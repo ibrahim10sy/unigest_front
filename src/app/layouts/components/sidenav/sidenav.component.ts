@@ -15,6 +15,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'vex-sidenav',
@@ -55,15 +56,21 @@ export class SidenavComponent implements OnInit {
 
   items$: Observable<NavigationItem[]> = this.navigationService.items$;
 
+  userData: any; // Pour stocker les infos du localStorage
+
   constructor(
     private navigationService: NavigationService,
     private layoutService: VexLayoutService,
     private configService: VexConfigService,
     private readonly popoverService: VexPopoverService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private authService: AuthService // 1. Injecte ton service
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // 2. Récupère les données au chargement
+    this.userData = this.authService.getUserData();
+  }
 
   collapseOpenSidenav() {
     this.layoutService.collapseOpenSidenav();

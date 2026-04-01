@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'vex-login',
@@ -37,7 +38,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 })
 export class LoginComponent {
   form = this.fb.group({
-    email: ['', Validators.required],
+    login: ['', Validators.required],
     password: ['', Validators.required]
   });
 
@@ -46,24 +47,39 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
+    private authService: AuthService,
     private fb: FormBuilder,
     private cd: ChangeDetectorRef,
     private snackbar: MatSnackBar
   ) {}
 
+
+  // send() {
+  //   // Redirection vers le dashboard après login
+  //   this.router.navigate(['/dashboards/analytics']);
+
+  //   this.snackbar.open(
+  //     "Connexion réussie ! Redirection vers le dashboard...",
+  //     'OK',
+  //     {
+  //       duration: 5000
+  //     }
+  //   );
+  // }
+
+  
+
   send() {
-    // Redirection vers le dashboard après login
-    this.router.navigate(['/dashboards/analytics']);
-
-    this.snackbar.open(
-      "Connexion réussie ! Redirection vers le dashboard...",
-      'OK',
-      {
-        duration: 5000
-      }
-    );
-  }
-
+  this.authService.login(this.form.value).subscribe({
+    next: () => {
+      this.router.navigate(['/dashboards/analytics']);
+      this.snackbar.open("Bienvenue !", 'OK', { duration: 3000 });
+    },
+    error: (err) => {
+      this.snackbar.open("Erreur de connexion", 'OK', { duration: 3000 });
+    }
+  });
+}
   toggleVisibility() {
     this.inputType = this.visible ? 'password' : 'text';
     this.visible = !this.visible;
