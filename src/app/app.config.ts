@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { appRoutes } from './app.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import {
+  HTTP_INTERCEPTORS,
   provideHttpClient,
   withInterceptorsFromDi
 } from '@angular/common/http';
@@ -16,6 +17,7 @@ import { provideVex } from '@vex/vex.provider';
 import { provideNavigation } from './core/navigation/navigation.provider';
 import { vexConfigs } from '@vex/config/vex-configs';
 import { provideQuillConfig } from 'ngx-quill';
+import { JwtInterceptor } from './interceptors/jwt.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -33,6 +35,10 @@ export const appConfig: ApplicationConfig = {
         scrollPositionRestoration: 'enabled'
       })
     ),
+    //interceptor
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    //interceptor
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
 

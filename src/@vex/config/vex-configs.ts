@@ -32,7 +32,8 @@ const baseConfig: VexConfig = {
   boxed: false,
   sidenav: {
     title: 'UniGest',
-    imageUrl: 'assets/img/logo/logo_b.png',
+    imageUrl: 'assets/img/illustrations/data_center.svg',
+    // imageUrl: 'assets/img/logo/logo_b.png',
     showCollapsePin: true,
     user: {
       visible: true
