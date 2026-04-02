@@ -56,12 +56,8 @@ getToken(): string | null {
 }
 
 logout(): void {
-
   localStorage.removeItem('auth_token');
   localStorage.removeItem('user_data');
-
-  this.router.navigateByUrl('/login', { replaceUrl: true });
-
 }
   
 }

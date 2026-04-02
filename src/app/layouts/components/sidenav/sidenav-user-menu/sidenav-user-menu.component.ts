@@ -25,42 +25,35 @@ export class SidenavUserMenuComponent implements OnInit {
     setTimeout(() => this.popoverRef.close(), 250);
   }
 
-  logout(): void {
+ logout(): void {
+
+ 
 
   Swal.fire({
-    title: 'Déconnexion',
+  title: "Déconnexion",
     text: "Êtes-vous sûr de vouloir vous déconnecter ?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Oui, me déconnecter',
-    cancelButtonText: 'Annuler',
-
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-
-    buttonsStyling: true
-
-  }).then((result) => {
-
-    if (result.isConfirmed) {
-
-      this.authService.logout();
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Déconnecté',
-        text: 'À bientôt',
-        timer: 1000,
-        showConfirmButton: false
-      }).then(() => {
-        this.router.navigate(['/login']);
-      });
-
-    }
-
+  icon: "warning",
+  // showCancelButton: true,
+  // cancelButtonText: "Non",
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Oui!"
+}).then((result) => {
+  if (result.isConfirmed) {
+   this.authService.logout();    
+    this.close();
+    Swal.fire({
+    title: "Déconnecté!",
+        text: "À bientôt",
+    icon: "success"
   });
+  // 4. Redirection UNIQUEMENT ICI
+        this.router.navigate(['/login']);
+  }else{
+     this.close();
+  }
+});
 
 }
-
 
 }

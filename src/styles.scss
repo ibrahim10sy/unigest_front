@@ -28,3 +28,51 @@ html {
   // --vex-color-warn: yellow;
   // --vex-color-warn-contrast: black;
 }
+
+
+/* Dans src/styles.scss */
+.swal2-container {
+  z-index: 999999 !important; /* Pour passer au-dessus des popovers Vex */
+}
+
+.swal2-styled {
+  /* On force la visibilité car Vex peut mettre l'opacité à 0 par défaut */
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-block !important;
+}
+
+/* On s'assure que le bouton de confirmation a bien sa couleur */
+.swal2-confirm {
+  background-color: #3085d6 !important;
+  color: white !important;
+}
+
+/* Idem pour le bouton annuler */
+.swal2-cancel {
+  background-color: #d33 !important;
+  color: white !important;
+}
+/* Dans src/styles.scss */
+
+/* Force la visibilité des boutons SweetAlert */
+.swal2-styled {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-block !important;
+  box-shadow: none !important;
+}
+
+/* On s'assure que le bouton annuler (Annuler) est bien rouge et visible */
+.swal2-cancel {
+  background-color: #d33 !important;
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* On s'assure que le bouton de confirmation (Oui) est bien bleu et visible */
+.swal2-confirm {
+  background-color: #3085d6 !important;
+  color: white !important;
+  opacity: 1 !important;
+}
