@@ -8,78 +8,147 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FiliereService } from 'src/app/services/filiere.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
+import { VexPageLayoutComponent } from '@vex/components/vex-page-layout/vex-page-layout.component';
+import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
+import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
+import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
+import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
+import { stagger40ms } from '@vex/animations/stagger.animation';
 
 import Swal from 'sweetalert2';
 import { Filiere } from 'src/app/models/Filiere';
+import { FiliereService } from 'src/app/services/filiere.service';
 import { FiliereFormComponent } from '../filiere-form/filiere-form.component';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+
 @Component({
   selector: 'vex-filiere-list',
   standalone: true,
+  animations: [fadeInUp400ms, stagger40ms],
   imports: [
-      MatSlideToggleModule,
+    CommonModule,
+    VexPageLayoutComponent,
+    VexPageLayoutHeaderDirective,
+    VexPageLayoutContentDirective,
+    VexBreadcrumbsComponent,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatButtonModule,
     MatIconModule,
-    CommonModule, MatTableModule, MatPaginatorModule, MatSortModule,
-    MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, MatTooltipModule
+    MatInputModule,
+    MatFormFieldModule,
+    MatTooltipModule,
+    MatSlideToggleModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatCheckboxModule
   ],
   templateUrl: './filiere-list.component.html',
   styleUrl: './filiere-list.component.scss'
 })
 export class FiliereListComponent implements OnInit {
   
-  displayedColumns: string[] = ['id', 'nom', 'actif', 'actions'];
+  layoutCtrl = new UntypedFormControl('boxed');
+  searchCtrl = new UntypedFormControl();
+
   dataSource = new MatTableDataSource<Filiere>();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator?: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort?: MatSort;
 
-  constructor(private filiereService: FiliereService, private dialog:MatDialog) {}
+  selection = new SelectionModel<Filiere>(true, []);
+  
+  // Ajoute 'checkbox' au début de tes colonnes
+  displayedColumns: string[] = ['checkbox', 'nom', 'actif', 'actions'];
+
+  // --- Logique des cases à cocher ---
+  
+  /** Vérifie si toutes les lignes sont sélectionnées */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Sélectionne tout ou désélectionne tout */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+
+  /** Action de suppression groupée (Optionnel) */
+  deleteSelectedFilieres() {
+    const ids = this.selection.selected.map((f:any) => f.id);
+    Swal.fire({
+      title: `Supprimer ${ids.length} éléments ?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer tout'
+    }).then(result => {
+      if (result.isConfirmed) {
+        // Appelle ton service ici pour supprimer la liste d'IDs
+        console.log("Suppression de :", ids);
+      }
+    });
+  }
+
+  constructor(private filiereService: FiliereService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.chargerFilieres();
+    
+    // Filtre automatique comme dans AIO
+    this.searchCtrl.valueChanges.subscribe(value => {
+      this.onFilterChange(value);
+    });
   }
 
-  
+  onFilterChange(value: string) {
+    if (!this.dataSource) return;
+    value = value.trim().toLowerCase();
+    this.dataSource.filter = value;
+  }
 
   chargerFilieres() {
     this.filiereService.getAllFilieres().subscribe({
       next: (data) => {
         this.dataSource.data = data;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      },
-      error: (error) => {
-        console.log('Erreur', 'Impossible de charger les filières',error);
+        this.dataSource.paginator = this.paginator!;
+        this.dataSource.sort = this.sort!;
       }
     });
   }
 
-
   // Dans filiere-list.component.ts
-// 1. Pour l'AJOUT
-ajouter() {
-  this.openDialog(null);
-}
+  // 1. Pour l'AJOUT
+  ajouter() {
+    this.openDialog(null);
+  }
 
-// 2. Pour la MODIFICATION (appelée depuis le bouton edit du tableau)
-modifier(filiere: Filiere) {
-  this.openDialog(filiere);
-}
+  // 2. Pour la MODIFICATION (appelée depuis le bouton edit du tableau)
+  modifier(filiere: Filiere) {
+    this.openDialog(filiere);
+  }
 
-// 3. La méthode commune qui ouvre la modale
-private openDialog(filiere: Filiere | null) {
-  this.dialog.open(FiliereFormComponent, {
-    width: '400px',
-    disableClose: true,
-    data: filiere // null si ajout, objet si modif
-  }).afterClosed().subscribe((res: any) => {
-    if (res) {
-      this.chargerFilieres(); // Rafraîchit la liste si le formulaire a été validé
-    }
-  });
-}
+  // 3. La méthode commune qui ouvre la modale
+  private openDialog(filiere: Filiere | null) {
+    this.dialog.open(FiliereFormComponent, {
+      width: '400px',
+      disableClose: true,
+      data: filiere // null si ajout, objet si modif
+    }).afterClosed().subscribe((res: any) => {
+      if (res) {
+        this.chargerFilieres(); // Rafraîchit la liste si le formulaire a été validé
+      }
+    });
+  }
+  
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -88,6 +157,7 @@ private openDialog(filiere: Filiere | null) {
       this.dataSource.paginator.firstPage();
     }
   }
+
 
   supprimer(filiere: Filiere) {
     Swal.fire({
@@ -103,7 +173,7 @@ private openDialog(filiere: Filiere | null) {
       if (result.isConfirmed && filiere.id) {
         this.filiereService.supprimerFiliere(filiere.id).subscribe(() => {
           this.chargerFilieres();
-          Swal.fire('Supprimé', 'La filière a été retirée', 'success');
+          this.handleSuccess("La filière a été retirée");
         });
       }
     });
@@ -156,5 +226,13 @@ private openDialog(filiere: Filiere | null) {
     }
   });
 }
+
+
+ handleSuccess(message: string,) {
+    Swal.fire({ icon: 'success', title: message, timer: 1500, showConfirmButton: false });
+  }
+ handleError(message: string,) {
+    Swal.fire({ icon: 'error', title: message, timer: 1500, showConfirmButton: false });
+  }
 
 }

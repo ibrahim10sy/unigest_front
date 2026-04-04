@@ -1,26 +1,81 @@
-<form [formGroup]="form" (ngSubmit)="save()">
-  <h2 mat-dialog-title>
-    {{ isEditMode ? 'Modifier la filière' : 'Nouvelle filière' }}
-  </h2>
+<form (ngSubmit)="save()" [formGroup]="form">
+  <div class="flex items-center" mat-dialog-title>
+    <mat-icon 
+      class="mr-4" 
+      svgIcon="mat:school" 
+      [style.color]="'var(--primary-600)'">
+    </mat-icon>
 
-  <mat-dialog-content class="flex flex-col gap-4 mt-4">
-    <mat-form-field appearance="outline" class="w-full">
+    <h2 class="headline m-0 flex-auto">
+      {{ isUpdateMode() ? 'Modifier la filière' : 'Nouvelle filière' }}
+    </h2>
+
+    <button
+      [matMenuTriggerFor]="settingsMenu"
+      class="text-secondary"
+      mat-icon-button
+      type="button">
+      <mat-icon svgIcon="mat:more_vert"></mat-icon>
+    </button>
+
+    <button
+      class="text-secondary"
+      mat-dialog-close
+      mat-icon-button
+      type="button">
+      <mat-icon svgIcon="mat:close"></mat-icon>
+    </button>
+  </div>
+
+  <mat-divider class="text-border"></mat-divider>
+
+  <mat-dialog-content class="flex flex-col">
+    <mat-form-field class="flex-auto mt-4">
       <mat-label>Nom de la filière</mat-label>
-      <input matInput formControlName="nom" placeholder="Ex. Génie Logiciel">
+      <input cdkFocusInitial formControlName="nom" matInput placeholder="Ex. Génie Logiciel" />
+      <mat-icon matIconPrefix svgIcon="mat:edit"></mat-icon>
       <mat-error *ngIf="form.get('nom')?.hasError('required')">Le nom est obligatoire</mat-error>
     </mat-form-field>
 
-    <div class="py-2" *ngIf="isEditMode">
+    <div class="flex items-center mt-4 mb-2" *ngIf="isUpdateMode()">
       <mat-slide-toggle formControlName="actif" color="primary">
-        Filière active
+        Statut de la filière ({{ form.get('actif')?.value ? 'Active' : 'Inactive' }})
       </mat-slide-toggle>
     </div>
   </mat-dialog-content>
 
-  <mat-dialog-actions align="end" class="p-4 border-t">
-    <button mat-button type="button" (click)="close()">Annuler</button>
-    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-      {{ isEditMode ? 'Mettre à jour' : 'Enregistrer' }}
+  <mat-divider class="text-border"></mat-divider>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">Annuler</button>
+    
+    <button
+      *ngIf="isCreateMode()"
+      color="primary"
+      mat-flat-button
+      [disabled]="form.invalid"
+      type="submit">
+      Créer la filière
+    </button>
+    
+    <button
+      *ngIf="isUpdateMode()"
+      color="primary"
+      mat-flat-button
+      [disabled]="form.invalid"
+      type="submit">
+      Mettre à jour
     </button>
   </mat-dialog-actions>
 </form>
+
+<mat-menu #settingsMenu="matMenu" xPosition="before" yPosition="below">
+  <button mat-menu-item>
+    <mat-icon svgIcon="mat:info"></mat-icon>
+    <span>Aide</span>
+  </button>
+  <button mat-menu-item *ngIf="isUpdateMode()">
+    <mat-icon svgIcon="mat:history"></mat-icon>
+    <span>Historique</span>
+  </button>
+</mat-menu>
