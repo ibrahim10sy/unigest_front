@@ -52,6 +52,12 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
+            label: 'tables',
+            route: '/scolarite/aio-table',
+            icon: 'mat:groups'
+          },
+          {
+            type: 'link',
             label: 'Classes',
             route: '/scolarite/classes',
             icon: 'mat:class'

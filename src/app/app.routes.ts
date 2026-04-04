@@ -41,6 +41,16 @@ export const appRoutes: VexRoutes = [
               import('./pages/scolarite/etudiants/etudiant-list/etudiant-list.component')
                 .then(m => m.EtudiantListComponent)
           },
+           {
+            path: 'aio-table',
+            loadComponent: () =>
+              import('./pages/apps/aio-table/aio-table.component').then(
+                (m) => m.AioTableComponent
+              ),
+            data: {
+              toolbarShadowEnabled: false
+            }
+          },
           {canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'etudiants/new',
             loadComponent: () =>
