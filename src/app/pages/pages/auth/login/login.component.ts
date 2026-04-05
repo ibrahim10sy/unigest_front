@@ -54,19 +54,6 @@ export class LoginComponent {
   ) {}
 
 
-  // send() {
-  //   // Redirection vers le dashboard après login
-  //   this.router.navigate(['/dashboards/analytics']);
-
-  //   this.snackbar.open(
-  //     "Connexion réussie ! Redirection vers le dashboard...",
-  //     'OK',
-  //     {
-  //       duration: 5000
-  //     }
-  //   );
-  // }
-
   
 
   send() {

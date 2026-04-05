@@ -5,6 +5,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
+  withInterceptors,
   withInterceptorsFromDi
 } from '@angular/common/http';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
@@ -17,7 +18,7 @@ import { provideVex } from '@vex/vex.provider';
 import { provideNavigation } from './core/navigation/navigation.provider';
 import { vexConfigs } from '@vex/config/vex-configs';
 import { provideQuillConfig } from 'ngx-quill';
-import { JwtInterceptor } from './interceptors/jwt.interceptor';
+import { jwtInterceptor } from './interceptors/jwt.interceptor'; // Minuscule ici
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -36,8 +37,9 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     //interceptor
-    provideHttpClient(withInterceptorsFromDi()),
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    provideHttpClient(withInterceptors([jwtInterceptor])),
+    // { provide: HTTP_INTERCEPTORS, useClass: jwtInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: jwtInterceptor, multi: true },
     //interceptor
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),

@@ -55,9 +55,11 @@ getToken(): string | null {
   return localStorage.getItem('auth_token');
 }
 
+
+// auth.service.ts
 logout(): void {
-  localStorage.removeItem('auth_token');
-  localStorage.removeItem('user_data');
+  localStorage.clear(); // Vide TOUT le local storage d'un coup
+  this.router.navigate(['/login']);
 }
   
 }
