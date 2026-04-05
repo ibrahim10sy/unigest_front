@@ -46,6 +46,12 @@ export class NavigationLoaderService {
         children: [
           {
             type: 'link',
+            label: 'Parent',
+            route: '/scolarite/parent',
+            icon: 'mat:groups'
+          },
+          {
+            type: 'link',
             label: 'Étudiants',
             route: '/scolarite/etudiants',
             icon: 'mat:groups'

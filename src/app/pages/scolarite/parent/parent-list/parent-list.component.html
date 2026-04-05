@@ -1,0 +1,43 @@
+<div class="p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="title m-0">Gestion des Parents</h1>
+    <button (click)="ajouter()" mat-flat-button color="primary">
+      <mat-icon class="mr-2" svgIcon="mat:add"></mat-icon> Ajouter un Parent
+    </button>
+  </div>
+
+  <div class="card overflow-auto">
+    <table [dataSource]="dataSource" mat-table class="w-full">
+      
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef>Parent</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex flex-col">
+            <span class="font-bold">{{ row.prenom }} {{ row.nom }}</span>
+            <span class="text-xs text-secondary">{{ row.email }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="telephone">
+        <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+        <td mat-cell *matCellDef="let row">{{ row.telephone }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button (click)="modifier(row)" mat-icon-button color="primary">
+            <mat-icon svgIcon="mat:edit"></mat-icon>
+          </button>
+          <button (click)="supprimer(row.id)" mat-icon-button color="warn">
+            <mat-icon svgIcon="mat:delete"></mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['nom', 'telephone', 'actions']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['nom', 'telephone', 'actions']"></tr>
+    </table>
+  </div>
+</div>

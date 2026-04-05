@@ -1,6 +1,10 @@
 
-export interface Filiere {
+export interface Parent {
   id?: number;
   nom: string;
-  telephone?: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  password?: string;
+  actif: boolean;
 }

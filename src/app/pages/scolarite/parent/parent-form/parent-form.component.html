@@ -1,0 +1,40 @@
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div mat-dialog-title class="flex items-center">
+    <mat-icon class="mr-3 text-primary" svgIcon="mat:person"></mat-icon>
+    <h2 class="headline m-0">{{ mode === 'update' ? 'Modifier' : 'Nouveau' }} Parent</h2>
+  </div>
+
+  <mat-dialog-content class="flex flex-col gap-4 mt-4">
+    <div class="flex gap-4">
+      <mat-form-field class="flex-auto">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="prenom">
+      </mat-form-field>
+      <mat-form-field class="flex-auto">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom">
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="w-full">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email">
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Téléphone</mat-label>
+      <input matInput formControlName="telephone">
+      <mat-icon matIconPrefix svgIcon="mat:phone"></mat-icon>
+    </mat-form-field>
+
+    <!-- <mat-form-field class="w-full" *ngIf="mode === 'create'">
+      <mat-label>Mot de passe</mat-label>
+      <input matInput type="password" formControlName="password">
+    </mat-form-field> -->
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">Annuler</button>
+    <button mat-flat-button color="primary" [disabled]="form.invalid">Enregistrer</button>
+  </mat-dialog-actions>
+</form>
