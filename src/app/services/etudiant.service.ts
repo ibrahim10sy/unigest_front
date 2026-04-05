@@ -2,18 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environnement/environment';
+import { Etudiant } from '../models/Etudiant';
 
-// Interface pour typer l'étudiant
-export interface Etudiant {
-  id?: number;
-  matricule: string;
-  nom: string;
-  prenom: string;
-  email?: string;
-  telephone?: string;
-  dateNaissance?: Date;
-  // Ajoute d'autres champs selon ton entité Java
-}
+
 
 @Injectable({
   providedIn: 'root'
@@ -56,5 +47,11 @@ export class EtudiantService {
   // 7️⃣ Récupérer un étudiant par matricule
   getEtudiantParMatricule(matricule: string): Observable<Etudiant> {
     return this.http.get<Etudiant>(`${this.apiUrl}/matricule/${matricule}`);
+  }
+
+  // create et update en meme temps
+  save(etudiant: Etudiant): Observable<Etudiant> {
+    if (etudiant.id) return this.http.put<Etudiant>(`${this.apiUrl}/${etudiant.id}`, etudiant);
+    return this.http.post<Etudiant>(this.apiUrl, etudiant);
   }
 }

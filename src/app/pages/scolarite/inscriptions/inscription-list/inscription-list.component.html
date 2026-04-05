@@ -1,1 +1,91 @@
-<p>inscription-list works!</p>
+<div class="p-6">
+  <div class="flex flex-col sm:flex-row items-center justify-between mb-6">
+    <div>
+      <h1 class="title m-0">Inscriptions Académiques</h1>
+      <p class="text-secondary text-sm">Gérez les affectations des étudiants aux classes</p>
+    </div>
+    
+    <div class="flex gap-3 mt-4 sm:mt-0">
+      <mat-form-field appearance="outline" class="vex-mat-dense">
+        <mat-label>Rechercher...</mat-label>
+        <input matInput (keyup)="appliquerFiltre($event)" placeholder="Nom, matricule...">
+        <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
+      </mat-form-field>
+
+      <button (click)="ajouter()" mat-flat-button color="primary">
+        <mat-icon class="mr-2" svgIcon="mat:person_add"></mat-icon> Inscrire
+      </button>
+    </div>
+  </div>
+
+  <div class="card overflow-auto">
+    <table [dataSource]="dataSource" mat-table matSort class="w-full">
+      
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+        <td mat-cell *matCellDef="let row">{{ row.dateInscription | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="etudiant">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Étudiant</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex flex-col" *ngIf="row.etudiant">
+            <span class="font-bold text-primary">{{ row.etudiant.prenom }} {{ row.etudiant.nom }}</span>
+            <span class="text-xs text-secondary">{{ row.etudiant.matricule }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="classe">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Classe</th>
+        <td mat-cell *matCellDef="let row">{{ row.classe?.nom }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="annee">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Année</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="px-2 py-1 rounded bg-gray-100 text-xs font-medium">
+            {{ row.anneeScolaire?.libelle }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="montant">
+        <th mat-header-cell *matHeaderCellDef>Montant Payé</th>
+        <td mat-cell *matCellDef="let row" class="font-bold">
+            {{ row.montantTotal | number }} <small>FCFA</small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef>Statut</th>
+        <td mat-cell *matCellDef="let row">
+          <span [ngClass]="{
+            'bg-green-100 text-green-700': row.statut === 'INSCRIT',
+            'bg-red-100 text-red-700': row.statut === 'ABANDONNE',
+            'bg-blue-100 text-blue-700': row.statut === 'TERMINE'
+          }" class="px-2 py-1 rounded-full text-xs font-bold">
+            {{ row.statut }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button (click)="modifier(row)" mat-icon-button color="primary" matTooltip="Modifier l'affectation">
+            <mat-icon svgIcon="mat:edit"></mat-icon>
+          </button>
+          <button (click)="supprimer(row.id)" mat-icon-button color="warn" matTooltip="Annuler l'inscription">
+            <mat-icon svgIcon="mat:delete_forever"></mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="hover:bg-gray-50 transition-colors"></tr>
+    </table>
+
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25]"></mat-paginator>
+  </div>
+</div>

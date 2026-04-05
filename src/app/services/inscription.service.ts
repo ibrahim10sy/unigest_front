@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environnement/environment';
+import { Inscription } from '../models/Inscription';
 
 @Injectable({
   providedIn: 'root'
@@ -28,10 +29,11 @@ private apiUrl = `${environment.apiUrl}/api/inscriptions`;
   }
 
   // 3️⃣ Modifier une inscription
-  modifier(id: number, classeId: number, anneeId: number): Observable<any> {
+  modifier(id: number, classeId: number, anneeId: number, montant:number): Observable<any> {
     const params = new HttpParams()
       .set('classeId', classeId.toString())
-      .set('anneeId', anneeId.toString());
+      .set('anneeId', anneeId.toString())
+      .set('montant', montant.toString());
 
     return this.http.put(`${this.apiUrl}/${id}`, null, { params });
   }
@@ -49,5 +51,10 @@ private apiUrl = `${environment.apiUrl}/api/inscriptions`;
   // 6️⃣ Liste filtrée par classe ET année
   getEtudiantsParClasseEtAnnee(classeId: number, anneeId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/classe/${classeId}/annee/${anneeId}`);
+  }
+
+
+  getAll(): Observable<Inscription[]> {
+    return this.http.get<Inscription[]>(this.apiUrl);
   }
 }

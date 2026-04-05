@@ -1,8 +1,9 @@
 import { Niveau } from "./Niveau";
-
+import { Parent } from "./Parent";
 export interface Filiere {
   id?: number;
   nom: string;
-  niveau:Niveau;
-  actif?: boolean;
+  actif: boolean;
+  niveau: Niveau;
+  
 }
