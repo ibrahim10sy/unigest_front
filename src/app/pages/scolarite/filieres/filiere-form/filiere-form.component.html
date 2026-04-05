@@ -30,6 +30,16 @@
   <mat-divider class="text-border"></mat-divider>
 
   <mat-dialog-content class="flex flex-col">
+
+    <mat-form-field class="flex-auto">
+  <mat-label>Niveau Parent</mat-label>
+  <mat-select formControlName="niveauId">
+    <mat-option *ngFor="let n of niveaux" [value]="n.id">
+      {{ n.nom }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
     <mat-form-field class="flex-auto mt-4">
       <mat-label>Nom de la filière</mat-label>
       <input cdkFocusInitial formControlName="nom" matInput placeholder="Ex. Génie Logiciel" />

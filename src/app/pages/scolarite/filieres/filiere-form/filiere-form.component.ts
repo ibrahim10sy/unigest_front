@@ -12,6 +12,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { FiliereService } from 'src/app/services/filiere.service';
 import { Filiere } from 'src/app/models/Filiere';
 import Swal from 'sweetalert2';
+import { NiveauService } from 'src/app/services/niveau.service';
+import { Niveau } from 'src/app/models/Niveau';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'vex-filiere-form',
@@ -26,7 +29,8 @@ import Swal from 'sweetalert2';
     MatSlideToggleModule,
     MatIconModule,
     MatDividerModule,
-    MatMenuModule
+    MatMenuModule,
+    MatSelectModule,    // <--- INDISPENSABLE pour mat-option
   ],
   templateUrl: './filiere-form.component.html'
 })
@@ -34,19 +38,24 @@ export class FiliereFormComponent implements OnInit {
   form: FormGroup;
   mode: 'create' | 'update' = 'create';
 
+  niveaux: Niveau[] = [];
+
   constructor(
     private fb: FormBuilder,
+    private niveauService: NiveauService,
     private filiereService: FiliereService,
     private dialogRef: MatDialogRef<FiliereFormComponent>,
     @Inject(MAT_DIALOG_DATA) public defaults: Filiere | null
   ) {
     this.form = this.fb.group({
-      nom: [this.defaults?.nom || '', [Validators.required, Validators.minLength(3)]],
+      nom: [this.defaults?.nom || '', [Validators.required]],
+      niveauId: [this.defaults?.niveau?.id || '', Validators.required], // ID du niveau parent
       actif: [this.defaults ? this.defaults.actif : true]
     });
   }
 
   ngOnInit(): void {
+    this.niveauService.getAllNiveaux().subscribe(res => this.niveaux = res);
     if (this.defaults) {
       this.mode = 'update';
     }
@@ -58,12 +67,12 @@ export class FiliereFormComponent implements OnInit {
     const val = this.form.value;
 
     if (this.isUpdateMode()) {
-      this.filiereService.modifierFiliere(this.defaults!.id!, val.nom, val.actif).subscribe({
+      this.filiereService.modifierFiliere(val.niveauId,this.defaults!.id!, val.nom, val.actif).subscribe({
         next: () => this.handleSuccess('Filière mise à jour'),
         error: () => Swal.fire('Erreur', 'Échec de la modification', 'error')
       });
     } else {
-      this.filiereService.ajouterFiliere(val.nom).subscribe({
+      this.filiereService.ajouterFiliere(val.nom, val.niveauId).subscribe({
         next: () => this.handleSuccess('Filière ajoutée'),
         error: () => Swal.fire('Erreur', "Échec de l'ajout", 'error')
       });

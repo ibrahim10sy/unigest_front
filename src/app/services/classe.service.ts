@@ -13,24 +13,37 @@ private apiUrl = `${environment.apiUrl}/api/classes`;
   constructor(private http: HttpClient) {}
 
   // 1️⃣ Créer une classe (Utilise HttpParams car le backend attend des @RequestParam)
-  creerClasse(nom: string, niveau: string, filiereId: number): Observable<any> {
-    const params = new HttpParams()
-      .set('nom', nom)
-      .set('niveau', niveau)
-      .set('filiereId', filiereId.toString());
-
-    return this.http.post(this.apiUrl, null, { params });
+ // 1️⃣ Créer une classe
+creerClasse(nom: string, niveauId: number, filiereId: number): Observable<any> {
+  // Sécurité : si les IDs sont absents, on ne tente pas le toString()
+  if (!niveauId || !filiereId) {
+    console.error("Tentative de création avec des IDs manquants", { niveauId, filiereId });
   }
 
-  // 2️⃣ Modifier une classe (required = false géré par l'absence de set si null)
-  modifierClasse(id: number, nom?: string, niveau?: string, filiereId?: number): Observable<any> {
-    let params = new HttpParams();
-    if (nom) params = params.set('nom', nom);
-    if (niveau) params = params.set('niveau', niveau);
-    if (filiereId) params = params.set('filiereId', filiereId.toString());
+  const params = new HttpParams()
+    .set('nom', nom)
+    .set('niveauId', (niveauId ?? '').toString())
+    .set('filiereId', (filiereId ?? '').toString());
 
-    return this.http.put(`${this.apiUrl}/${id}`, null, { params });
+  return this.http.post(this.apiUrl, null, { params });
+}
+
+// 2️⃣ Modifier une classe
+modifierClasse(id: number, nom?: string, niveauId?: number, filiereId?: number): Observable<any> {
+  let params = new HttpParams();
+  if (nom) params = params.set('nom', nom);
+  
+  // Utilise une condition stricte pour le chiffre 0 si nécessaire, 
+  // mais ici on vérifie surtout que ce n'est pas null/undefined
+  if (niveauId !== undefined && niveauId !== null) {
+    params = params.set('niveauId', niveauId.toString());
   }
+  if (filiereId !== undefined && filiereId !== null) {
+    params = params.set('filiereId', filiereId.toString());
+  }
+
+  return this.http.put(`${this.apiUrl}/${id}`, null, { params });
+}
 
   // 3️⃣ Supprimer une classe
   supprimerClasse(id: number): Observable<string> {

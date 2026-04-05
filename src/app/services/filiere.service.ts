@@ -25,15 +25,18 @@ export class FiliereService {
   constructor(private http: HttpClient) { }
 
   // 1️⃣ Ajouter une filière (Utilise HttpParams car le backend attend @RequestParam)
-  ajouterFiliere(nom: string): Observable<Filiere> {
-    const params = new HttpParams().set('nom', nom);
+  ajouterFiliere(nom: string, niveauId:number): Observable<Filiere> {
+     let params = new HttpParams();
+    if (nom) params = params.set('nom', nom);
+     if (niveauId) params = params.set('niveauId', niveauId.toString());
     return this.http.post<Filiere>(this.apiUrl, null, { params });
   }
 
   // 2️⃣ Modifier une filière
-  modifierFiliere(id: number, nom?: string, actif?: boolean): Observable<Filiere> {
+  modifierFiliere( niveauId:number, id: number, nom?: string, actif?: boolean): Observable<Filiere> {
     let params = new HttpParams();
     if (nom) params = params.set('nom', nom);
+    if (niveauId) params = params.set('niveauId', niveauId.toString());
     if (actif !== undefined) params = params.set('actif', actif.toString());
     
     return this.http.put<Filiere>(`${this.apiUrl}/${id}`, null, { params });
@@ -71,5 +74,9 @@ updateActif(id: number, actif: boolean): Observable<string> {
   return this.http.patch(`${this.apiUrl}/${id}/actif`, { actif }, { 
     responseType: 'text' // 👈 Indique à Angular de ne pas parser en JSON
   });
+}
+
+ getFilieresParNiveau(niveauId: number): Observable<Filiere[]> {
+  return this.http.get<Filiere[]>(`${this.apiUrl}/par-niveau/${niveauId}`);
 }
 }

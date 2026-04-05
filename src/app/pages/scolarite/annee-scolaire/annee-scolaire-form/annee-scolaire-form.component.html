@@ -1,0 +1,49 @@
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div mat-dialog-title class="flex items-center justify-between">
+    <h2 class="headline m-0">{{ mode === 'update' ? 'Modifier' : 'Nouvelle' }} Année Scolaire</h2>
+    <button mat-icon-button mat-dialog-close type="button">
+      <mat-icon svgIcon="mat:close"></mat-icon>
+    </button>
+  </div>
+
+  <mat-divider class="-mx-6 text-border"></mat-divider>
+
+  <mat-dialog-content class="flex flex-col gap-4 mt-4">
+    <mat-form-field class="w-full">
+      <mat-label>Libellé de l'année scolaire</mat-label>
+      <input matInput formControlName="libelle" placeholder="Ex: 2025-2026">
+      <mat-icon matIconPrefix svgIcon="mat:event_note"></mat-icon>
+      <mat-hint>Format suggéré : AAAA-AAAA</mat-hint>
+    </mat-form-field>
+
+    <div class="flex gap-4">
+      <mat-form-field class="flex-auto">
+        <mat-label>Date de début</mat-label>
+        <input matInput [matDatepicker]="picker1" formControlName="dateDebut">
+        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="flex-auto">
+        <mat-label>Date de fin</mat-label>
+        <input matInput [matDatepicker]="picker2" formControlName="dateFin">
+        <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <mat-slide-toggle formControlName="active" color="primary">
+      Définir comme année en cours
+    </mat-slide-toggle>
+  </mat-dialog-content>
+
+  <mat-divider class="-mx-6 text-border"></mat-divider>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">Annuler</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+      <mat-icon class="mr-2" svgIcon="mat:save"></mat-icon>
+      {{ mode === 'update' ? 'Mettre à jour' : 'Enregistrer' }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,28 @@
+<form (ngSubmit)="save()" [formGroup]="form">
+  <div class="flex items-center" mat-dialog-title>
+    <mat-icon class="mr-4" svgIcon="mat:layers" color="primary"></mat-icon>
+    <h2 class="headline m-0 flex-auto">{{ mode === 'update' ? 'Modifier' : 'Nouveau' }} Niveau</h2>
+    <button mat-dialog-close class="text-secondary" mat-icon-button type="button">
+      <mat-icon svgIcon="mat:close"></mat-icon>
+    </button>
+  </div>
+
+  <mat-divider class="text-border"></mat-divider>
+
+  <mat-dialog-content class="flex flex-col mt-4">
+    <mat-form-field class="flex-auto">
+      <mat-label>Nom du niveau (ex: Licence 1/ 8 ème année)</mat-label>
+      <input cdkFocusInitial formControlName="nom" matInput placeholder="Ex. L1, Master 2...">
+      <mat-icon matIconPrefix svgIcon="mat:edit"></mat-icon>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-divider class="text-border"></mat-divider>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">Annuler</button>
+    <button color="primary" mat-flat-button type="submit" [disabled]="form.invalid">
+      {{ mode === 'update' ? 'Mettre à jour' : 'Enregistrer' }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -64,7 +64,7 @@ export class FiliereListComponent implements OnInit {
   selection = new SelectionModel<Filiere>(true, []);
   
   // Ajoute 'checkbox' au début de tes colonnes
-  displayedColumns: string[] = ['checkbox', 'nom', 'actif', 'actions'];
+  displayedColumns: string[] = ['checkbox', 'nom', 'niveau', 'actif', 'actions'];
 
   // --- Logique des cases à cocher ---
   
@@ -148,7 +148,7 @@ export class FiliereListComponent implements OnInit {
       }
     });
   }
-  
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

@@ -56,24 +56,37 @@ export class NavigationLoaderService {
             route: '/scolarite/aio-table',
             icon: 'mat:groups'
           },
-          {
+             {
             type: 'link',
-            label: 'Classes',
-            route: '/scolarite/classes',
-            icon: 'mat:class'
+            label: 'Anne Scolaire',
+            route: '/scolarite/annee-scolaire',
+            icon: 'mat:date_range'
           },
           {
             type: 'link',
-            label: 'Inscriptions',
-            route: '/scolarite/inscriptions',
-            icon: 'mat:assignment_ind'
+            label: 'Niveau',
+            route: '/scolarite/niveau',
+            icon: 'mat:layers'
           },
           {
             type: 'link',
             label: 'Filières',
             route: '/scolarite/filieres',
             icon: 'mat:school'
-          }
+          },
+          {
+            type: 'link',
+            label: 'Classes',
+            route: '/scolarite/classes',
+            icon: 'mat:class'
+          },
+       
+          {
+            type: 'link',
+            label: 'Inscriptions',
+            route: '/scolarite/inscriptions',
+            icon: 'mat:assignment_ind'
+          },
         ]
       },
 

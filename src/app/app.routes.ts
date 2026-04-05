@@ -93,6 +93,20 @@ export const appRoutes: VexRoutes = [
             loadComponent: () =>
               import('./pages/scolarite/filieres/filiere-list/filiere-list.component')
                 .then(m => m.FiliereListComponent)
+          },
+          {
+            canActivate: [AuthGuard], // Ajoute le guard ici
+            path: 'niveau',
+            loadComponent: () =>
+              import('./pages/scolarite/niveau/niveau-list/niveau-list.component')
+                .then(m => m.NiveauListComponent)
+          },
+          {
+            canActivate: [AuthGuard], // Ajoute le guard ici
+            path: 'annee-scolaire',
+            loadComponent: () =>
+              import('./pages/scolarite/annee-scolaire/annee-scolaire-liste/annee-scolaire-liste.component')
+                .then(m => m.AnneeScolaireListeComponent)
           }
         ]
       },

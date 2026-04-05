@@ -63,6 +63,11 @@
           <td *matCellDef="let row" mat-cell class="font-medium"> {{row.nom}} </td>
         </ng-container>
 
+        <ng-container matColumnDef="niveau">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Niveau </th>
+          <td *matCellDef="let row" mat-cell class="font-medium"> {{row.niveau?.nom}} </td>
+        </ng-container>
+
         <ng-container matColumnDef="actif">
           <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Statut </th>
           <td *matCellDef="let row" mat-cell>
