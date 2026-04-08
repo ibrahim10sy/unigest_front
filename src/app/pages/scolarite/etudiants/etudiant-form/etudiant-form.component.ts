@@ -28,7 +28,6 @@ export class EtudiantFormComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       id: [defaults?.id || null],
-      matricule: [defaults?.matricule || '', Validators.required],
       prenom: [defaults?.prenom || '', Validators.required],
       nom: [defaults?.nom || '', Validators.required],
       email: [defaults?.email || '', [Validators.required, Validators.email]],

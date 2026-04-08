@@ -1,5 +1,5 @@
 
-export interface Parent {
+export interface Enseignant {
   id?: number;
   nom: string;
   prenom: string;

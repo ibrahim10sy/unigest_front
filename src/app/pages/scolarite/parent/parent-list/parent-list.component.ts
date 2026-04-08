@@ -3,35 +3,45 @@ import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
-import { ParentFormComponent } from '../parent-form/parent-form.component';
+import { VexPageLayoutComponent } from '@vex/components/vex-page-layout/vex-page-layout.component';
+import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
+import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
+import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
+import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
+import { stagger40ms } from '@vex/animations/stagger.animation';
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import Swal from 'sweetalert2';
-import { Parent } from 'src/app/models/Parent';
 import { ParentService } from 'src/app/services/parent.service';
+import { Parent } from 'src/app/models/Parent';
+import { ParentFormComponent } from '../parent-form/parent-form.component';
+
 
 @Component({
   selector: 'vex-parent-list',
   standalone: true,
+    animations: [fadeInUp400ms, stagger40ms],
   imports: [
-    CommonModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTooltipModule
-  ],
+    CommonModule, VexPageLayoutComponent, VexPageLayoutHeaderDirective,
+    VexPageLayoutContentDirective, VexBreadcrumbsComponent, MatTableModule,
+    MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
+    MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatDialogModule,
+    MatButtonToggleModule
+],
   templateUrl: './parent-list.component.html'
 })
 export class ParentListComponent implements OnInit {
 
   // Configuration des colonnes de la table
-  displayedColumns: string[] = ['nom', 'email', 'telephone', 'actions'];
+  layoutCtrl = new UntypedFormControl('boxed');
+  searchCtrl = new UntypedFormControl();
+  displayedColumns: string[] = ['nom','prenom','adresse', 'email', 'telephone', 'actions'];
   dataSource = new MatTableDataSource<Parent>();
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -44,6 +54,7 @@ export class ParentListComponent implements OnInit {
 
   ngOnInit(): void {
     this.chargerParents();
+    this.searchCtrl.valueChanges.subscribe(v => this.dataSource.filter = v.trim().toLowerCase());
   }
 
   // Récupération des données depuis le backend
@@ -53,7 +64,6 @@ export class ParentListComponent implements OnInit {
         this.dataSource.data = res;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        console.log('data', this.dataSource.data);
       },
       error: (err:any) => {
         console.error('Erreur lors du chargement des parents', err);

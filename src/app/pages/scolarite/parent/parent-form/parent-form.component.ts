@@ -25,6 +25,7 @@ export class ParentFormComponent implements OnInit {
       id: [defaults?.id || null],
       nom: [defaults?.nom || '', Validators.required],
       prenom: [defaults?.prenom || '', Validators.required],
+      adresse: [defaults?.adresse || '', Validators.required],
       email: [defaults?.email || ''],
       // email: [defaults?.email || '', [Validators.required, Validators.email]],
       telephone: [defaults?.telephone || '', Validators.required],

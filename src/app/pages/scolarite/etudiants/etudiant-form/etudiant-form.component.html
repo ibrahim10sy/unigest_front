@@ -2,10 +2,10 @@
   <h2 mat-dialog-title>{{ mode === 'update' ? 'Modifier' : 'Nouvel' }} Étudiant</h2>
 
   <mat-dialog-content class="flex flex-col gap-4">
-    <mat-form-field class="w-full">
+    <!-- <mat-form-field class="w-full">
       <mat-label>Matricule</mat-label>
       <input matInput formControlName="matricule">
-    </mat-form-field>
+    </mat-form-field> -->
 
     <div class="flex gap-4">
       <mat-form-field class="flex-auto">
@@ -20,17 +20,23 @@
 
     <div class="flex gap-4">
       <mat-form-field class="flex-auto">
-        <mat-label>Email</mat-label>
+         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="email">
       </mat-form-field>
       <mat-form-field class="flex-auto">
+        <mat-label>Téléphone</mat-label>
+      <input matInput formControlName="telephone">
+      <mat-icon matIconPrefix svgIcon="mat:phone"></mat-icon>
+      </mat-form-field>
+    </div>
+
+  
+  <mat-form-field class="flex-auto">
         <mat-label>Date de Naissance</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="dateNaissance">
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
-    </div>
-
     <mat-form-field class="w-full">
       <mat-label>Parent / Tuteur</mat-label>
       <mat-select formControlName="parent" [compareWith]="compareParents">

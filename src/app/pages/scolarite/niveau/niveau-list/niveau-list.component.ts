@@ -21,8 +21,9 @@ import { NiveauService } from 'src/app/services/niveau.service';
 import { NiveauFormComponent } from '../niveau-form/niveau-form.component';
 import Swal from 'sweetalert2';
 import { Niveau } from 'src/app/models/Niveau';
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
 
-@Component({
+@Component({ 
   selector: 'vex-niveau-list',
   standalone: true,
   animations: [fadeInUp400ms, stagger40ms],
@@ -30,8 +31,9 @@ import { Niveau } from 'src/app/models/Niveau';
     CommonModule, VexPageLayoutComponent, VexPageLayoutHeaderDirective,
     VexPageLayoutContentDirective, VexBreadcrumbsComponent, MatTableModule,
     MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
-    MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatDialogModule
-  ],
+    MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatDialogModule,
+    MatButtonToggleModule
+],
   templateUrl: './niveau-list.component.html'
 })
 export class NiveauListComponent implements OnInit {

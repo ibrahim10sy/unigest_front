@@ -1,85 +1,143 @@
 <vex-page-layout>
-  <vex-page-layout-header class="pb-16 flex flex-col items-start justify-center">
-    <div [class.container]="layoutCtrl.value === 'boxed'" class="w-full flex flex-col sm:flex-row justify-between px-6">
+  <vex-page-layout-header
+    class="pb-16 flex flex-col items-start justify-center">
+    <div
+      [class.container]="layoutCtrl.value === 'boxed'"
+      class="w-full flex flex-col sm:flex-row justify-between px-6">
       <div>
         <h1 class="title mt-0 mb-1">Gestion des Filières</h1>
-        <vex-breadcrumbs [crumbs]="['Configuration', 'Filières']"></vex-breadcrumbs>
+        <vex-breadcrumbs
+          [crumbs]="['Configuration', 'Filières']"></vex-breadcrumbs>
       </div>
     </div>
   </vex-page-layout-header>
 
-  <vex-page-layout-content [class.container]="layoutCtrl.value === 'boxed'" class="-mt-6">
-    
+  <vex-page-layout-content
+    [class.container]="layoutCtrl.value === 'boxed'"
+    class="-mt-6">
     <div class="card overflow-auto -mt-16">
-      
-      <div class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
-        <h2 class="title my-0 ltr:pr-4 rtl:pl-4 ltr:mr-4 rtl:ml-4 ltr:border-r rtl:border-l hidden sm:block flex-none">
+      <div
+        class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
+        <h2
+          class="title my-0 ltr:pr-4 rtl:pl-4 ltr:mr-4 rtl:ml-4 ltr:border-r rtl:border-l hidden sm:block flex-none">
           <span *ngIf="selection.isEmpty()">Filières</span>
           <span *ngIf="selection.hasValue()">
-            {{ selection.selected.length }} Filière<span *ngIf="selection.selected.length > 1">s</span> sélectionnée(s)
+            {{ selection.selected.length }} Filière<span
+              *ngIf="selection.selected.length > 1"
+              >s</span
+            >
+            sélectionnée(s)
           </span>
         </h2>
 
         <div *ngIf="selection.hasValue()" class="ml-4 pr-4 border-r flex-none">
-          <button color="primary" mat-icon-button matTooltip="Supprimer la sélection" type="button">
+          <button
+            color="primary"
+            mat-icon-button
+            matTooltip="Supprimer la sélection"
+            type="button">
             <mat-icon svgIcon="mat:delete"></mat-icon>
           </button>
         </div>
 
         <mat-form-field subscriptSizing="dynamic" class="ml-4">
           <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
-          <input matInput [formControl]="searchCtrl" placeholder="Rechercher..." type="text" />
+          <input
+            matInput
+            [formControl]="searchCtrl"
+            placeholder="Rechercher..."
+            type="text" />
         </mat-form-field>
 
         <span class="flex-1"></span>
 
-        <button (click)="ajouter()" class="ml-4 flex-none" color="primary" mat-mini-fab matTooltip="Ajouter une filière" type="button">
+        <button
+          (click)="ajouter()"
+          class="ml-4 flex-none"
+          color="primary"
+          mat-mini-fab
+          matTooltip="Ajouter une filière"
+          type="button">
           <mat-icon svgIcon="mat:add"></mat-icon>
         </button>
       </div>
 
-      <table @stagger [dataSource]="dataSource" class="w-full" mat-table matSort>
-
+      <table
+        @stagger
+        [dataSource]="dataSource"
+        class="w-full"
+        mat-table
+        matSort>
         <ng-container matColumnDef="checkbox">
           <th *matHeaderCellDef mat-header-cell>
-            <mat-checkbox (change)="$event ? masterToggle() : null"
-                          [checked]="selection.hasValue() && isAllSelected()"
-                          [indeterminate]="selection.hasValue() && !isAllSelected()"
-                          color="primary">
+            <mat-checkbox
+              (change)="$event ? masterToggle() : null"
+              [checked]="selection.hasValue() && isAllSelected()"
+              [indeterminate]="selection.hasValue() && !isAllSelected()"
+              color="primary">
             </mat-checkbox>
           </th>
           <td *matCellDef="let row" class="w-4" mat-cell>
-            <mat-checkbox (change)="$event ? selection.toggle(row) : null"
-                          (click)="$event.stopPropagation()"
-                          [checked]="selection.isSelected(row)"
-                          color="primary">
+            <mat-checkbox
+              (change)="$event ? selection.toggle(row) : null"
+              (click)="$event.stopPropagation()"
+              [checked]="selection.isSelected(row)"
+              color="primary">
             </mat-checkbox>
           </td>
         </ng-container>
 
-
         <ng-container matColumnDef="nom">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Nom </th>
-          <td *matCellDef="let row" mat-cell class="font-medium"> {{row.nom}} </td>
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header
+            class="uppercase">
+            Nom
+          </th>
+          <td *matCellDef="let row" mat-cell class="font-medium">
+            {{ row.nom }}
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="niveau">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Niveau </th>
-          <td *matCellDef="let row" mat-cell class="font-medium"> {{row.niveau?.nom}} </td>
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header
+            class="uppercase">
+            Niveau
+          </th>
+          <td *matCellDef="let row" mat-cell class="font-medium">
+            {{ row.niveau?.nom }}
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="actif">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Statut </th>
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header
+            class="uppercase">
+            Statut
+          </th>
           <td *matCellDef="let row" mat-cell>
             <div class="flex items-center gap-2">
-                <mat-slide-toggle [checked]="row.actif" [disabled]="row.loading" 
-                                 (click)="$event.stopPropagation(); onToggleClick($event, row)" 
-                                 color="primary">
-                </mat-slide-toggle>
-                <span [class]="row.actif ? 'text-green-600 bg-green-600/10' : 'text-red-600 bg-red-600/10'" 
-                      class="rounded px-2 py-1 font-medium text-xs">
-                    {{ row.actif ? 'ACTIF' : 'INACTIF' }}
-                </span>
+              <mat-slide-toggle
+                [checked]="row.actif"
+                [disabled]="row.loading"
+                (click)="$event.stopPropagation(); onToggleClick($event, row)"
+                color="primary">
+              </mat-slide-toggle>
+              <span
+                [class]="
+                  row.actif
+                    ? 'text-green-600 bg-green-600/10'
+                    : 'text-red-600 bg-red-600/10'
+                "
+                class="rounded px-2 py-1 font-medium text-xs">
+                {{ row.actif ? "ACTIF" : "INACTIF" }}
+              </span>
             </div>
           </td>
         </ng-container>
@@ -88,26 +146,62 @@
           <th *matHeaderCellDef mat-header-cell></th>
           <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
             <div class="flex">
-                <button (click)="$event.stopPropagation(); modifier(row)" mat-icon-button color="primary" matTooltip="Modifier">
-                    <mat-icon svgIcon="mat:edit"></mat-icon>
-                </button>
-                <button (click)="$event.stopPropagation(); supprimer(row)" mat-icon-button color="warn" matTooltip="Supprimer">
-                    <mat-icon svgIcon="mat:delete"></mat-icon>
-                </button>
+              <button
+                (click)="$event.stopPropagation(); modifier(row)"
+                mat-icon-button
+                color="primary"
+                matTooltip="Modifier">
+                <mat-icon svgIcon="mat:edit"></mat-icon>
+              </button>
+              <button
+                (click)="$event.stopPropagation(); supprimer(row)"
+                mat-icon-button
+                color="warn"
+                matTooltip="Supprimer">
+                <mat-icon svgIcon="mat:delete"></mat-icon>
+              </button>
+              <button
+                (click)="$event.stopPropagation(); ouvrirAjoutMatieres(row)"
+                mat-icon-button
+                color="primary"
+                matTooltip="Ajouter des matières">
+                <mat-icon svgIcon="mat:add"></mat-icon>
+              </button>
             </div>
           </td>
         </ng-container>
 
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-        <tr *matRowDef="let row; columns: displayedColumns" 
-            @fadeInUp
-            (click)="modifier(row)"
-            class="hover:bg-hover transition duration-400 ease-out-swift cursor-pointer" 
-            mat-row></tr>
+        <tr
+          *matRowDef="let row; columns: displayedColumns"
+          @fadeInUp
+          (click)="modifier(row)"
+          class="hover:bg-hover transition duration-400 ease-out-swift cursor-pointer"
+          mat-row></tr>
       </table>
+      <div *ngIf="filiereSelectionnee" class="mt-4">
+        <h3 class="mb-2">
+          Ajouter des matières à : {{ filiereSelectionnee.nom }}
+        </h3>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]" class="sticky left-0"></mat-paginator>
+        <mat-form-field appearance="outline">
+          <mat-label>Matières</mat-label>
+
+          <mat-select multiple [formControl]="matieresControl">
+            <mat-option *ngFor="let matiere of matieres" [value]="matiere.id">
+              {{ matiere.nom }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="ajouterMatieres()">
+          Ajouter
+        </button>
+      </div>
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20]"
+        class="sticky left-0"></mat-paginator>
     </div>
-
   </vex-page-layout-content>
 </vex-page-layout>
