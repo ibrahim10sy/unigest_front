@@ -16,12 +16,12 @@ import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/v
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
 import { stagger40ms } from '@vex/animations/stagger.animation';
+import Swal from 'sweetalert2';
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
 
 import { NiveauService } from 'src/app/services/niveau.service';
 import { NiveauFormComponent } from '../niveau-form/niveau-form.component';
-import Swal from 'sweetalert2';
 import { Niveau } from 'src/app/models/Niveau';
-import { MatButtonToggleModule } from "@angular/material/button-toggle";
 
 @Component({ 
   selector: 'vex-niveau-list',

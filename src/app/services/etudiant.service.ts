@@ -18,7 +18,7 @@ export class EtudiantService {
   creerEtudiant(etudiant: Etudiant): Observable<Etudiant> {
     return this.http.post<Etudiant>(this.apiUrl, etudiant);
   }
-
+ 
   // 2️⃣ Modifier un étudiant (@RequestBody)
   modifierEtudiant(id: number, data: Etudiant): Observable<Etudiant> {
     return this.http.put<Etudiant>(`${this.apiUrl}/${id}`, data);

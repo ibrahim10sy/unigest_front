@@ -16,32 +16,47 @@ import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/v
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
 import { stagger40ms } from '@vex/animations/stagger.animation';
-import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import Swal from 'sweetalert2';
 import { ParentService } from 'src/app/services/parent.service';
 import { Parent } from 'src/app/models/Parent';
 import { ParentFormComponent } from '../parent-form/parent-form.component';
 
-
 @Component({
   selector: 'vex-parent-list',
   standalone: true,
-    animations: [fadeInUp400ms, stagger40ms],
+  animations: [fadeInUp400ms, stagger40ms],
   imports: [
-    CommonModule, VexPageLayoutComponent, VexPageLayoutHeaderDirective,
-    VexPageLayoutContentDirective, VexBreadcrumbsComponent, MatTableModule,
-    MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
-    MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatDialogModule,
+    CommonModule,
+    VexPageLayoutComponent,
+    VexPageLayoutHeaderDirective,
+    VexPageLayoutContentDirective,
+    VexBreadcrumbsComponent,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatDialogModule,
     MatButtonToggleModule
-],
+  ],
   templateUrl: './parent-list.component.html'
 })
 export class ParentListComponent implements OnInit {
-
   // Configuration des colonnes de la table
   layoutCtrl = new UntypedFormControl('boxed');
   searchCtrl = new UntypedFormControl();
-  displayedColumns: string[] = ['nom','prenom','adresse', 'email', 'telephone', 'actions'];
+  displayedColumns: string[] = [
+    'nom',
+    'prenom',
+    'adresse',
+    'email',
+    'telephone',
+    'actions'
+  ];
   dataSource = new MatTableDataSource<Parent>();
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -50,24 +65,30 @@ export class ParentListComponent implements OnInit {
   constructor(
     private parentService: ParentService,
     private dialog: MatDialog
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.chargerParents();
-    this.searchCtrl.valueChanges.subscribe(v => this.dataSource.filter = v.trim().toLowerCase());
+    this.searchCtrl.valueChanges.subscribe(
+      (v) => (this.dataSource.filter = v.trim().toLowerCase())
+    );
   }
 
   // Récupération des données depuis le backend
   chargerParents() {
     this.parentService.getAll().subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         this.dataSource.data = res;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       },
-      error: (err:any) => {
+      error: (err: any) => {
         console.error('Erreur lors du chargement des parents', err);
-        Swal.fire('Erreur', 'Impossible de charger la liste des parents', 'error');
+        Swal.fire(
+          'Erreur',
+          'Impossible de charger la liste des parents',
+          'error'
+        );
       }
     });
   }
@@ -100,7 +121,7 @@ export class ParentListComponent implements OnInit {
       disableClose: true
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.parentService.save(result).subscribe({
           next: () => {
@@ -112,8 +133,12 @@ export class ParentListComponent implements OnInit {
             });
             this.chargerParents();
           },
-          error: (err:any) => {
-            Swal.fire('Erreur', 'Une erreur est survenue lors de l\'enregistrement', 'error');
+          error: (err: any) => {
+            Swal.fire(
+              'Erreur',
+              "Une erreur est survenue lors de l'enregistrement",
+              'error'
+            );
           }
         });
       }
@@ -124,7 +149,7 @@ export class ParentListComponent implements OnInit {
   supprimer(id: number) {
     Swal.fire({
       title: 'Êtes-vous sûr ?',
-      text: "Cette action est irréversible !",
+      text: 'Cette action est irréversible !',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -138,8 +163,8 @@ export class ParentListComponent implements OnInit {
             Swal.fire('Supprimé !', 'Le parent a été supprimé.', 'success');
             this.chargerParents();
           },
-          error: (err:any) => {
-          console.log("erreur ", err)
+          error: (err: any) => {
+            console.log('erreur ', err);
             Swal.fire('Erreur', 'Impossible de supprimer ce parent ', 'error');
           }
         });

@@ -5,6 +5,7 @@ export interface Enseignant {
   prenom: string;
   email: string;
   adresse: string;
+  specialite: string;
   telephone: string;
   password?: string;
   actif: boolean;

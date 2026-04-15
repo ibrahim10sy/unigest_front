@@ -44,24 +44,19 @@ export class NavigationLoaderService {
         type: 'subheading',
         label: 'Scolarité',
         children: [
-          {
-            type: 'link',
-            label: 'Parent',
-            route: '/scolarite/parent',
-            icon: 'mat:groups'
-          },
+          
           {
             type: 'link',
             label: 'Étudiants',
             route: '/scolarite/etudiants',
             icon: 'mat:groups'
           },
-          {
-            type: 'link',
-            label: 'tables',
-            route: '/scolarite/aio-table',
-            icon: 'mat:groups'
-          },
+          // {
+          //   type: 'link',
+          //   label: 'tables',
+          //   route: '/scolarite/aio-table',
+          //   icon: 'mat:groups'
+          // },
              {
             type: 'link',
             label: 'Anne Scolaire',
@@ -82,7 +77,7 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
-            label: 'Classes',
+            label: 'Classes/Matières',
             route: '/scolarite/classes',
             icon: 'mat:class'
           },
@@ -161,10 +156,11 @@ export class NavigationLoaderService {
         children: [
           {
             type: 'link',
-            label: 'Parents',
-            route: '/utilisateurs/parents',
+            label: 'Parent',
+            route: '/scolarite/parent',
             icon: 'mat:family_restroom'
           },
+         
           {
             type: 'link',
             label: 'Enseignants',
