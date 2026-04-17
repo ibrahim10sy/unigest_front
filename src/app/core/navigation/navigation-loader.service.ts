@@ -77,7 +77,7 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
-            label: 'Classes/Matières',
+            label: 'Classes / Matières',
             route: '/scolarite/classes',
             icon: 'mat:class'
           },

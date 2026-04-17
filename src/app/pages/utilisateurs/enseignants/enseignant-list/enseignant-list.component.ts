@@ -9,14 +9,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
+import Swal from 'sweetalert2';
 import { VexPageLayoutComponent } from '@vex/components/vex-page-layout/vex-page-layout.component';
 import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
 import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
 import { stagger40ms } from '@vex/animations/stagger.animation';
-import Swal from 'sweetalert2';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { Enseignant } from 'src/app/models/Enseignant';
@@ -26,7 +25,7 @@ import { EnseignantFormComponent } from '../enseignant-form/enseignant-form.comp
 @Component({
   selector: 'vex-enseignant-list',
   standalone: true,
-  animations: [fadeInUp400ms, stagger40ms],
+ animations: [fadeInUp400ms, stagger40ms],
   imports: [
     CommonModule,
     VexPageLayoutComponent,

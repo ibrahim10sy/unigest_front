@@ -28,7 +28,6 @@ import { Filiere } from 'src/app/models/Filiere';
 export class ClasseFormComponent implements OnInit {
   form: FormGroup;
   mode: 'create' | 'update' = 'create';
- niveaux: Niveau[] = [];
 filieresFiltrees: Filiere[] = [];
   
 
@@ -42,7 +41,6 @@ filieresFiltrees: Filiere[] = [];
   ) {
     this.form = this.fb.group({
       nom: [this.defaults?.nom || '', Validators.required],
-niveauId: [this.defaults?.niveau?.id || '', Validators.required],
       filiereId: [this.defaults?.filiere?.id || '', Validators.required]
     });
   }
@@ -51,22 +49,21 @@ niveauId: [this.defaults?.niveau?.id || '', Validators.required],
     if (this.defaults) this.mode = 'update';
     
   
-        this.niveauService.getAllNiveaux().subscribe(data => this.niveaux = data);
+        // this.niveauService.getAllNiveaux().subscribe(data => this.niveaux = data);
          // Si on est en mode édition, on charge déjà les filières du niveau actuel
-  if (this.defaults?.niveau) {
-    this.chargerFilieres(this.defaults.niveau.id);
-  }
+         this.chargerFilieres();
+ 
 
   }
 
   onNiveauChange(niveauId: number) {
   // Réinitialiser le champ filière si on change de niveau
   this.form.get('filiereId')?.setValue(null);
-  this.chargerFilieres(niveauId);
+  this.chargerFilieres();
 }
 
-chargerFilieres(niveauId: number) {
-  this.filiereService.getFilieresParNiveau(niveauId).subscribe(res => {
+chargerFilieres() {
+  this.filiereService.getAllFilieres().subscribe(res => {
     this.filieresFiltrees = res;
   });
    }
@@ -76,12 +73,12 @@ chargerFilieres(niveauId: number) {
     const val = this.form.value;
 
     if (this.mode === 'update') {
-      this.classeService.modifierClasse(this.defaults.id, val.nom, val.niveauId, val.filiereId).subscribe({
+      this.classeService.modifierClasse(this.defaults.id, val.nom, val.filiereId).subscribe({
         next: () => this.handleSuccess('Classe modifiée'),
         error: () => Swal.fire('Erreur', 'Échec', 'error')
       });
     } else {
-      this.classeService.creerClasse(val.nom, val.niveauId, val.filiereId).subscribe({
+      this.classeService.creerClasse(val.nom, val.filiereId).subscribe({
         next: () => this.handleSuccess('Classe créée'),
         error: () => Swal.fire('Erreur', 'Échec', 'error')
       });

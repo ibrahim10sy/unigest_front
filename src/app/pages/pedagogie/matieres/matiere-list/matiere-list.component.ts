@@ -21,18 +21,20 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { Matiere, MatiereService } from 'src/app/services/matiere.service';
 import { MatiereFormComponent } from '../matiere-form/matiere-form.component';
 import Swal from 'sweetalert2';
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 
 @Component({
   selector: 'vex-matiere-list',
   standalone: true,
   animations: [fadeInUp400ms, stagger40ms],
     imports: [
-      CommonModule, VexPageLayoutComponent, VexPageLayoutHeaderDirective,
-      VexPageLayoutContentDirective, VexBreadcrumbsComponent, MatTableModule,
-      MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
-      MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatDialogModule,
-      MatButtonToggleModule
-  ],
+    CommonModule, VexPageLayoutComponent, VexPageLayoutHeaderDirective,
+    VexPageLayoutContentDirective, VexBreadcrumbsComponent, MatTableModule,
+    MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
+    MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatDialogModule,
+    MatButtonToggleModule,
+    MatSlideToggleModule
+],
   templateUrl: './matiere-list.component.html',
   styleUrl: './matiere-list.component.scss'
 })
@@ -41,7 +43,7 @@ export class MatiereListComponent {
     layoutCtrl = new UntypedFormControl('boxed');
     searchCtrl = new UntypedFormControl();
     dataSource = new MatTableDataSource<Matiere>();
-    displayedColumns: string[] = ['id', 'nom','coefficient', 'actions'];
+    displayedColumns: string[] = ['id', 'nom','statut', 'actions'];
   
     @ViewChild(MatPaginator, { static: true }) paginator?: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort?: MatSort;

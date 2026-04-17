@@ -38,7 +38,7 @@ export class MatiereFormComponent  implements OnInit{
     ) {
       this.form = this.fb.group({
         nom: [this.defaults?.nom || '', [Validators.required]],
-        coefficient: [this.defaults?.coefficient || '', [Validators.required]]
+        // coefficient: [this.defaults?.coefficient || '', [Validators.required]]
       });
     }
 

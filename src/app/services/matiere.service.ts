@@ -7,8 +7,7 @@ import { Filiere } from '../models/Filiere';
 export interface Matiere {
   id?: number;
   nom: string;
-  coefficient: number;
-  filieres: Filiere
+  statut: boolean
 }
 
 @Injectable({

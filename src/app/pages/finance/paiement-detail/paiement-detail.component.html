@@ -1,0 +1,82 @@
+<div class="flex items-center" mat-dialog-title>
+  <mat-icon class="mr-3 text-primary" svgIcon="mat:receipt_long"></mat-icon>
+  <h2 class="headline m-0 flex-auto">Détails du Paiement</h2>
+  <button class="text-secondary" mat-dialog-close mat-icon-button type="button">
+    <mat-icon svgIcon="mat:close"></mat-icon>
+  </button>
+</div>
+
+<mat-divider class="-mx-6 text-border"></mat-divider>
+
+<mat-dialog-content class="flex flex-col gap-6 mt-4" *ngIf="data">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="p-4 border rounded-lg bg-light">
+      <h3 class="title mt-0 mb-3 flex items-center text-primary">
+        <mat-icon class="mr-2 icon-sm" svgIcon="mat:person"></mat-icon> Étudiant
+      </h3>
+      <p class="m-0"><strong>Nom complet:</strong> {{ data.inscription.etudiant?.prenom }} {{ data.inscription.etudiant?.nom }}</p>
+      <p class="m-0"><strong>Matricule:</strong> <span class="badge-accent px-2 rounded text-xs">{{ data.inscription.etudiant?.matricule }}</span></p>
+      <p class="m-0 text-secondary"><strong>Email:</strong> {{ data.inscription.etudiant?.email }}</p>
+    </div>
+
+    <div class="p-4 border rounded-lg bg-light">
+      <h3 class="title mt-0 mb-3 flex items-center text-primary">
+        <mat-icon class="mr-2 icon-sm" svgIcon="mat:school"></mat-icon> Académique
+      </h3>
+      <p class="m-0"><strong>Classe:</strong> {{ data.inscription.classe?.nom }}</p>
+      <p class="m-0"><strong>Filière:</strong> {{ data.inscription.classe?.filiere?.nom }}</p>
+      <p class="m-0"><strong>Année:</strong> {{ data.inscription.anneeScolaire?.libelle }}</p>
+    </div>
+  </div>
+
+  <div class="p-4 border rounded-lg">
+    <h3 class="title mt-0 mb-4 flex items-center text-primary">
+      <mat-icon class="mr-2 icon-sm" svgIcon="mat:payments"></mat-icon> Détails de la Transaction
+    </h3>
+    
+    <div class="grid grid-cols-2 gap-y-4">
+      <div>
+        <span class="text-secondary block caption">Montant Versé</span>
+        <span class="text-xl font-bold text-green-600">{{ data.montant | number }} FCFA</span>
+      </div>
+
+      <div>
+        <span class="text-secondary block caption">Mode de Règlement</span>
+        <div class="flex items-center">
+             <mat-icon class="mr-1 icon-sm text-secondary" [svgIcon]="getPaymentIcon(data.modePaiement)"></mat-icon>
+             <span class="font-medium">{{ data.modePaiement }}</span>
+        </div>
+      </div>
+
+      <div>
+        <span class="text-secondary block caption">Date du paiement</span>
+        <span class="font-medium">{{ data.datePaiement | date: 'dd MMMM yyyy' }}</span>
+      </div>
+
+      <div>
+        <span class="text-secondary block caption">Référence</span>
+        <code class="bg-gray-100 px-2 py-1 rounded text-primary font-bold">
+            {{ data.reference || 'N/A' }}
+        </code>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-2">
+    <div class="flex justify-between mb-1">
+      <span class="caption text-secondary">Progression du règlement (Scolarité)</span>
+      <span class="caption font-bold">{{ (data.montant / data.inscription.montantTotal * 100).toFixed(1) }}%</span>
+    </div>
+    <mat-progress-bar mode="determinate" [value]="(data.montant / data.inscription.montantTotal * 100)" color="primary"></mat-progress-bar>
+    <p class="text-xs text-secondary mt-1 italic">Montant total dû : {{ data.inscription.montantTotal | number }} FCFA</p>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="gap-2">
+  <button mat-button mat-dialog-close type="button">Fermer</button>
+  <button color="primary" mat-flat-button type="button" (click)="imprimerRecu(data)">
+    <mat-icon class="mr-2" svgIcon="mat:print"></mat-icon> Imprimer Reçu
+  </button>
+</mat-dialog-actions>

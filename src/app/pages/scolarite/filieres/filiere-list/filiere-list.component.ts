@@ -109,40 +109,40 @@ export class FiliereListComponent implements OnInit {
   this.filiereSelectionnee = row;
   this.matieresControl.setValue([]);
 }
-  ajouterMatieres() {
-  if (!this.filiereSelectionnee) return;
+//   ajouterMatieres() {
+//   if (!this.filiereSelectionnee) return;
 
-  const matiereIds = this.matieresControl.value;
+//   const matiereIds = this.matieresControl.value;
 
-  console.log("IDs envoyés :", matiereIds);
+//   console.log("IDs envoyés :", matiereIds);
 
-  if (!matiereIds || matiereIds.length === 0) {
-    Swal.fire('Attention', 'Veuillez sélectionner au moins une matière', 'warning');
-    return;
-  }
+//   if (!matiereIds || matiereIds.length === 0) {
+//     Swal.fire('Attention', 'Veuillez sélectionner au moins une matière', 'warning');
+//     return;
+//   }
 
-  const dto = {
-    filiereId: this.filiereSelectionnee.id,
-    matiereIds: matiereIds
-  };
+//   const dto = {
+//     filiereId: this.filiereSelectionnee.id,
+//     matiereIds: matiereIds
+//   };
 
-  this.filiereService.ajouterMatieres(dto).subscribe({
-    next: () => {
-      Swal.fire({
-        icon: 'success',
-        title: 'Matières ajoutées',
-        timer: 1500,
-        showConfirmButton: false
-      });
+//   this.filiereService.ajouterMatieres(dto).subscribe({
+//     next: () => {
+//       Swal.fire({
+//         icon: 'success',
+//         title: 'Matières ajoutées',
+//         timer: 1500,
+//         showConfirmButton: false
+//       });
 
-      this.matieresControl.setValue([]);
-      this.filiereSelectionnee = null;
-    },
-    error: () => {
-      Swal.fire('Erreur', 'Impossible d’ajouter', 'error');
-    }
-  });
-}
+//       this.matieresControl.setValue([]);
+//       this.filiereSelectionnee = null;
+//     },
+//     error: () => {
+//       Swal.fire('Erreur', 'Impossible d’ajouter', 'error');
+//     }
+//   });
+// }
 
   /** Action de suppression groupée (Optionnel) */
   deleteSelectedFilieres() {

@@ -14,30 +14,27 @@ private apiUrl = `${environment.apiUrl}/api/classes`;
 
   // 1️⃣ Créer une classe (Utilise HttpParams car le backend attend des @RequestParam)
  // 1️⃣ Créer une classe
-creerClasse(nom: string, niveauId: number, filiereId: number): Observable<any> {
+creerClasse(nom: string, filiereId: number): Observable<any> {
   // Sécurité : si les IDs sont absents, on ne tente pas le toString()
-  if (!niveauId || !filiereId) {
-    console.error("Tentative de création avec des IDs manquants", { niveauId, filiereId });
+  if (!filiereId) {
+    console.error("Tentative de création avec des IDs manquants", { filiereId });
   }
 
   const params = new HttpParams()
     .set('nom', nom)
-    .set('niveauId', (niveauId ?? '').toString())
     .set('filiereId', (filiereId ?? '').toString());
 
   return this.http.post(this.apiUrl, null, { params });
 }
 
 // 2️⃣ Modifier une classe
-modifierClasse(id: number, nom?: string, niveauId?: number, filiereId?: number): Observable<any> {
+modifierClasse(id: number, nom?: string,filiereId?: number): Observable<any> {
   let params = new HttpParams();
   if (nom) params = params.set('nom', nom);
   
   // Utilise une condition stricte pour le chiffre 0 si nécessaire, 
   // mais ici on vérifie surtout que ce n'est pas null/undefined
-  if (niveauId !== undefined && niveauId !== null) {
-    params = params.set('niveauId', niveauId.toString());
-  }
+ 
   if (filiereId !== undefined && filiereId !== null) {
     params = params.set('filiereId', filiereId.toString());
   }

@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
-
+import { RouterLink } from '@angular/router';
 // VEX Imports
 import { VexPageLayoutComponent } from '@vex/components/vex-page-layout/vex-page-layout.component';
 import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
@@ -22,88 +22,127 @@ import { stagger40ms } from '@vex/animations/stagger.animation';
 
 import Swal from 'sweetalert2';
 import { ClasseService } from 'src/app/services/classe.service';
-import { ClasseFormComponent } from '../classe-form/classe-form.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NiveauService } from 'src/app/services/niveau.service';
-import { MatSelectModule } from '@angular/material/select'; // <--- INDISPENSABLE
+import { MatSelectModule } from '@angular/material/select';
+import { ClasseMatiereService } from 'src/app/services/ClasseMatiereService';
 import { Classe } from 'src/app/models/Classe';
+import { MatiereService } from 'src/app/services/matiere.service';
+import { ClassematiereComponent } from '../form/classematiere.component';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'vex-classe-list',
+  selector: 'vex-classe-matiere-list',
   standalone: true,
   animations: [fadeInUp400ms, stagger40ms],
   imports: [
-    CommonModule, VexPageLayoutComponent, VexPageLayoutHeaderDirective,
-    VexPageLayoutContentDirective, VexBreadcrumbsComponent, MatTableModule,
-    MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
-    MatInputModule, MatFormFieldModule, MatTooltipModule, MatDialogModule, 
-    ReactiveFormsModule,MatCheckboxModule,MatSelectModule, // <--- AJOUTE CECI ICI
+    CommonModule,
+    VexPageLayoutComponent,
+    VexPageLayoutHeaderDirective,
+    VexPageLayoutContentDirective,
+    VexBreadcrumbsComponent,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatTooltipModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    RouterLink
   ],
-  templateUrl: './classe-list.component.html'
+  templateUrl: './classe-matiere-list.component.html',
+  styleUrl: './classe-matiere-list.component.scss'
 })
-export class ClasseListComponent implements OnInit {
+export class ClasseMatiereListComponent {
   layoutCtrl = new UntypedFormControl('boxed');
   searchCtrl = new UntypedFormControl();
-  
-  displayedColumns: string[] = ['checkbox', 'nom', 'niveau', 'filiere', 'actions'];
+
+  displayedColumns: string[] = ['classe', 'matiere', 'coefficient', 'actions'];
   dataSource = new MatTableDataSource<any>();
   selection = new SelectionModel<any>(true, []);
+  classe!: Classe;
+
   @ViewChild(MatPaginator, { static: true }) paginator?: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort?: MatSort;
 
-  constructor(private classeService: ClasseService, private dialog: MatDialog,private router: Router) {}
+  constructor(
+    private classeService: ClasseService,
+    private classem: ClasseMatiereService,
+    private mService: MatiereService,
+    private dialog: MatDialog,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.chargerClasses();
+    this.classe = history.state?.classe;
 
-    this.searchCtrl.valueChanges.subscribe(value => this.dataSource.filter = value.trim().toLowerCase());
+    if (!this.classe) {
+      console.error('Aucune classe reçue !');
+      return;
+    }
+
+    this.chargerMatiere(this.classe.id);
+
+    this.searchCtrl.valueChanges.subscribe(
+      (value) => (this.dataSource.filter = value.trim().toLowerCase())
+    );
   }
 
-  chargerClasses() {
-    this.classeService.getAllClasses().subscribe(data => {
-      this.dataSource.data = data;
+  chargerMatiere(id: any) {
+    this.classem.getByClasse(id).subscribe((res) => {
+      this.dataSource.data = res;
       this.dataSource.paginator = this.paginator!;
       this.dataSource.sort = this.sort!;
     });
   }
 
-  details(classe: Classe) {
-      this.router.navigate(['/scolarite/classes/details'], {
-        state: { classe }
-      });
-    }
+  chargerM() {
+    this.mService.getAllMatieres().subscribe((res) => {
+      console.log(res);
+    });
+  }
+
+  ajouter() {
+  this.openDialog({ classe: this.classe });
+}
+
   
-  isAllSelected() {
-    return this.selection.selected.length === this.dataSource.data.length;
-  }
-
-  masterToggle() {
-    this.isAllSelected() ? this.selection.clear() : this.dataSource.data.forEach(row => this.selection.select(row));
-  }
-
-  ajouter() { this.openDialog(null); }
-  modifier(classe: any) { this.openDialog(classe); }
-
-  private openDialog(classe: any | null) {
-    this.dialog.open(ClasseFormComponent, {
+  private openDialog(data: { classe: Classe, classeMatiere?: any }) {
+  this.dialog
+    .open(ClassematiereComponent, {
       width: '500px',
       disableClose: true,
-      data: classe
-    }).afterClosed().subscribe(res => { if (res) this.chargerClasses(); });
-  }
+      data: data
+    })
+    .afterClosed()
+    .subscribe((res) => {
+      if (res) this.chargerMatiere(this.classe.id);
+    });
+}
+
+ modifier(classeMatiere: any) {
+  this.openDialog({
+    classe: this.classe,
+    classeMatiere: classeMatiere
+  });
+}
 
   supprimer(classe: any) {
     Swal.fire({
       title: 'Supprimer ?',
-      text: `Voulez-vous supprimer la classe ${classe.nom} ?`,
+      text: `Voulez-vous supprimer ?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.classeService.supprimerClasse(classe.id).subscribe(() => {
-          this.chargerClasses();
+        this.classem.delete(classe.id).subscribe(() => {
+          this.chargerMatiere(this.classe.id);
           this.selection.deselect(classe);
           Swal.fire('Supprimé', '', 'success');
         });

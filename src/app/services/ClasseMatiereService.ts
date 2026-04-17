@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ClasseMatiere } from '../models/ClasseMatiere';
+import { environment } from 'src/environnement/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClasseMatiereService {
 
-  private apiUrl = 'http://localhost:9000/api/classe-matiere';
+   private apiUrl = `${environment.apiUrl}/api/classe-matiere`;
 
   constructor(private http: HttpClient) {}
 
@@ -21,6 +22,10 @@ export class ClasseMatiereService {
 
     return this.http.post<ClasseMatiere>(this.apiUrl, null, { params });
   }
+
+  update(id: number, data: ClasseMatiere): Observable<ClasseMatiere> {
+  return this.http.put<ClasseMatiere>(`${this.apiUrl}/${id}`, data);
+}
 
   // ✅ Lister matières d'une classe
   getByClasse(classeId: number): Observable<ClasseMatiere[]> {

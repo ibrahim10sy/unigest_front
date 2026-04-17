@@ -2,6 +2,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { LayoutComponent } from './layouts/layout/layout.component';
 import { VexRoutes } from '@vex/interfaces/vex-route.interface';
 import { DetailsComponent } from './pages/pedagogie/affectations/details/details.component';
+import { ClasseMatiereListComponent } from './pages/scolarite/classematiere/classe-matiere-list/classe-matiere-list.component';
 
 export const appRoutes: VexRoutes = [
   {
@@ -63,13 +64,30 @@ export const appRoutes: VexRoutes = [
           },
 
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'classes',
-            loadComponent: () =>
-              import(
-                './pages/scolarite/classes/classe-list/classe-list.component'
-              ).then((m) => m.ClasseListComponent)
+            children: [
+              {
+                path: '',
+                canActivate: [AuthGuard],
+                loadComponent: () =>
+                  import(
+                    './pages/scolarite/classes/classe-list/classe-list.component'
+                  ).then((m) => m.ClasseListComponent)
+              },
+              {
+                path: 'details',
+                component: ClasseMatiereListComponent
+              }
+            ]
           },
+          // {
+          //   canActivate: [AuthGuard], // Ajoute le guard ici
+          //   path: 'classes',
+          //   loadComponent: () =>
+          //     import(
+          //       './pages/scolarite/classes/classe-list/classe-list.component'
+          //     ).then((m) => m.ClasseListComponent)
+          // },
           {
             path: 'classes/new',
             loadComponent: () =>
@@ -153,21 +171,22 @@ export const appRoutes: VexRoutes = [
               ).then((m) => m.MatiereListComponent)
           },
           {
-  path: 'affectations',
-  children: [
-    {
-      path: '',
-      canActivate: [AuthGuard],
-      loadComponent: () =>
-        import('./pages/pedagogie/affectations/affectation-list/affectation-list.component')
-          .then((m) => m.AffectationListComponent)
-    },
-    {
-      path: 'details',
-      component: DetailsComponent
-    }
-  ]
-},
+            path: 'affectations',
+            children: [
+              {
+                path: '',
+                canActivate: [AuthGuard],
+                loadComponent: () =>
+                  import(
+                    './pages/pedagogie/affectations/affectation-list/affectation-list.component'
+                  ).then((m) => m.AffectationListComponent)
+              },
+              {
+                path: 'details',
+                component: DetailsComponent
+              }
+            ]
+          },
           // {
           //   canActivate: [AuthGuard], // Ajoute le guard ici
           //   path: 'affectations',

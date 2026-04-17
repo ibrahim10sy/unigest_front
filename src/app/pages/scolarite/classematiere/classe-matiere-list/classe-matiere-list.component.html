@@ -1,0 +1,85 @@
+<vex-page-layout>
+<vex-page-layout-header class="pb-16 flex flex-col items-start justify-center">
+  <div [class.container]="layoutCtrl.value === 'boxed'" class="w-full flex flex-col sm:flex-row items-center justify-between px-6">
+    
+    <div class="flex items-center">
+      <button [routerLink]="['/configuration/classes']" mat-icon-button class="mr-4 bg-white/10" matTooltip="Retour aux classes">
+        <mat-icon svgIcon="mat:arrow_back"></mat-icon>
+      </button>
+
+      <div>
+        <h1 class="title mt-0 mb-1 flex items-center">
+          <mat-icon class="mr-3 text-primary" svgIcon="mat:menu_book"></mat-icon>
+          Gestion des matières 
+          <span class="text-secondary ml-2 font-light">— {{classe.nom}}</span>
+        </h1>
+        <vex-breadcrumbs [crumbs]="['Configuration', 'Classes', classe.nom, 'Matières']"></vex-breadcrumbs>
+      </div>
+    </div>
+
+  <div class="mt-4 sm:mt-0 flex gap-2">
+      <button color="primary" mat-raised-button type="button" (click)="ajouter()">
+        <mat-icon class="ltr:mr-2 rtl:ml-2" svgIcon="mat:add"></mat-icon>
+        <span>Ajouter une matière</span>
+      </button>
+    </div>
+
+  </div>
+</vex-page-layout-header>
+
+  <vex-page-layout-content [class.container]="layoutCtrl.value === 'boxed'" class="-mt-6">
+    <div class="card overflow-auto -mt-16">
+      <div class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
+    
+        <mat-form-field subscriptSizing="dynamic" class="ml-4">
+          <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
+          <input matInput [formControl]="searchCtrl" placeholder="Rechercher une classe..." type="text" />
+        </mat-form-field>
+
+        <span class="flex-1"></span>
+
+        <!-- <button  class="ml-4 flex-none" color="primary" mat-mini-fab matTooltip="Ajouter une matière">
+          <mat-icon svgIcon="mat:add"></mat-icon>
+        </button> -->
+      </div>
+
+      <table @stagger [dataSource]="dataSource" class="w-full" mat-table matSort>
+    
+
+        <ng-container matColumnDef="classe">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Classe </th>
+          <td *matCellDef="let row" mat-cell class="font-medium"> {{row.classe.nom}} </td>
+        </ng-container>
+
+    
+     <ng-container matColumnDef="matiere">
+  <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Matière </th>
+  <td *matCellDef="let row" mat-cell> 
+    <span class="bg-primary-600/10 text-primary-600 px-2 py-1 rounded text-xs font-bold">
+      {{ row.matiere?.nom }} 
+    </span>
+  </td>
+</ng-container>
+
+        <ng-container matColumnDef="coefficient">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Coéfficient </th>
+          <td *matCellDef="let row" mat-cell> {{row.coefficient}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th *matHeaderCellDef mat-header-cell></th>
+          <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
+            <div class="flex">
+                <button (click)="$event.stopPropagation(); modifier(row)" mat-icon-button color="primary"><mat-icon svgIcon="mat:edit"></mat-icon></button>
+                <button (click)="$event.stopPropagation(); supprimer(row)" mat-icon-button color="warn"><mat-icon svgIcon="mat:delete"></mat-icon></button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns" @fadeInUp (click)="modifier(row)" class="hover:bg-hover cursor-pointer" mat-row></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" class="sticky left-0"></mat-paginator>
+    </div>
+  </vex-page-layout-content>
+</vex-page-layout>
