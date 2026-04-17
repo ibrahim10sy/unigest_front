@@ -22,6 +22,7 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { EtudiantFormComponent } from '../etudiant-form/etudiant-form.component';
 import { Etudiant } from 'src/app/models/Etudiant';
 import { EtudiantService } from 'src/app/services/etudiant.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'vex-etudiant-list',
@@ -48,7 +49,7 @@ export class EtudiantListComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
-  constructor(private etudiantService: EtudiantService, private dialog: MatDialog) {}
+  constructor(private etudiantService: EtudiantService, private dialog: MatDialog,private router: Router) {}
 
   ngOnInit() { 
     this.refresh(); 
