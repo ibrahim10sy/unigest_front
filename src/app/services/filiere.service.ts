@@ -14,6 +14,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environnement/environment';
 import { Filiere } from '../models/Filiere';
+import { AjoutMatieresDTO } from '../models/AjoutMatieresDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,10 @@ export class FiliereService {
     return this.http.put<Filiere>(`${this.apiUrl}/${id}`, null, { params });
   }
 
+  ajouterMatieres(dto: AjoutMatieresDTO): Observable<any> {
+    return this.http.post(`${this.apiUrl}/ajouter-matieres`, dto);
+  }
+  
   // 3️⃣ Supprimer une filière
   supprimerFiliere(id: number): Observable<string> {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });

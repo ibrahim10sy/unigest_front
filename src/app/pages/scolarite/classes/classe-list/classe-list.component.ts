@@ -26,6 +26,8 @@ import { ClasseFormComponent } from '../classe-form/classe-form.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NiveauService } from 'src/app/services/niveau.service';
 import { MatSelectModule } from '@angular/material/select'; // <--- INDISPENSABLE
+import { Classe } from 'src/app/models/Classe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'vex-classe-list',
@@ -50,7 +52,7 @@ export class ClasseListComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator?: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort?: MatSort;
 
-  constructor(private classeService: ClasseService, private dialog: MatDialog) {}
+  constructor(private classeService: ClasseService, private dialog: MatDialog,private router: Router) {}
 
   ngOnInit(): void {
     this.chargerClasses();
@@ -66,6 +68,12 @@ export class ClasseListComponent implements OnInit {
     });
   }
 
+  details(classe: Classe) {
+      this.router.navigate(['/scolarite/classes/details'], {
+        state: { classe }
+      });
+    }
+  
   isAllSelected() {
     return this.selection.selected.length === this.dataSource.data.length;
   }

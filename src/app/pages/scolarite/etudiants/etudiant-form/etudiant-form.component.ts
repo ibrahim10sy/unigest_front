@@ -25,10 +25,9 @@ export class EtudiantFormComponent implements OnInit {
     private dialogRef: MatDialogRef<EtudiantFormComponent>,
     private fb: FormBuilder,
     private parentService: ParentService
-  ) {
+  ) { 
     this.form = this.fb.group({
       id: [defaults?.id || null],
-      matricule: [defaults?.matricule || '', Validators.required],
       prenom: [defaults?.prenom || '', Validators.required],
       nom: [defaults?.nom || '', Validators.required],
       email: [defaults?.email || '', [Validators.required, Validators.email]],

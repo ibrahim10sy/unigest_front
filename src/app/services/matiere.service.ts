@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environnement/environment';
+import { Filiere } from '../models/Filiere';
 
 export interface Matiere {
   id?: number;
   nom: string;
-  coefficient: number;
+  statut: boolean
 }
 
 @Injectable({
@@ -18,23 +19,15 @@ export class MatiereService {
   constructor(private http: HttpClient) {}
 
   // 1️⃣ Ajouter une matière (Utilise HttpParams pour @RequestParam)
-  ajouterMatiere(nom: string, coefficient: number): Observable<Matiere> {
-    const params = new HttpParams()
-      .set('nom', nom)
-      .set('coefficient', coefficient.toString());
+  ajouterMatiere(matiere : Matiere): Observable<Matiere> {
 
-    return this.http.post<Matiere>(this.apiUrl, null, { params });
+    return this.http.post<Matiere>(this.apiUrl,matiere);
   }
 
   // 2️⃣ Modifier une matière (Champs optionnels)
-  modifierMatiere(id: number, nom?: string, coefficient?: number): Observable<Matiere> {
-    let params = new HttpParams();
-    if (nom) params = params.set('nom', nom);
-    if (coefficient !== undefined && coefficient !== null) {
-      params = params.set('coefficient', coefficient.toString());
-    }
+  modifierMatiere(id: number, matiere: Matiere): Observable<Matiere> {
 
-    return this.http.put<Matiere>(`${this.apiUrl}/${id}`, null, { params });
+    return this.http.put<Matiere>(`${this.apiUrl}/${id}`, matiere);
   }
 
   // 3️⃣ Supprimer une matière

@@ -1,15 +1,32 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormGroup,
+  FormBuilder,
+  Validators
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  MatDialogModule,
+  MAT_DIALOG_DATA,
+  MatDialogRef
+} from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'vex-parent-form',
   standalone: true,
-imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatInputModule, MatButtonModule, MatIconModule],  templateUrl: './parent-form.component.html',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule
+  ],
+  templateUrl: './parent-form.component.html',
   styleUrl: './parent-form.component.scss'
 })
 export class ParentFormComponent implements OnInit {
@@ -25,9 +42,10 @@ export class ParentFormComponent implements OnInit {
       id: [defaults?.id || null],
       nom: [defaults?.nom || '', Validators.required],
       prenom: [defaults?.prenom || '', Validators.required],
+      adresse: [defaults?.adresse || '', Validators.required],
       email: [defaults?.email || ''],
       // email: [defaults?.email || '', [Validators.required, Validators.email]],
-      telephone: [defaults?.telephone || '', Validators.required],
+      telephone: [defaults?.telephone || '', Validators.required]
       // password: [''] // Optionnel en update
     });
   }
@@ -39,4 +57,4 @@ export class ParentFormComponent implements OnInit {
   save() {
     if (this.form.valid) this.dialogRef.close(this.form.value);
   }
-  }
+}

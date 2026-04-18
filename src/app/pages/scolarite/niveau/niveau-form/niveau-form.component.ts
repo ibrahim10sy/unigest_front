@@ -7,8 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
-import { NiveauService } from 'src/app/services/niveau.service';
 import Swal from 'sweetalert2';
+import { NiveauService } from 'src/app/services/niveau.service';
 import { Niveau } from 'src/app/models/Niveau';
 
 @Component({

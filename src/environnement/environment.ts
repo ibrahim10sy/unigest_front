@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: "http://localhost:5200",
-  // apiUrl1: 'https://tuwindi.app:8443/nepal'
+  // apiUrl: 'https://api.lyuni-gest.com'
 };
 
 /*

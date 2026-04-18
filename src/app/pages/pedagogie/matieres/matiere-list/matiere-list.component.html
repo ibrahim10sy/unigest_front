@@ -1,1 +1,107 @@
-<p>matiere-list works!</p>
+<vex-page-layout>
+  <vex-page-layout-header
+    class="pb-16 flex flex-col items-start justify-center">
+    <div
+      [class.container]="layoutCtrl.value === 'boxed'"
+      [class.px-6]="layoutCtrl.value === 'fullwidth'"
+      class="w-full flex flex-col sm:flex-row justify-between">
+      <div>
+        <h1 class="title mt-0 mb-1">Matières</h1>
+        <vex-breadcrumbs
+          [crumbs]="['Configuration', 'Gestion des matières']"></vex-breadcrumbs>
+      </div>
+
+      <div class="hidden sm:block">
+        <mat-button-toggle-group
+          [formControl]="layoutCtrl"
+          class="mt-4 sm:mt-0">
+          <mat-button-toggle value="boxed">Réduire</mat-button-toggle>
+          <mat-button-toggle value="fullwidth">Plein écran</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+ 
+</vex-page-layout-header>
+  <vex-page-layout-content [class.container]="layoutCtrl.value === 'boxed'" class="-mt-6">
+    <div class="card overflow-auto -mt-16">
+      
+      <div class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
+        <h2 class="title my-0 hidden sm:block flex-none">Matières</h2>
+
+        <mat-form-field subscriptSizing="dynamic" class="ml-4">
+          <mat-label>Rechercher...</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Nom, matricule...">
+        <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
+        </mat-form-field>
+
+        <span class="flex-1"></span>
+
+        <button (click)="ajouter()" class="ml-4 flex-none" color="primary" mat-mini-fab matTooltip="Ajouter un niveau">
+          <mat-icon svgIcon="mat:add"></mat-icon>
+        </button>
+      </div>
+
+      <table @stagger [dataSource]="dataSource" class="w-full" mat-table matSort>
+        
+        <ng-container matColumnDef="id">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> ID </th>
+          <td *matCellDef="let row" mat-cell> {{row.id}} </td>
+        </ng-container>
+
+         <ng-container matColumnDef="nom">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header class="uppercase"> Matière </th>
+          <td *matCellDef="let row" mat-cell class="font-medium text-primary"> {{row.nom}} </td>
+        </ng-container>
+       <ng-container matColumnDef="statut">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header
+            class="uppercase">
+            Statut
+          </th>
+          <td *matCellDef="let row" mat-cell>
+            <div class="flex items-center gap-2">
+              <mat-slide-toggle
+                [checked]="row.statut"
+                [disabled]="row.loading"
+                (click)="$event.stopPropagation();"
+                color="primary">
+              </mat-slide-toggle>
+              <span
+                [class]="
+                  row.statut
+                    ? 'text-green-600 bg-green-600/10'
+                    : 'text-red-600 bg-red-600/10'
+                "
+                class="rounded px-2 py-1 font-medium text-xs">
+                {{ row.statut ? "actif" : "Inactif" }}
+              </span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th *matHeaderCellDef mat-header-cell></th>
+          <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
+            <div class="flex">
+                <button (click)="$event.stopPropagation(); modifier(row)" mat-icon-button color="primary">
+                  <mat-icon svgIcon="mat:edit"></mat-icon>
+                </button>
+                <button (click)="$event.stopPropagation(); supprimer(row)" mat-icon-button color="warn">
+                  <mat-icon svgIcon="mat:delete"></mat-icon>
+                </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns" 
+            @fadeInUp 
+            class="hover:bg-hover cursor-pointer" 
+            mat-row></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" class="sticky left-0"></mat-paginator>
+    </div>
+  </vex-page-layout-content>
+</vex-page-layout>

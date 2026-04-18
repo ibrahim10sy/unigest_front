@@ -8,42 +8,45 @@ import { environment } from 'src/environnement/environment';
   providedIn: 'root'
 })
 export class ClasseService {
-private apiUrl = `${environment.apiUrl}/api/classes`;
+  private apiUrl = `${environment.apiUrl}/api/classes`;
 
   constructor(private http: HttpClient) {}
 
   // 1️⃣ Créer une classe (Utilise HttpParams car le backend attend des @RequestParam)
- // 1️⃣ Créer une classe
-creerClasse(nom: string, niveauId: number, filiereId: number): Observable<any> {
-  // Sécurité : si les IDs sont absents, on ne tente pas le toString()
-  if (!niveauId || !filiereId) {
-    console.error("Tentative de création avec des IDs manquants", { niveauId, filiereId });
+  // 1️⃣ Créer une classe
+  creerClasse(nom: string, filiereId: number): Observable<any> {
+    // Sécurité : si les IDs sont absents, on ne tente pas le toString()
+    if (!filiereId) {
+      console.error('Tentative de création avec des IDs manquants', {
+        filiereId
+      });
+    }
+
+    const params = new HttpParams()
+      .set('nom', nom)
+      .set('filiereId', (filiereId ?? '').toString());
+
+    return this.http.post(this.apiUrl, null, { params });
   }
 
-  const params = new HttpParams()
-    .set('nom', nom)
-    .set('niveauId', (niveauId ?? '').toString())
-    .set('filiereId', (filiereId ?? '').toString());
+  // 2️⃣ Modifier une classe
+  modifierClasse(
+    id: number,
+    nom?: string,
+    filiereId?: number
+  ): Observable<any> {
+    let params = new HttpParams();
+    if (nom) params = params.set('nom', nom);
 
-  return this.http.post(this.apiUrl, null, { params });
-}
+    // Utilise une condition stricte pour le chiffre 0 si nécessaire,
+    // mais ici on vérifie surtout que ce n'est pas null/undefined
 
-// 2️⃣ Modifier une classe
-modifierClasse(id: number, nom?: string, niveauId?: number, filiereId?: number): Observable<any> {
-  let params = new HttpParams();
-  if (nom) params = params.set('nom', nom);
-  
-  // Utilise une condition stricte pour le chiffre 0 si nécessaire, 
-  // mais ici on vérifie surtout que ce n'est pas null/undefined
-  if (niveauId !== undefined && niveauId !== null) {
-    params = params.set('niveauId', niveauId.toString());
+    if (filiereId !== undefined && filiereId !== null) {
+      params = params.set('filiereId', filiereId.toString());
+    }
+
+    return this.http.put(`${this.apiUrl}/${id}`, null, { params });
   }
-  if (filiereId !== undefined && filiereId !== null) {
-    params = params.set('filiereId', filiereId.toString());
-  }
-
-  return this.http.put(`${this.apiUrl}/${id}`, null, { params });
-}
 
   // 3️⃣ Supprimer une classe
   supprimerClasse(id: number): Observable<string> {
@@ -66,7 +69,12 @@ modifierClasse(id: number, nom?: string, niveauId?: number, filiereId?: number):
   }
 
   // 7️⃣ Étudiants d'une classe pour une année scolaire
-  getEtudiantsParClasseEtAnnee(classeId: number, anneeId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${classeId}/annee/${anneeId}/etudiants`);
+  getEtudiantsParClasseEtAnnee(
+    classeId: number,
+    anneeId: number
+  ): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/${classeId}/annee/${anneeId}/etudiants`
+    );
   }
 }

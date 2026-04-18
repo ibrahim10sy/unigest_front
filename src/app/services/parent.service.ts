@@ -7,19 +7,25 @@ import { Parent } from '../models/Parent';
   providedIn: 'root'
 })
 export class ParentService {
-
   private apiUrl = `${environment.apiUrl}/api/parents`;
 
   constructor(private http: HttpClient) {}
 
-  getAll() { return this.http.get<Parent[]>(this.apiUrl); }
-  
-  getById(id: number) { return this.http.get<Parent>(`${this.apiUrl}/${id}`); }
+  getAll() {
+    return this.http.get<Parent[]>(this.apiUrl);
+  }
+
+  getById(id: number) {
+    return this.http.get<Parent>(`${this.apiUrl}/${id}`);
+  }
 
   save(parent: Parent) {
-    if (parent.id) return this.http.put<Parent>(`${this.apiUrl}/${parent.id}`, parent);
+    if (parent.id)
+      return this.http.put<Parent>(`${this.apiUrl}/${parent.id}`, parent);
     return this.http.post<Parent>(this.apiUrl, parent);
   }
 
-  delete(id: number) { return this.http.delete(`${this.apiUrl}/${id}`); }
+  delete(id: number) {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }
