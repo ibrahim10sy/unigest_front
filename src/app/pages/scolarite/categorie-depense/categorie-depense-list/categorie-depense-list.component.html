@@ -1,0 +1,45 @@
+<vex-page-layout>
+  <vex-page-layout-header class="pb-16 flex flex-col items-start justify-center">
+    <div class="w-full flex flex-col sm:flex-row justify-between px-6">
+      <div>
+        <h1 class="title mt-0 mb-1">Gestion des Catégories</h1>
+        <vex-breadcrumbs [crumbs]="['Configuration', 'Catégories']"></vex-breadcrumbs>
+      </div>
+    </div>
+  </vex-page-layout-header>
+
+  <vex-page-layout-content class="-mt-6">
+    <div class="card overflow-auto -mt-16">
+      <div class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
+        <h2 class="title my-0">Catégories</h2>
+        <span class="flex-1"></span>
+        <button (click)="ajouter()" color="primary" mat-mini-fab>
+          <mat-icon svgIcon="mat:add"></mat-icon>
+        </button>
+      </div>
+
+      <table [dataSource]="dataSource" class="w-full" mat-table matSort>
+        <ng-container matColumnDef="id">
+          <th *matHeaderCellDef mat-header-cell> ID </th>
+          <td *matCellDef="let row" mat-cell> {{row.id}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nom">
+          <th *matHeaderCellDef mat-header-cell> Libellé </th>
+          <td *matCellDef="let row" mat-cell> {{row.nom}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th *matHeaderCellDef mat-header-cell></th>
+          <td *matCellDef="let row" mat-cell>
+            <button (click)="modifier(row)" mat-icon-button color="primary"><mat-icon svgIcon="mat:edit"></mat-icon></button>
+            <button (click)="supprimer(row)" mat-icon-button color="warn"><mat-icon svgIcon="mat:delete"></mat-icon></button>
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="['id', 'nom', 'actions']" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: ['id', 'nom', 'actions']" mat-row></tr>
+      </table>
+    </div>
+  </vex-page-layout-content>
+</vex-page-layout>
