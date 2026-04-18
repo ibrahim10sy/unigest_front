@@ -45,7 +45,7 @@ export class ClassematiereComponent implements OnInit{
         private dialogRef: MatDialogRef<ClassematiereComponent>,
         @Inject(MAT_DIALOG_DATA) public data: {
     classe: Classe,
-    classeMatiere?: ClasseMatiere
+    classeMatiere?: ClasseMatiere 
   }
       ) {
         this.form = this.fb.group({

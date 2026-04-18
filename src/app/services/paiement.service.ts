@@ -10,7 +10,7 @@ import { ModePaiement, Paiement } from '../models/paiement';
 })
 export class PaiementService {
 
-   private apiUrl = `${environment.apiUrl}/api/paiements`;
+  private apiUrl = `${environment.apiUrl}/api/paiements`;
   
     constructor(private http: HttpClient) {}
 
@@ -25,8 +25,9 @@ export class PaiementService {
   }
 
   // ✅ Modifier un paiement
-  modifierPaiement(id: number, montant: number, mode: ModePaiement): Observable<Paiement> {
+  modifierPaiement(id: number,inscriptionId: number, montant: number, mode: ModePaiement): Observable<Paiement> {
     const params = new HttpParams()
+      .set('inscriptionId', inscriptionId)
       .set('montant', montant)
       .set('mode', mode);
 

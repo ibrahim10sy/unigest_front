@@ -144,6 +144,14 @@ export class NavigationLoaderService {
             route: '/finance/paiements',
             icon: 'mat:payments'
           }
+          ,
+          {
+            type: 'link',
+            label: 'Dépenses',
+            route: '/finance/depenses',
+            icon: 'mat:payments'
+          }
+
         ]
       },
 

@@ -3,7 +3,11 @@ import { Inscription } from "./Inscription";
 
 export enum ModePaiement {
   ESPECES = 'ESPECES',
-  MOBILE_MONEY = 'MOBILE_MONEY',
+  ORANGE_MONEY = 'ORANGE_MONEY',
+  MOOV_MONEY = 'MOOV_MONEY',
+  SAMA_MONEY = 'SAMA_MONEY',
+  WAVE = 'WAVE',
+  CHEQUE = 'CHEQUE',
   CARTE = 'CARTE',
   VIREMENT = 'VIREMENT'
 }
@@ -11,7 +15,6 @@ export enum ModePaiement {
 export interface Paiement {
   id?: number;
   inscription: Inscription;
-  anneeScolaire : AnneeScolaire,
   montant: number;
   datePaiement: string; // ISO string (LocalDate côté backend)
   modePaiement: ModePaiement;

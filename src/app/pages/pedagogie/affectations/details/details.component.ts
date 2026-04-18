@@ -46,7 +46,7 @@ export class DetailsComponent implements OnInit{
     @ViewChild(MatSort, { static: true }) sort?: MatSort;
   affectation!: Affectation;
 
-    constructor(private seanceService: SeanceService, private dialog: MatDialog) {}
+  constructor(private seanceService: SeanceService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
   this.affectation = history.state?.affectation;

@@ -50,7 +50,7 @@ import { AffectationRequest } from 'src/app/models/AffectationRequest';
 export class AffectationListComponent implements OnInit {
   layoutCtrl = new UntypedFormControl('boxed');
   searchCtrl = new UntypedFormControl();
-  displayedColumns: string[] = ['enseignant', 'matiere', 'classe', 'actions'];
+  displayedColumns: string[] = ['enseignant', 'specialite', 'classe', 'actions'];
   dataSource = new MatTableDataSource<Affectation>();
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -103,11 +103,11 @@ export class AffectationListComponent implements OnInit {
   ajouter() {
     this.ouvrirDialogue();
   }
-
   // Modifier
   modifier(affectation: AffectationRequest) {
     this.ouvrirDialogue(affectation);
   }
+
   details(affectation: Affectation) {
   this.router.navigate(['/pedagogie/affectations/details'], {
   state: { affectation }

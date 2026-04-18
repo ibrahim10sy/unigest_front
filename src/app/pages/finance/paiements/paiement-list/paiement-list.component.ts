@@ -137,6 +137,12 @@ export class PaiementListComponent implements OnInit {
     }
   }
 
+  chargerData() {
+    this.chargerInitialData();
+    this.chargerClasses();
+    this.chargerAnnee();
+  }
+
   chargerClasses() {
     this.classeService.getAllClasses().subscribe((data) => {});
   }
@@ -148,8 +154,8 @@ export class PaiementListComponent implements OnInit {
   ajouter() {
     this.openDialog(null);
   }
-  modifier(classe: any) {
-    this.openDialog(classe);
+  modifier(paiement: any) {
+    this.openDialog(paiement);
   }
 
   voirDetails(paiement: Paiement) {
@@ -159,16 +165,16 @@ export class PaiementListComponent implements OnInit {
     });
   }
 
-  private openDialog(classe: any | null) {
+  private openDialog(paiement: any | null) {
     this.dialog
       .open(PaiementFormComponent, {
         width: '500px',
         disableClose: true,
-        data: classe
+        data: paiement
       })
       .afterClosed()
       .subscribe((res) => {
-        if (res) this.chargerClasses();
+        if (res) this.chargerData();
       });
   }
 

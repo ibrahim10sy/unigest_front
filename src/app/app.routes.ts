@@ -3,6 +3,7 @@ import { LayoutComponent } from './layouts/layout/layout.component';
 import { VexRoutes } from '@vex/interfaces/vex-route.interface';
 import { DetailsComponent } from './pages/pedagogie/affectations/details/details.component';
 import { ClasseMatiereListComponent } from './pages/scolarite/classematiere/classe-matiere-list/classe-matiere-list.component';
+import { DetailEtudiantComponent } from './pages/scolarite/etudiants/detail-etudiant/detail-etudiant.component';
 
 export const appRoutes: VexRoutes = [
   {
@@ -37,13 +38,24 @@ export const appRoutes: VexRoutes = [
         path: 'scolarite',
         canActivate: [AuthGuard], // Ajoute le guard ici
         children: [
-          {
+           {
             path: 'etudiants',
-            loadComponent: () =>
-              import(
-                './pages/scolarite/etudiants/etudiant-list/etudiant-list.component'
-              ).then((m) => m.EtudiantListComponent)
+            children: [
+              {
+                path: '',
+                canActivate: [AuthGuard],
+                loadComponent: () =>
+                  import(
+                    './pages/scolarite/etudiants/etudiant-list/etudiant-list.component'
+                  ).then((m) => m.EtudiantListComponent)
+              },
+              {
+                path: 'details',
+                component: DetailEtudiantComponent
+              }
+            ]
           },
+         
           {
             path: 'aio-table',
             loadComponent: () =>
@@ -256,6 +268,22 @@ export const appRoutes: VexRoutes = [
               import(
                 './pages/finance/paiements/paiement-list/paiement-list.component'
               ).then((m) => m.PaiementListComponent)
+          },
+          {
+            canActivate: [AuthGuard], // Ajoute le guard ici
+            path: 'depenses',
+            loadComponent: () =>
+              import(
+                './pages/finance/depense-list/depense-list.component'
+              ).then((m) => m.DepenseListComponent)
+          },
+          {
+            canActivate: [AuthGuard], // Ajoute le guard ici
+            path: 'categorie',
+            loadComponent: () =>
+              import(
+                './pages/finance/categorie-list/categorie-list.component'
+              ).then((m) => m.CategorieListComponent)
           }
         ]
       },

@@ -1,1 +1,56 @@
-<p>paiement-form works!</p>
+<form [formGroup]="form" (ngSubmit)="save()">
+  <h2 mat-dialog-title>
+    {{ mode === "update" ? "Modifier" : "Nouveau" }} Paiement
+  </h2>
+
+  <mat-dialog-content class="flex flex-col gap-4 py-4">
+  
+    <!-- <div class="grid grid-cols-2 gap-2"> -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Année Scolaire</mat-label>
+        <mat-select [(ngModel)]="filterYear" (selectionChange)="applyFilters()" [ngModelOptions]="{standalone: true}">
+          <mat-option value="">Toutes les années</mat-option>
+          <mat-option *ngFor="let year of uniqueYears" [value]="year">{{ year }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Rechercher un étudiant</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (input)="applyFilters()" [ngModelOptions]="{standalone: true}" placeholder="Nom ou Prénom..." />
+      </mat-form-field> -->
+    <!-- </div> -->
+
+    <mat-form-field class="w-full">
+      <mat-label>Sélectionner l'inscription</mat-label>
+      <mat-select formControlName="inscription" [compareWith]="compareInscription">
+        <mat-option *ngFor="let i of filteredInscriptions" [value]="i">
+          <div class="flex flex-col py-1">
+            <span class="font-semibold">{{ i.etudiant?.prenom }} {{ i.etudiant?.nom }}</span>
+            <span class="text-xs text-gray-500">{{ i.classe?.nom }} - {{ i.anneeScolaire?.libelle }}</span>
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Mode de paiement</mat-label>
+      <mat-select formControlName="mode">
+        <mat-option *ngFor="let mode of paymentModes" [value]="mode">
+          {{ mode | titlecase }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Montant</mat-label>
+      <input matInput formControlName="montant" type="number" placeholder="Ex: 50000" />
+      <span matTextPrefix>FCFA &nbsp;</span>
+    </mat-form-field>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">Annuler</button>
+    <button mat-flat-button color="primary" [disabled]="form.invalid">Enregistrer</button>
+  </mat-dialog-actions>
+</form>
