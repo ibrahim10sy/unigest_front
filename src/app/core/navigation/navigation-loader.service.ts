@@ -147,6 +147,12 @@ export class NavigationLoaderService {
           ,
           {
             type: 'link',
+            label: 'Categorie Depense',
+            route: '/finance/categorie-depense',
+            icon: 'mat:payments'
+          },
+          {
+            type: 'link',
             label: 'Dépenses',
             route: '/finance/depenses',
             icon: 'mat:payments'

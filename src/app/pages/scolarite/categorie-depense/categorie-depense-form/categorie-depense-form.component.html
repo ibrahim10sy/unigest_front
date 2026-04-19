@@ -1,7 +1,7 @@
 <form (ngSubmit)="save()" [formGroup]="form">
   <div class="flex items-center" mat-dialog-title>
     <mat-icon class="mr-4" svgIcon="mat:category" color="primary"></mat-icon>
-    <h2 class="headline m-0 flex-auto">{{ mode === 'update' ? 'Modifier' : 'Nouvelle' }} Catégorie</h2>
+    <h2 class="headline m-0 flex-auto">{{ mode === 'update' ? 'Modifier' : 'Nouvelle' }}  Dépense</h2>
     <button mat-dialog-close class="text-secondary" mat-icon-button type="button">
       <mat-icon svgIcon="mat:close"></mat-icon>
     </button>
@@ -11,10 +11,17 @@
 
   <mat-dialog-content class="flex flex-col mt-4">
     <mat-form-field class="flex-auto">
-      <mat-label>Nom de la catégorie</mat-label>
+      <mat-label>Nom </mat-label>
       <input cdkFocusInitial formControlName="nom" matInput placeholder="Ex: Loyer, Alimentation...">
       <mat-icon matIconPrefix svgIcon="mat:edit"></mat-icon>
     </mat-form-field>
+
+    <mat-form-field class="flex-auto">
+      <mat-label>Description</mat-label>
+      <input cdkFocusInitial formControlName="description" matInput placeholder="Ex: Description/Motif...">
+      <!-- <mat-icon matIconPrefix svgIcon="mat:edit"></mat-icon> -->
+    </mat-form-field>
+
   </mat-dialog-content>
 
   <mat-divider class="text-border"></mat-divider>

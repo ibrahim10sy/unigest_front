@@ -21,6 +21,8 @@ import Swal from 'sweetalert2';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { Router } from '@angular/router';
 import { Depense, DepenseService } from 'src/app/services/DepenseService.service';
+import { DepenseFormComponent } from '../depense-form/depense-form.component';
+import { CategorieDepenseService } from 'src/app/services/categorie-depense.service';
 
 @Component({
   selector: 'vex-depense-list',
@@ -54,6 +56,7 @@ export class DepenseListComponent implements OnInit {
   displayedColumns: string[] = [
     'dateDepense',
     'libelle',
+    'categorie',
     'montant',
     'actions'
   ];
@@ -81,5 +84,36 @@ export class DepenseListComponent implements OnInit {
       this.dataSource.sort = this.sort;
       console.log('data', this.dataSource.data);
     });
+  }
+
+ supprimer(row: Depense) {
+  Swal.fire({ 
+    title: 'Supprimer ?', 
+    icon: 'warning', 
+    showCancelButton: true,
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler'
+  }).then(r => {
+    if (r.isConfirmed) {
+      this.dService.delete(row.id!).subscribe(() => {
+        // Rafraîchir la liste
+        this.refresh();
+        
+        // Message de succès sans bouton OK
+        Swal.fire({
+          icon: 'success',
+          title: 'Supprimé avec succès',
+          showConfirmButton: false, // Cache le bouton OK
+          timer: 1500,              // Disparaît après 1.5 secondes
+          timerProgressBar: true    // Ajoute une petite barre de progression
+        });
+      });
+    }
+  });
+}
+
+  ouvrirForm(depense?: Depense) {
+    this.dialog.open(DepenseFormComponent, { data: depense || null, width: '500px' })
+      .afterClosed().subscribe(res => { if (res) this.refresh(); });
   }
 }

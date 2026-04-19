@@ -45,6 +45,7 @@ CommonModule,
   templateUrl: './categorie-depense-list.component.html',
   styleUrl: './categorie-depense-list.component.scss'
 })
+
 export class CategorieListComponent implements OnInit {
   dataSource = new MatTableDataSource<CategorieDepense>();
   

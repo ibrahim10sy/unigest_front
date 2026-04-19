@@ -1,1 +1,39 @@
-<p>depense-list works!</p>
+<div class="bg-app-bar px-6 h-16 border-b flex items-center">
+  <h2 class="title my-0">Dépenses</h2>
+  <span class="flex-1"></span>
+  <button (click)="ouvrirForm()" color="primary" mat-mini-fab><mat-icon svgIcon="mat:add"></mat-icon></button>
+</div>
+
+<table [dataSource]="dataSource" mat-table matSort class="w-full">
+  <ng-container matColumnDef="dateDepense">
+    <th *matHeaderCellDef mat-sort-header> Date </th>
+    <td *matCellDef="let row" mat-cell> {{row.dateDepense | date:'dd/MM/yyyy'}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="libelle">
+    <th *matHeaderCellDef mat-sort-header> Libellé </th>
+    <td *matCellDef="let row" mat-cell> {{row.libelle}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="montant">
+    <th *matHeaderCellDef mat-sort-header> Montant </th>
+    <td *matCellDef="let row" mat-cell class="font-bold"> {{row.montant | number:'1.0-0' }} F </td>
+    <!-- <td *matCellDef="let row" mat-cell class="font-bold"> {{row.montant | currency:'XOF':'symbol'}} </td> -->
+  </ng-container>
+
+  <ng-container matColumnDef="categorie">
+  <th *matHeaderCellDef mat-sort-header> Catégorie </th>
+  <td *matCellDef="let row" mat-cell> {{ row.categorieDepense?.nom }} </td>
+</ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th *matHeaderCellDef mat-cell></th>
+    <td *matCellDef="let row" mat-cell class="text-right">
+      <button (click)="ouvrirForm(row)" mat-icon-button color="primary"><mat-icon svgIcon="mat:edit"></mat-icon></button>
+      <button (click)="supprimer(row)" mat-icon-button color="warn"><mat-icon svgIcon="mat:delete"></mat-icon></button>
+    </td>
+  </ng-container>
+
+  <tr *matHeaderRowDef="['dateDepense', 'libelle', 'montant','categorie' , 'actions']" mat-header-row></tr>
+  <tr *matRowDef="let row; columns: ['dateDepense', 'libelle', 'montant','categorie' , 'actions']" mat-row></tr>
+</table>

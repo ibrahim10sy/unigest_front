@@ -133,6 +133,7 @@ export const appRoutes: VexRoutes = [
                 './pages/scolarite/filieres/filiere-list/filiere-list.component'
               ).then((m) => m.FiliereListComponent)
           },
+         
           {
             canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'niveau',
@@ -268,6 +269,14 @@ export const appRoutes: VexRoutes = [
               import(
                 './pages/finance/paiements/paiement-list/paiement-list.component'
               ).then((m) => m.PaiementListComponent)
+          },
+           {
+            canActivate: [AuthGuard], // Ajoute le guard ici
+            path: 'categorie-depense',
+            loadComponent: () =>
+              import(
+                './pages/scolarite/categorie-depense/categorie-depense-list/categorie-depense-list.component'
+              ).then((m) => m.CategorieListComponent)
           },
           {
             canActivate: [AuthGuard], // Ajoute le guard ici

@@ -38,7 +38,8 @@ export class CategorieFormComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public defaults: CategorieDepense | null
   ) {
     this.form = this.fb.group({
-      nom: [this.defaults?.nom || '', [Validators.required]]
+      nom: [this.defaults?.nom || '', [Validators.required]],
+      description: [this.defaults?.description || '']
     });
   }
 

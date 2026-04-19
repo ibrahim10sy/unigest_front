@@ -31,6 +31,14 @@ export class DepenseService {
     return this.http.post<Depense>(this.apiUrl, depense);
   }
 
+  
+  // =========================
+  // UPDATE
+  // =========================
+  update(id: number, depense: Depense): Observable<Depense> {
+  return this.http.put<Depense>(`${this.apiUrl}/${id}`, depense);
+}
+
   // =========================
   // GET ALL
   // =========================
