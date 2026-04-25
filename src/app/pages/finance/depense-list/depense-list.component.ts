@@ -57,6 +57,7 @@ export class DepenseListComponent implements OnInit {
     'dateDepense',
     'libelle',
     'categorie',
+    'anneeScolaire',
     'montant',
     'actions'
   ];

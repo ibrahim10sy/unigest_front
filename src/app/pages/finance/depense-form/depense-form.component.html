@@ -18,6 +18,15 @@
       </mat-option>
     </mat-select>
      </mat-form-field>
+    <mat-form-field class="w-full">
+    <mat-label>Année Scolaire</mat-label>
+    <mat-select formControlName="anneeScolaire">
+     <mat-option *ngFor="let annee of anneesScolaires" [value]="annee.id">
+        {{ annee.libelle }}
+      </mat-option>
+    </mat-select>
+     </mat-form-field>
+
 
     <div class="flex gap-4">
       <mat-form-field class="flex-auto">

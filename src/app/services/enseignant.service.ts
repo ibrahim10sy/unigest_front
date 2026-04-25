@@ -11,6 +11,7 @@ export interface Enseignant {
   prenom: string;
   specialite?: string;
   email?: string;
+  adresse?: string;
   telephone?: string;
 }
 

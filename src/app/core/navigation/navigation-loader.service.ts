@@ -59,7 +59,7 @@ export class NavigationLoaderService {
           // },
              {
             type: 'link',
-            label: 'Anne Scolaire',
+            label: 'Année Scolaire',
             route: '/scolarite/annee-scolaire',
             icon: 'mat:date_range'
           },

@@ -34,7 +34,7 @@ import { Niveau } from 'src/app/models/Niveau';
     MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatDialogModule,
     MatButtonToggleModule
 ],
-  templateUrl: './niveau-list.component.html'
+  templateUrl: './niveau-list.component.html' 
 })
 export class NiveauListComponent implements OnInit {
   layoutCtrl = new UntypedFormControl('boxed');

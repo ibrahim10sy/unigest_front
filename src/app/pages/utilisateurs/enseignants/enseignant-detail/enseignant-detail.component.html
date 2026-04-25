@@ -1,0 +1,137 @@
+<div class="flex items-center p-4 border-b bg-gray-50/50" mat-dialog-title>
+
+  <!-- Icon -->
+  <div class="bg-primary/10 text-primary p-2 rounded-lg mr-4 flex items-center justify-center">
+    <mat-icon svgIcon="mat:person"></mat-icon>
+  </div>
+
+  <!-- Title -->
+  <div class="flex-auto">
+    <h2 class="headline m-0 text-lg font-bold">
+      Détails de l'enseignant
+    </h2>
+    <p class="caption text-secondary m-0 leading-none">
+      Spécialité :
+      <span class="font-mono text-primary uppercase">
+        {{ enseignant.specialite || 'Non définie' }}
+      </span>
+    </p>
+  </div>
+
+  <!-- Close -->
+  <button (click)="close()" class="text-secondary" mat-icon-button type="button">
+    <mat-icon svgIcon="mat:close"></mat-icon>
+  </button>
+</div>
+
+<!-- CONTENT -->
+<mat-dialog-content class="p-6">
+
+  <div class="flex flex-col gap-6">
+
+    <!-- INFO TOP -->
+    <div class="grid grid-cols-2 gap-4">
+
+      <div class="p-4 rounded-xl border bg-light/30 flex flex-col items-center text-center">
+        <span class="text-secondary text-xs uppercase mb-1">Nom complet</span>
+        <span class="text-xl font-black text-primary leading-none">
+          {{ enseignant.prenom }} {{ enseignant.nom }}
+        </span>
+      </div>
+
+      <div class="p-4 rounded-xl border bg-light/30 flex flex-col items-center text-center">
+        <span class="text-secondary text-xs uppercase mb-1">Contact</span>
+        <span class="text-sm font-bold">
+          {{ enseignant.telephone || 'N/A' }}
+        </span>
+        <span class="text-xs text-secondary">
+          {{ enseignant.email }}
+        </span>
+      </div>
+
+    </div>
+
+    <!-- DETAILS -->
+    <div class="border rounded-xl p-4 bg-gray-50/50">
+
+      <h4 class="m-0 mb-4 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
+        <mat-icon class="icon-sm mr-2" svgIcon="mat:info_outline"></mat-icon>
+        Informations générales
+      </h4>
+
+      <div class="grid grid-cols-2 gap-y-3 text-sm">
+
+        <div class="flex justify-between">
+          <span class="text-secondary">Adresse :</span>
+          <span class="font-medium">{{ enseignant.adresse || 'Non définie' }}</span>
+        </div>
+
+        <div class="flex justify-between">
+          <span class="text-secondary">Spécialité :</span>
+          <span class="font-medium">{{ enseignant.specialite || 'Non définie' }}</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CV SECTION -->
+    <div class="border rounded-xl p-4">
+
+      <div class="flex justify-between items-center mb-3">
+        <h4 class="m-0 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
+          <mat-icon class="icon-sm mr-2" svgIcon="mat:description"></mat-icon>
+          CV / Documents
+        </h4>
+
+        <!-- UPLOAD -->
+        <button mat-flat-button color="primary" (click)="fileInput.click()">
+          <mat-icon class="mr-1" svgIcon="mat:upload"></mat-icon>
+          Ajouter CV
+        </button>
+
+        <input
+          #fileInput
+          type="file"
+          hidden
+          accept=".pdf,.jpg,.jpeg,.png"
+          (change)="uploadCv($event)" />
+      </div>
+
+      <!-- LIST CV -->
+      <div *ngIf="cvs.length === 0" class="text-sm text-secondary italic">
+        Aucun CV disponible
+      </div>
+
+      <div *ngFor="let cv of cvs" class="flex items-center justify-between p-2 border-b">
+
+        <div class="flex items-center gap-2">
+          <mat-icon class="text-primary" svgIcon="mat:picture_as_pdf"></mat-icon>
+          <span class="text-sm font-medium">{{ cv.fichier }}</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+
+          <button mat-icon-button (click)="voirCv(cv)">
+            <mat-icon svgIcon="mat:visibility"></mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" (click)="deleteCv(cv)">
+            <mat-icon svgIcon="mat:delete"></mat-icon>
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</mat-dialog-content>
+
+<!-- ACTIONS -->
+<mat-dialog-actions align="end" class="p-4 border-t bg-gray-50/50">
+
+  <button mat-button (click)="close()" class="text-secondary">
+    Fermer
+  </button>
+
+</mat-dialog-actions>

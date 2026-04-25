@@ -36,8 +36,8 @@ export class EnseignantFormComponent implements OnInit {
       adresse: [defaults?.adresse || '', Validators.required],
       email: [defaults?.email || ''],
       specialite: [defaults?.specialite || '', [Validators.required]],
-      telephone: [defaults?.telephone || '', Validators.required]
-      // password: [''] // Optionnel en update
+      telephone: [defaults?.telephone || '', Validators.required],
+      // password: ['123456'] // Optionnel en update
     });
   }
 

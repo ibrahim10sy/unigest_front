@@ -12,6 +12,7 @@ export interface Depense {
   modePaiement?: string;
   dateCreation?: string;
   categorieDepense?: any;
+  anneeScolaire?: any;
   utilisateur?: any;
 }
 

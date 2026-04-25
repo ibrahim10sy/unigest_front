@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CategorieDepense } from 'src/app/models/CategorieDepense';
 import Swal from 'sweetalert2';
 import { CategorieFormComponent } from '../categorie-depense-form/categorie-depense-form.component';
@@ -13,19 +13,23 @@ import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/ve
 import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
+import { stagger40ms } from '@vex/animations/stagger.animation';
 
 @Component({
   selector: 'vex-categorie-depense-list',
   standalone: true,
+    animations: [fadeInUp400ms, stagger40ms],
   imports: [
-CommonModule,
+    CommonModule,
     // Material
     MatTableModule,
     MatPaginatorModule,
@@ -40,13 +44,21 @@ CommonModule,
     VexPageLayoutComponent,
     VexPageLayoutHeaderDirective,
     VexPageLayoutContentDirective,
-    VexBreadcrumbsComponent
-  ],
+    VexBreadcrumbsComponent,
+    MatButtonToggleModule
+],
   templateUrl: './categorie-depense-list.component.html',
   styleUrl: './categorie-depense-list.component.scss'
 })
 
 export class CategorieListComponent implements OnInit {
+   layoutCtrl = new UntypedFormControl('boxed');
+    searchCtrl = new UntypedFormControl();
+    displayedColumns: string[] = ['id', 'nom', 'description', 'actions'];
+  
+    @ViewChild(MatPaginator, { static: true }) paginator?: MatPaginator;
+    @ViewChild(MatSort, { static: true }) sort?: MatSort;
+  
   dataSource = new MatTableDataSource<CategorieDepense>();
   
   constructor(private service: CategorieDepenseService, private dialog: MatDialog) {}

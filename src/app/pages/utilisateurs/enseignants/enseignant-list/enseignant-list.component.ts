@@ -21,11 +21,14 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { Enseignant } from 'src/app/models/Enseignant';
 import { EnseignantService } from 'src/app/services/enseignant.service';
 import { EnseignantFormComponent } from '../enseignant-form/enseignant-form.component';
+import { MediaService } from 'src/app/services/MediasService.service';
+import { MediaType } from 'src/app/models/Medias';
+import { EnseignantDetailComponent } from '../enseignant-detail/enseignant-detail.component';
 
 @Component({
   selector: 'vex-enseignant-list',
   standalone: true,
- animations: [fadeInUp400ms, stagger40ms],
+  animations: [fadeInUp400ms, stagger40ms],
   imports: [
     CommonModule,
     VexPageLayoutComponent,
@@ -55,16 +58,19 @@ export class EnseignantListComponent implements OnInit {
     'adresse',
     'email',
     'telephone',
+    'cv',
     'actions'
   ];
   dataSource = new MatTableDataSource<Enseignant>();
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
+  cvMap: { [key: number]: any[] } = {};
 
   constructor(
     private enService: EnseignantService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private mediaService: MediaService
   ) {}
 
   ngOnInit(): void {
@@ -80,17 +86,27 @@ export class EnseignantListComponent implements OnInit {
         this.dataSource.data = res;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-      },
-      error: (err: any) => {
-        console.error('Erreur lors du chargement des enseignants', err);
-        Swal.fire(
-          'Erreur',
-          'Impossible de charger la liste des enseignants',
-          'error'
-        );
+
+        this.chargerCvEnseignants();
       }
     });
   }
+
+ chargerCvEnseignants() {
+  this.dataSource.data.forEach((enseignant) => {
+
+    this.mediaService
+      .getByType(MediaType.CV_ENSEIGNANT, enseignant.id!)
+      .subscribe({
+        next: (medias) => {
+          this.cvMap[enseignant.id!] = medias;
+        },
+        error: () => {
+          this.cvMap[enseignant.id!] = [];
+        }
+      });
+  });
+}
 
   // Filtrer la table (recherche rapide)
   appliquerFiltre(event: Event) {
@@ -117,6 +133,51 @@ export class EnseignantListComponent implements OnInit {
   envoyerEmail(email: string) {
     window.open(`mailto:${email}`, '_self');
   }
+
+  onFileSelected(event: any, enseignant: any) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const media = {
+    type: MediaType.CV_ENSEIGNANT,
+    referenceId: enseignant.id
+  };
+
+  this.mediaService.create(media, file).subscribe({
+    next: (res) => {
+
+      if (!this.cvMap[enseignant.id]) {
+        this.cvMap[enseignant.id] = [];
+      }
+
+      this.cvMap[enseignant.id].push(res);
+
+      Swal.fire('Succès', 'CV ajouté avec succès', 'success');
+    },
+    error: () => {
+      Swal.fire('Erreur', 'Impossible d’ajouter le CV', 'error');
+    }
+  });
+}
+
+ouvrirDetail(enseignant: Enseignant) {
+  this.dialog.open(EnseignantDetailComponent, {
+    width: '600px',
+    data: enseignant
+  });
+}
+
+openFileInput(input: HTMLInputElement) {
+  input.click();
+}
+
+voirCv(media: any) {
+  window.open(media.fichierUrl, '_blank');
+}
+
+  hasCv(id: number): boolean {
+  return !!this.cvMap[id]?.length;
+}
 
   ouvrirCarte(adresse: string) {
     const url = `https://www.google.com/maps/search/${encodeURIComponent(adresse)}`;
