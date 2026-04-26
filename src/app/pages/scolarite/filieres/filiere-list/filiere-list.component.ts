@@ -77,10 +77,11 @@ export class FiliereListComponent implements OnInit {
 
   // Ajoute 'checkbox' au début de tes colonnes
   displayedColumns: string[] = [
-    'checkbox',
     'nom',
     'niveau',
     'actif',
+    'fraisInscription',
+    'fraisScolarite',
     'actions'
   ];
 

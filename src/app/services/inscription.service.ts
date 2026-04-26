@@ -13,27 +13,28 @@ private apiUrl = `${environment.apiUrl}/api/inscriptions`;
   constructor(private http: HttpClient) {}
 
   // 1️⃣ Inscrire un étudiant (Utilisation de HttpParams pour les @RequestParam)
-  inscrire(etudiantId: number, classeId: number, anneeId: number, montant: number): Observable<any> {
+  inscrire(etudiantId: number, classeId: number, anneeId: number, montantReduction: number, motifReduction: string): Observable<any> {
     const params = new HttpParams()
       .set('etudiantId', etudiantId.toString())
       .set('classeId', classeId.toString())
       .set('anneeId', anneeId.toString())
-      .set('montant', montant.toString());
+      .set('montantReduction', montantReduction.toString())
+      .set('motifReduction', motifReduction);
 
     return this.http.post(this.apiUrl, null, { params });
   }
 
-  // 2️⃣ Récupérer une inscription par ID
   getInscription(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
   // 3️⃣ Modifier une inscription
-  modifier(id: number, classeId: number, anneeId: number, montant:number): Observable<any> {
+  modifier(id: number, classeId: number, anneeId: number, montantReduction: number, motifReduction: string): Observable<any> {
     const params = new HttpParams()
       .set('classeId', classeId.toString())
       .set('anneeId', anneeId.toString())
-      .set('montant', montant.toString());
+      .set('montantReduction', montantReduction.toString())
+      .set('motifReduction', motifReduction);
 
     return this.http.put(`${this.apiUrl}/${id}`, null, { params });
   }

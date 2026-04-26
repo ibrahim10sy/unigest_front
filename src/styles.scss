@@ -76,3 +76,26 @@ html {
   color: white !important;
   opacity: 1 !important;
 }
+
+@media print {
+
+  body * {
+    visibility: hidden;
+  }
+
+  #recu-print, #recu-print * {
+    visibility: visible;
+  }
+
+  #recu-print {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  mat-dialog-actions,
+  button {
+    display: none !important;
+  }
+}

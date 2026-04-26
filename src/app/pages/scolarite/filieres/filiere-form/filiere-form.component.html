@@ -47,6 +47,20 @@
       <mat-error *ngIf="form.get('nom')?.hasError('required')">Le nom est obligatoire</mat-error>
     </mat-form-field>
 
+    <div class="flex gap-4 mt-4">
+      <mat-form-field class="flex-auto">
+        <mat-label>Frais d'inscription</mat-label>
+        <input formControlName="fraisInscription" matInput type="number" placeholder="Ex. 50000" />
+        <mat-error *ngIf="form.get('fraisInscription')?.hasError('min')">Doit être positif</mat-error>
+      </mat-form-field>
+
+      
+      <mat-form-field class="flex-auto">
+        <mat-label>Frais de scolarité</mat-label>
+        <input formControlName="fraisScolarite" matInput type="number" placeholder="Ex. 200000" />
+        <mat-error *ngIf="form.get('fraisScolarite')?.hasError('min')">Doit être positif</mat-error>
+      </mat-form-field>
+    </div>
     <div class="flex items-center mt-4 mb-2" *ngIf="isUpdateMode()">
       <mat-slide-toggle formControlName="actif" color="primary">
         Statut de la filière ({{ form.get('actif')?.value ? 'Active' : 'Inactive' }})

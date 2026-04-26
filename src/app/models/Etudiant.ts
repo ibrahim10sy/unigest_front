@@ -6,7 +6,4 @@ export interface Etudiant {
   email: string;
   telephone: string;
   dateNaissance: string;
-
-
-  
 }

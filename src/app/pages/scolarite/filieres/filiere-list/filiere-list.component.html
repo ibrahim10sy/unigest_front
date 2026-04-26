@@ -68,24 +68,6 @@
         class="w-full"
         mat-table
         matSort>
-        <ng-container matColumnDef="checkbox">
-          <th *matHeaderCellDef mat-header-cell>
-            <mat-checkbox
-              (change)="$event ? masterToggle() : null"
-              [checked]="selection.hasValue() && isAllSelected()"
-              [indeterminate]="selection.hasValue() && !isAllSelected()"
-              color="primary">
-            </mat-checkbox>
-          </th>
-          <td *matCellDef="let row" class="w-4" mat-cell>
-            <mat-checkbox
-              (change)="$event ? selection.toggle(row) : null"
-              (click)="$event.stopPropagation()"
-              [checked]="selection.isSelected(row)"
-              color="primary">
-            </mat-checkbox>
-          </td>
-        </ng-container>
 
         <ng-container matColumnDef="nom">
           <th
@@ -142,6 +124,32 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="fraisInscription">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header
+            class="uppercase">
+            Frais d'inscription
+          </th>
+          <td *matCellDef="let row" mat-cell class="font-medium">
+            {{ row.fraisInscription | number:'1.0-0' }} FCFA
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fraisScolarite">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header
+            class="uppercase">
+            Frais de scolarité
+          </th>
+          <td *matCellDef="let row" mat-cell class="font-medium">
+            {{ row.fraisScolarite | number:'1.0-0' }} FCFA
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="actions">
           <th *matHeaderCellDef mat-header-cell></th>
           <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
@@ -173,26 +181,7 @@
           class="hover:bg-hover transition duration-400 ease-out-swift cursor-pointer"
           mat-row></tr>
       </table>
-      <!-- <div *ngIf="filiereSelectionnee" class="mt-4">
-        <h3 class="mb-2">
-          Ajouter des matières à : {{ filiereSelectionnee.nom }}
-        </h3>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Matières</mat-label>
-
-          <mat-select multiple [formControl]="matieresControl">
-            <mat-option *ngFor="let matiere of matieres" [value]="matiere.id">
-              {{ matiere.nom }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" (click)="ajouterMatieres()">
-          Ajouter
-        </button>
-      </div> -->
-
+     
       <mat-paginator
         [pageSizeOptions]="[5, 10, 20]"
         class="sticky left-0"></mat-paginator>

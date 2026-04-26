@@ -5,54 +5,75 @@ import { ModePaiement, Paiement } from 'src/app/models/paiement';
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatIconModule } from "@angular/material/icon";
 import { MatDividerModule } from "@angular/material/divider";
+import { PaiementService } from 'src/app/services/paiement.service';
+import { PaiementResumeDTO } from 'src/app/models/PaiementResumeDTO';
 
 @Component({
   selector: 'vex-paiement-detail',
   standalone: true,
-  imports: [MatDialogContent, MatDialogActions, CommonModule, MatProgressBarModule, MatIconModule, MatDividerModule],
+  imports: [
+    CommonModule,
+    MatDialogContent,
+    MatDialogActions,
+    MatProgressBarModule,
+    MatIconModule,
+    MatDividerModule
+  ],
   templateUrl: './paiement-detail.component.html',
   styleUrl: './paiement-detail.component.scss'
 })
 export class PaiementDetailComponent implements OnInit {
 
+  resume!: PaiementResumeDTO;
+  loading = true;
+
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialogRef: MatDialogRef<PaiementDetailComponent> // Indispensable pour fermer
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public data: Paiement,
+    private paiementService: PaiementService,
+    private dialogRef: MatDialogRef<PaiementDetailComponent>
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const inscriptionId = this.data?.inscription?.id;
 
-  // Action de fermeture
+    if (!inscriptionId) {
+      console.error('Inscription ID introuvable');
+      this.loading = false;
+      return;
+    }
+
+    this.paiementService.getResume(inscriptionId).subscribe({
+      next: (res) => {
+        this.resume = res;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement résumé paiement', err);
+        this.loading = false;
+      }
+    });
+  }
+
   close() {
     this.dialogRef.close();
   }
 
-  getPercentage(): number {
-    if (!this.data.inscription?.montantTotal) return 0;
-    return Math.round((this.data.montant / this.data.inscription.montantTotal) * 100);
+  imprimerRecu() {
+    window.print();
   }
 
-  getPaymentIcon(mode: string): string {
-    switch (mode) {
-      case 'ESPECES': return 'mat:payments';
-      case 'MOBILE_MONEY': return 'mat:smartphone';
-      case 'CARTE': return 'mat:credit_card';
-      case 'VIREMENT': return 'mat:account_balance';
-      default: return 'mat:help_outline';
-    }
-  }
+  // ================= UI HELPERS =================
 
   getStatusClass(statut: string): string {
     switch (statut) {
-      case 'INSCRIT': return 'bg-green-100 text-green-700 border border-green-200';
-      case 'ABANDONNE': return 'bg-red-100 text-red-700 border border-red-200';
-      case 'TERMINE': return 'bg-blue-100 text-blue-700 border border-blue-200';
-      default: return 'bg-gray-100 text-gray-700 border border-gray-200';
+      case 'COMPLET':
+        return 'bg-green-100 text-green-700 border border-green-200';
+      case 'PARTIEL':
+        return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
+      case 'IMPAYE':
+        return 'bg-red-100 text-red-700 border border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-700 border border-gray-200';
     }
-  }
-
-  imprimerRecu(data: any) {
-    console.log('Impression en cours...', data);
-    // Logique d'impression (window.print() ou service PDF)
   }
 }

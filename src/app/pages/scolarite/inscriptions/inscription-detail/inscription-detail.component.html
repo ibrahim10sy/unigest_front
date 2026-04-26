@@ -1,0 +1,285 @@
+<!-- HEADER -->
+<div
+  class="flex items-center p-4 border-b bg-gray-50/50"
+  mat-dialog-title>
+
+  <div
+    class="bg-primary/10 text-primary p-2 rounded-lg mr-4 flex items-center justify-center">
+
+    <mat-icon svgIcon="mat:school"></mat-icon>
+  </div>
+
+  <div class="flex-auto">
+    <h2 class="headline m-0 text-lg font-bold">
+      Détails de l'inscription
+    </h2>
+
+    <p class="caption text-secondary m-0 leading-none">
+      Statut :
+      <span class="font-mono text-primary uppercase">
+        {{ inscription.statut }}
+      </span>
+    </p>
+  </div>
+
+  <button
+    (click)="close()"
+    mat-icon-button>
+
+    <mat-icon svgIcon="mat:close"></mat-icon>
+  </button>
+</div>
+
+<!-- CONTENT -->
+<mat-dialog-content class="p-6">
+
+  <div class="flex flex-col gap-6">
+
+    <!-- ETUDIANT -->
+    <div class="border rounded-xl p-5 bg-gray-50/50">
+
+      <h4
+        class="m-0 mb-5 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
+
+        <mat-icon
+          class="icon-sm mr-2"
+          svgIcon="mat:person">
+        </mat-icon>
+
+        Étudiant
+      </h4>
+
+      <div class="grid grid-cols-2 gap-x-8 gap-y-5 text-sm">
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Nom complet :</span>
+          <span class="font-medium">
+            {{ inscription.etudiant?.prenom }}
+            {{ inscription.etudiant?.nom }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Matricule :</span>
+          <span class="font-medium">
+            {{ inscription.etudiant?.matricule }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Téléphone :</span>
+          <span class="font-medium">
+            {{ inscription.etudiant?.telephone }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Email :</span>
+          <span class="font-medium">
+            {{ inscription.etudiant?.email }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2 col-span-2">
+          <span class="text-secondary">Date de naissance :</span>
+          <span class="font-medium">
+            {{ inscription.etudiant?.dateNaissance | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ACADEMIQUE -->
+    <div class="border rounded-xl p-5 bg-gray-50/50">
+
+      <h4
+        class="m-0 mb-5 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
+
+        <mat-icon
+          class="icon-sm mr-2"
+          svgIcon="mat:menu_book">
+        </mat-icon>
+
+        Informations académiques
+      </h4>
+
+      <div class="grid grid-cols-2 gap-x-8 gap-y-5 text-sm">
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Classe :</span>
+          <span class="font-medium">
+            {{ inscription.classe?.nom }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Filière :</span>
+          <span class="font-medium">
+            {{ inscription.classe?.filiere?.nom }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Année scolaire :</span>
+          <span class="font-medium">
+            {{ inscription.anneeScolaire?.libelle }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Date inscription :</span>
+          <span class="font-medium">
+            {{ inscription.dateInscription | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FINANCIER -->
+    <div class="border rounded-xl p-5 bg-gray-50/50">
+
+      <h4
+        class="m-0 mb-5 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
+
+        <mat-icon
+          class="icon-sm mr-2"
+          svgIcon="mat:payments">
+        </mat-icon>
+
+        Informations financières
+      </h4>
+
+      <div class="grid grid-cols-2 gap-x-8 gap-y-5 text-sm">
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Frais inscription :</span>
+          <span class="font-medium">
+            {{ inscription.classe?.filiere?.fraisInscription | number }}
+            FCFA
+          </span>
+        </div>
+        
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Frais scolarité :</span>
+          <span class="font-medium">
+            {{ inscription.classe?.filiere?.fraisScolarite | number }}
+            FCFA
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2">
+          <span class="text-secondary">Réduction :</span>
+          <span class="font-medium">
+            {{ inscription.montantReduction | number }}
+            FCFA
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center py-2 col-span-2">
+          <span class="text-secondary">Motif réduction :</span>
+          <span class="font-medium">
+            {{ inscription.motifReduction || 'Aucun' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DOSSIERS -->
+    <div class="border rounded-xl p-5">
+
+      <div class="flex justify-between items-center mb-4">
+
+        <h4
+          class="m-0 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
+
+          <mat-icon
+            class="icon-sm mr-2"
+            svgIcon="mat:folder">
+          </mat-icon>
+
+          Dossier d'inscription
+        </h4>
+
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="fileInput.click()">
+
+          <mat-icon
+            class="mr-1"
+            svgIcon="mat:upload">
+          </mat-icon>
+
+          Ajouter
+        </button>
+
+        <input
+          #fileInput
+          type="file"
+          hidden
+          accept=".pdf,.jpg,.jpeg,.png"
+          (change)="uploadFile($event)" />
+      </div>
+
+      <div
+        *ngIf="files.length === 0"
+        class="text-sm text-secondary italic py-3">
+
+        Aucun document disponible
+      </div>
+
+      <div
+        *ngFor="let file of files"
+        class="flex items-center justify-between py-3 px-2 border-b">
+
+        <div class="flex items-center gap-3">
+
+          <mat-icon svgIcon="mat:description"></mat-icon>
+
+          <span class="text-sm font-medium">
+            {{ file.fichier }}
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+
+          <button
+            mat-icon-button
+            (click)="voirFile(file)">
+
+            <mat-icon svgIcon="mat:visibility"></mat-icon>
+          </button>
+
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteFile(file)">
+
+            <mat-icon svgIcon="mat:delete"></mat-icon>
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</mat-dialog-content>
+
+<!-- FOOTER -->
+<mat-dialog-actions
+  align="end"
+  class="p-4 border-t bg-gray-50/50">
+
+  <button
+    mat-button
+    (click)="close()">
+
+    Fermer
+  </button>
+
+</mat-dialog-actions>

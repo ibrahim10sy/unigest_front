@@ -16,7 +16,7 @@ export interface Paiement {
   id?: number;
   inscription: Inscription;
   montant: number;
-  datePaiement: string; // ISO string (LocalDate côté backend)
+  datePaiement: string; 
   modePaiement: ModePaiement;
   reference?: string;
 }

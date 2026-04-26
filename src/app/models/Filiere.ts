@@ -1,9 +1,16 @@
+import { Classe } from "./Classe";
 import { Niveau } from "./Niveau";
 import { Parent } from "./Parent";
 export interface Filiere {
-  id?: number;
+  id: number;
   nom: string;
+
   actif: boolean;
-  niveau: Niveau;
-  
+
+  fraisInscription: number;
+  fraisScolarite: number;
+
+  niveau?: Niveau;
+
+  classes?: Classe[];
 }

@@ -3,19 +3,22 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environnement/environment';
 import { ModePaiement, Paiement } from '../models/paiement';
-
+import { PaiementResumeDTO } from '../models/PaiementResumeDTO';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PaiementService {
-
   private apiUrl = `${environment.apiUrl}/api/paiements`;
-  
-    constructor(private http: HttpClient) {}
 
-    // ✅ Effectuer un paiement
-  effectuerPaiement(inscriptionId: number, montant: number, mode: ModePaiement): Observable<Paiement> {
+  constructor(private http: HttpClient) {}
+
+  // ✅ Effectuer un paiement
+  effectuerPaiement(
+    inscriptionId: number,
+    montant: number,
+    mode: ModePaiement
+  ): Observable<Paiement> {
     const params = new HttpParams()
       .set('inscriptionId', inscriptionId)
       .set('montant', montant)
@@ -25,13 +28,24 @@ export class PaiementService {
   }
 
   // ✅ Modifier un paiement
-  modifierPaiement(id: number,inscriptionId: number, montant: number, mode: ModePaiement): Observable<Paiement> {
+  modifierPaiement(
+    id: number,
+    inscriptionId: number,
+    montant: number,
+    mode: ModePaiement
+  ): Observable<Paiement> {
     const params = new HttpParams()
       .set('inscriptionId', inscriptionId)
       .set('montant', montant)
       .set('mode', mode);
 
     return this.http.put<Paiement>(`${this.apiUrl}/${id}`, null, { params });
+  }
+
+  getResume(inscriptionId: number) {
+    return this.http.get<PaiementResumeDTO>(
+      `${this.apiUrl}/resume/${inscriptionId}`
+    );
   }
 
   // ✅ Supprimer un paiement
@@ -50,8 +64,13 @@ export class PaiementService {
   }
 
   // ✅ Historique par classe + année
-  getHistoriquePaiements(classeId: number, anneeId: number): Observable<Paiement[]> {
-    return this.http.get<Paiement[]>(`${this.apiUrl}/classe/${classeId}/annee/${anneeId}`);
+  getHistoriquePaiements(
+    classeId: number,
+    anneeId: number
+  ): Observable<Paiement[]> {
+    return this.http.get<Paiement[]>(
+      `${this.apiUrl}/classe/${classeId}/annee/${anneeId}`
+    );
   }
 
   // ✅ Paiement par ID
@@ -60,7 +79,11 @@ export class PaiementService {
   }
 
   // ✅ Historique étudiant + classe + année
-  getHistoriquePaiementsEtudiant(etudiantId: number, classeId: number, anneeId: number): Observable<Paiement[]> {
+  getHistoriquePaiementsEtudiant(
+    etudiantId: number,
+    classeId: number,
+    anneeId: number
+  ): Observable<Paiement[]> {
     return this.http.get<Paiement[]>(
       `${this.apiUrl}/etudiant/${etudiantId}/classe/${classeId}/annee/${anneeId}`
     );

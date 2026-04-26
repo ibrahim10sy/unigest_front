@@ -21,6 +21,7 @@ import { Inscription } from 'src/app/models/Inscription';
 import Swal from 'sweetalert2';
 import { ModePaiement } from 'src/app/models/paiement';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: 'vex-paiement-form',
@@ -33,8 +34,9 @@ import { FormsModule } from '@angular/forms';
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatButtonModule
-  ],
+    MatButtonModule,
+    MatIconModule
+],
   templateUrl: './paiement-form.component.html',
   styleUrl: './paiement-form.component.scss'
 })
@@ -47,6 +49,14 @@ export class PaiementFormComponent implements OnInit {
   // Variables pour les filtres
   filterYear: string = '';
   searchTerm: string = '';
+
+  selectedInscription: any = null;
+
+totalBrut = 0;
+totalNet = 0;
+totalPaye = 0;
+reste = 0;
+
 
   paymentModes = Object.values(ModePaiement);
 
@@ -88,6 +98,34 @@ export class PaiementFormComponent implements OnInit {
     this.allInscriptions = res;
     this.filteredInscriptions = res;
   });
+
+  this.form.get('inscription')?.valueChanges.subscribe((inscription) => {
+    if (inscription) {
+      this.selectedInscription = inscription;
+      this.calculerMontants(inscription);
+    } else {
+      this.selectedInscription = null;
+    }
+  });
+}
+
+calculerMontants(inscription: any) {
+  const filiere = inscription?.classe?.filiere;
+
+  const fraisInscription = filiere?.fraisInscription || 0;
+  const fraisScolarite = filiere?.fraisScolarite || 0;
+  const reduction = inscription?.montantReduction || 0;
+
+  this.totalBrut = fraisInscription + fraisScolarite;
+  this.totalNet = this.totalBrut - reduction;
+
+  this.totalPaye =
+    (inscription?.paiements || []).reduce(
+      (sum: number, p: any) => sum + (p.montant || 0),
+      0
+    );
+
+  this.reste = this.totalNet - this.totalPaye;
 }
 
   normalizeMode(mode: any): ModePaiement | null {

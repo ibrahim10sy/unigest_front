@@ -25,12 +25,15 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { InscriptionFormComponent } from '../inscription-form/inscription-form.component';
 import { Inscription } from 'src/app/models/Inscription';
 import { InscriptionService } from 'src/app/services/inscription.service';
-import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MediaService } from 'src/app/services/MediasService.service';
+import { MediaType } from 'src/app/models/Medias';
+import { InscriptionDetailComponent } from '../inscription-detail/inscription-detail.component';
 
 @Component({
   selector: 'vex-inscription-list',
   standalone: true,
-animations: [fadeInUp400ms, stagger40ms],
+  animations: [fadeInUp400ms, stagger40ms],
   imports: [
     CommonModule,
     VexPageLayoutComponent,
@@ -50,45 +53,107 @@ animations: [fadeInUp400ms, stagger40ms],
     ReactiveFormsModule,
     MatCheckboxModule,
     MatButtonToggleModule
-],
-    templateUrl: './inscription-list.component.html',
+  ],
+  templateUrl: './inscription-list.component.html',
   styleUrl: './inscription-list.component.scss'
 })
-export class InscriptionListComponent  implements OnInit {
-
-  displayedColumns: string[] = ['date', 'etudiant', 'classe', 'annee', 'montant', 'statut', 'actions'];
+export class InscriptionListComponent implements OnInit {
+  displayedColumns: string[] = [
+    'date',
+    'etudiant',
+    'classe',
+    'annee',
+    'statut',
+    'files',
+    'actions'
+  ];
   dataSource = new MatTableDataSource<Inscription>();
-   layoutCtrl = new UntypedFormControl('boxed');
+  layoutCtrl = new UntypedFormControl('boxed');
   searchCtrl = new UntypedFormControl();
-
+  filesMap: { [key: number]: any[] } = {};
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   constructor(
     private insService: InscriptionService,
-    private dialog: MatDialog
-  ) { }
+    private dialog: MatDialog,
+    private mediaService: MediaService
+  ) {}
 
   ngOnInit(): void {
     this.chargerInscriptions();
   }
 
-  // Note: Ton controller n'avait pas de "getAll", on suppose qu'il existe 
+  // Note: Ton controller n'avait pas de "getAll", on suppose qu'il existe
   // ou on utilise le filtre par classe par défaut.
   chargerInscriptions() {
-    // Si tu n'as pas de getAllGlobal, tu peux initialiser avec une liste vide 
-    // ou appeler une méthode par défaut.
     this.insService.getAll().subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         this.dataSource.data = res;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+
+        this.chargerFichiers();
       },
-      error: () => Swal.fire('Erreur', 'Impossible de charger les inscriptions', 'error')
+      error: () =>
+        Swal.fire('Erreur', 'Impossible de charger les inscriptions', 'error')
+    });
+  }
+  chargerFichiers() {
+    this.dataSource.data.forEach((inscription) => {
+      this.mediaService
+        .getByType(MediaType.DOSSIER_INSCRIPTION, inscription.id!)
+        .subscribe({
+          next: (files) => {
+            this.filesMap[inscription.id!] = files;
+          },
+          error: () => {
+            this.filesMap[inscription.id!] = [];
+          }
+        });
     });
   }
 
+  onFileSelected(event: any, inscription: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const media = {
+      type: MediaType.DOSSIER_INSCRIPTION,
+      referenceId: inscription.id
+    };
+
+    this.mediaService.create(media, file).subscribe({
+      next: (res) => {
+        if (!this.filesMap[inscription.id]) {
+          this.filesMap[inscription.id] = [];
+        }
+
+        this.filesMap[inscription.id].push(res);
+
+        Swal.fire('Succès', 'Fichier ajouté avec succès', 'success');
+      },
+      error: () => {
+        Swal.fire('Erreur', "Impossible d'ajouter le fichier", 'error');
+      }
+    });
+  }
+
+  voirFichier(media: any) {
+    window.open(media.fichierUrl, '_blank');
+  }
+
+  hasFiles(id: number): boolean {
+    return !!this.filesMap[id]?.length;
+  }
+
+  ouvrirDetail(inscription: Inscription) {
+  this.dialog.open(InscriptionDetailComponent, {
+    width: '800px',
+    data: inscription
+  });
+}
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -109,30 +174,48 @@ export class InscriptionListComponent  implements OnInit {
   private ouvrirDialogue(inscription?: Inscription) {
     const dialogRef = this.dialog.open(InscriptionFormComponent, {
       data: inscription || null,
-      width: '600px',
+      width: '800px',
       disableClose: true
     });
 
-    dialogRef.afterClosed().subscribe(val => {
+    dialogRef.afterClosed().subscribe((val) => {
       if (val) {
         if (val.id) {
           // UPDATE via RequestParams (classeId, anneeId)
-          this.insService.modifier(val.id, val.classeId, val.anneeId,  val.montantTotal).subscribe({
-            next: () => {
-              Swal.fire('Succès', 'Inscription mise à jour', 'success');
-              this.chargerInscriptions();
-            },
-            error: (err:any) => Swal.fire('Erreur', 'Echec de la modification', 'error')
-          });
+          this.insService
+            .modifier(
+              val.id,
+              val.classeId,
+              val.anneeId,
+              val.montantReduction,
+              val.motifReduction
+            )
+            .subscribe({
+              next: () => {
+                Swal.fire('Succès', 'Inscription mise à jour', 'success');
+                this.chargerInscriptions();
+              },
+              error: (err: any) =>
+                Swal.fire('Erreur', 'Echec de la modification', 'error')
+            });
         } else {
           // CREATE via RequestParams (etudiantId, classeId, anneeId, montant)
-          this.insService.inscrire(val.etudiantId, val.classeId, val.anneeId, val.montantTotal).subscribe({
-            next: () => {
-              Swal.fire('Succès', 'Étudiant inscrit avec succès', 'success');
-              this.chargerInscriptions();
-            },
-            error: (err:any) => Swal.fire('Erreur', 'Echec de l\'inscription', 'error')
-          });
+          this.insService
+            .inscrire(
+              val.etudiantId,
+              val.classeId,
+              val.anneeId,
+              val.montantReduction,
+              val.motifReduction
+            )
+            .subscribe({
+              next: () => {
+                Swal.fire('Succès', 'Étudiant inscrit avec succès', 'success');
+                this.chargerInscriptions();
+              },
+              error: (err: any) =>
+                Swal.fire('Erreur', "Echec de l'inscription", 'error')
+            });
         }
       }
     });
@@ -140,7 +223,7 @@ export class InscriptionListComponent  implements OnInit {
 
   supprimer(id: number) {
     Swal.fire({
-      title: 'Annuler l\'inscription ?',
+      title: "Annuler l'inscription ?",
       text: "Cela supprimera l'historique de cet étudiant pour cette année.",
       icon: 'warning',
       showCancelButton: true,
@@ -148,7 +231,7 @@ export class InscriptionListComponent  implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.insService.supprimer(id).subscribe(() => {
-          Swal.fire('Supprimé', 'L\'inscription a été annulée.', 'success');
+          Swal.fire('Supprimé', "L'inscription a été annulée.", 'success');
           this.chargerInscriptions();
         });
       }

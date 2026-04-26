@@ -50,7 +50,9 @@ export class FiliereFormComponent implements OnInit {
     this.form = this.fb.group({
       nom: [this.defaults?.nom || '', [Validators.required]],
       niveauId: [this.defaults?.niveau?.id || '', Validators.required], // ID du niveau parent
-      actif: [this.defaults ? this.defaults.actif : true]
+      actif: [this.defaults ? this.defaults.actif : true],
+      fraisInscription: [this.defaults?.fraisInscription || 0, [Validators.min(0)]],
+      fraisScolarite: [this.defaults?.fraisScolarite || 0, [Validators.min(0)]],
     });
   }
 
@@ -67,12 +69,12 @@ export class FiliereFormComponent implements OnInit {
     const val = this.form.value;
 
     if (this.isUpdateMode()) {
-      this.filiereService.modifierFiliere(val.niveauId,this.defaults!.id!, val.nom, val.actif).subscribe({
+      this.filiereService.modifierFiliere(val.niveauId,this.defaults!.id!, val.nom, val.actif, val.fraisInscription, val.fraisScolarite).subscribe({
         next: () => this.handleSuccess('Filière mise à jour'),
         error: () => Swal.fire('Erreur', 'Échec de la modification', 'error')
       });
     } else {
-      this.filiereService.ajouterFiliere(val.nom, val.niveauId).subscribe({
+      this.filiereService.ajouterFiliere(val.nom, val.niveauId, val.fraisInscription, val.fraisScolarite).subscribe({
         next: () => this.handleSuccess('Filière ajoutée'),
         error: () => Swal.fire('Erreur', "Échec de l'ajout", 'error')
       });

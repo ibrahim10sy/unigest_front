@@ -1,8 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormGroup,
+  FormBuilder,
+  Validators
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  MatDialogModule,
+  MAT_DIALOG_DATA,
+  MatDialogRef
+} from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AnneeScolaire } from 'src/app/models/AnneeScolaire';
@@ -15,7 +25,16 @@ import { EtudiantService } from 'src/app/services/etudiant.service';
 @Component({
   selector: 'vex-inscription-form',
   standalone: true,
-imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatSelectModule, MatInputModule, MatButtonModule],  templateUrl: './inscription-form.component.html',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatSelectModule,
+    MatInputModule,
+    MatButtonModule
+  ],
+  templateUrl: './inscription-form.component.html',
   styleUrl: './inscription-form.component.scss'
 })
 export class InscriptionFormComponent implements OnInit {
@@ -38,20 +57,52 @@ export class InscriptionFormComponent implements OnInit {
       etudiantId: [defaults?.etudiant?.id || '', Validators.required],
       classeId: [defaults?.classe?.id || '', Validators.required],
       anneeId: [defaults?.anneeScolaire?.id || '', Validators.required],
-      montantTotal: [defaults?.montantTotal || 0, [Validators.required, Validators.min(0)]]
+
+      hasReduction: [!!defaults?.montantReduction],
+
+      montantReduction: [defaults?.montantReduction ?? 0],
+      motifReduction: [defaults?.motifReduction ?? '']
     });
   }
 
   ngOnInit() {
-    if (this.defaults) this.mode = 'update';
-    
-    // Chargement des données pour les sélecteurs
-    this.etudiantService.listerEtudiants().subscribe((res:any) => this.etudiants = res);
-    this.classeService.getAllClasses().subscribe((res:any) => this.classes = res);
-    this.anneeService.getAll().subscribe((res:any) => this.annees = res);
+  if (this.defaults) {
+    this.mode = 'update';
   }
 
+  this.form.get('hasReduction')?.valueChanges.subscribe((checked) => {
+    if (!checked) {
+      this.form.patchValue({
+        montantReduction: 0,
+        motifReduction: ''
+      });
+    }
+  });
+
+  this.etudiantService
+    .listerEtudiants()
+    .subscribe((res: any) => (this.etudiants = res));
+
+  this.classeService
+    .getAllClasses()
+    .subscribe((res: any) => (this.classes = res));
+
+  this.anneeService
+    .getAll()
+    .subscribe((res: any) => (this.annees = res));
+}
+
   save() {
-    if (this.form.valid) this.dialogRef.close(this.form.value);
+    if (!this.form.valid) return;
+
+    const value = this.form.value;
+
+    // 🔥 nettoyage logique
+    if (!value.hasReduction) {
+      value.montantReduction = 0;
+      value.motifReduction = null;
+    }
+
+    this.dialogRef.close(value);
   }
 }

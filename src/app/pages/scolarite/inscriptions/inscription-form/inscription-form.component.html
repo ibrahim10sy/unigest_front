@@ -1,5 +1,7 @@
 <form [formGroup]="form" (ngSubmit)="save()">
-  <h2 mat-dialog-title>{{ mode === 'update' ? 'Réaffectation' : 'Nouvelle Inscription' }}</h2>
+  <h2 mat-dialog-title>
+    {{ mode === "update" ? "Réaffectation" : "Nouvelle Inscription" }}
+  </h2>
 
   <mat-dialog-content class="flex flex-col gap-4">
     <mat-form-field class="w-full">
@@ -14,28 +16,46 @@
     <mat-form-field class="w-full">
       <mat-label>Classe</mat-label>
       <mat-select formControlName="classeId">
-        <mat-option *ngFor="let c of classes" [value]="c.id">{{ c.nom }}</mat-option>
+        <mat-option *ngFor="let c of classes" [value]="c.id">{{
+          c.nom
+        }}</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field class="w-full">
       <mat-label>Année Scolaire</mat-label>
       <mat-select formControlName="anneeId">
-        <mat-option *ngFor="let a of annees" [value]="a.id" [disabled]="!a.active">
-          {{ a.libelle }} {{ a.active ? '(Courante)' : '' }}
+        <mat-option
+          *ngFor="let a of annees"
+          [value]="a.id"
+          [disabled]="!a.active">
+          {{ a.libelle }} {{ a.active ? "(Courante)" : "" }}
         </mat-option>
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field class="w-full">
-      <mat-label>Montant des frais</mat-label>
-      <input matInput type="number" formControlName="montantTotal">
-      <span matTextSuffix>FCFA</span>
-    </mat-form-field>
+   <mat-checkbox formControlName="hasReduction">
+  Appliquer une réduction
+</mat-checkbox>
+
+  <div *ngIf="form.value.hasReduction">
+  <mat-form-field class="w-full">
+    <mat-label>Montant de la réduction</mat-label>
+    <input matInput type="number" formControlName="montantReduction" />
+    <span matTextSuffix>FCFA</span>
+  </mat-form-field>
+
+  <mat-form-field class="w-full">
+    <mat-label>Motif de la réduction</mat-label>
+    <input matInput type="text" formControlName="motifReduction" />
+  </mat-form-field>
+</div>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close type="button">Annuler</button>
-    <button mat-flat-button color="primary" [disabled]="form.invalid">Valider l'inscription</button>
+    <button mat-flat-button color="primary" [disabled]="form.invalid">
+      Valider l'inscription
+    </button>
   </mat-dialog-actions>
 </form>
