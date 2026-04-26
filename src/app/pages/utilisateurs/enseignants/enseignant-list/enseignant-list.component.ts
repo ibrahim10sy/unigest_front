@@ -162,7 +162,7 @@ export class EnseignantListComponent implements OnInit {
 
 ouvrirDetail(enseignant: Enseignant) {
   this.dialog.open(EnseignantDetailComponent, {
-    width: '600px',
+    width: '800px',
     data: enseignant
   });
 }

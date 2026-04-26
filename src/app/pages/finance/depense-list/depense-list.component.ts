@@ -23,6 +23,9 @@ import { Router } from '@angular/router';
 import { Depense, DepenseService } from 'src/app/services/DepenseService.service';
 import { DepenseFormComponent } from '../depense-form/depense-form.component';
 import { CategorieDepenseService } from 'src/app/services/categorie-depense.service';
+import { MediaService } from 'src/app/services/MediasService.service';
+import { MediaType } from 'src/app/models/Medias';
+import { DepenseDetailComponent } from '../depense-detail/depense-detail.component';
 
 @Component({
   selector: 'vex-depense-list',
@@ -59,15 +62,18 @@ export class DepenseListComponent implements OnInit {
     'categorie',
     'anneeScolaire',
     'montant',
+    'files',
     'actions'
   ];
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
+  filesMap: { [key: number]: any[] } = {};
 
   constructor(
     private dService: DepenseService,
     private dialog: MatDialog,
+    private mediaService: MediaService,
     private router: Router
   ) {}
 
@@ -79,13 +85,63 @@ export class DepenseListComponent implements OnInit {
   }
 
   refresh() {
-    this.dService.getAll().subscribe((res) => {
-      this.dataSource.data = res;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      console.log('data', this.dataSource.data);
-    });
-  }
+  this.dService.getAll().subscribe((res) => {
+    this.dataSource.data = res;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+    this.chargerFichiersDepense();
+  });
+}
+
+chargerFichiersDepense() {
+  this.dataSource.data.forEach((depense) => {
+
+    this.mediaService
+      .getByType(MediaType.JUSTIFICATIF_DEPENSE, depense.id!)
+      .subscribe({
+        next: (files) => {
+          this.filesMap[depense.id!] = files;
+        },
+        error: () => {
+          this.filesMap[depense.id!] = [];
+        }
+      });
+  });
+}
+
+onFileSelected(event: any, depense: any) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const media = {
+    type: MediaType.JUSTIFICATIF_DEPENSE,
+    referenceId: depense.id
+  };
+
+  this.mediaService.create(media, file).subscribe({
+    next: (res) => {
+
+      if (!this.filesMap[depense.id]) {
+        this.filesMap[depense.id] = [];
+      }
+
+      this.filesMap[depense.id].push(res);
+
+      Swal.fire('Succès', 'Fichier ajouté avec succès', 'success');
+    },
+    error: () => {
+      Swal.fire('Erreur', 'Impossible d’ajouter le fichier', 'error');
+    }
+  });
+}
+
+voirFichier(media: any) {
+  window.open(media.fichierUrl, '_blank');
+}
+hasFiles(id: number): boolean {
+  return !!this.filesMap[id]?.length;
+}
 
  supprimer(row: Depense) {
   Swal.fire({ 
@@ -116,5 +172,9 @@ export class DepenseListComponent implements OnInit {
   ouvrirForm(depense?: Depense) {
     this.dialog.open(DepenseFormComponent, { data: depense || null, width: '500px' })
       .afterClosed().subscribe(res => { if (res) this.refresh(); });
+  }
+
+  ouvrirDetail(depense: Depense) {
+    this.dialog.open(DepenseDetailComponent, { data: depense, width: '800px' });
   }
 }

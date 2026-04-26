@@ -21,111 +21,188 @@
       </div>
     </div>
   </vex-page-layout-header>
-  <vex-page-layout-content
-    [class.container]="layoutCtrl.value === 'boxed'"
-    class="-mt-6">
-    <div class="card overflow-auto -mt-16">
-      <div
-        class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
-        <h2 class="title my-0 hidden sm:block flex-none">Catégories</h2>
+ <vex-page-layout-content
+  [class.container]="layoutCtrl.value === 'boxed'"
+  class="-mt-6">
 
-        <mat-form-field subscriptSizing="dynamic" class="ml-4">
-          <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
-          <input
-            matInput
-            [formControl]="searchCtrl"
-            placeholder="Rechercher une catégorie..."
-            type="text" />
-        </mat-form-field>
+  <div class="card overflow-auto -mt-16">
 
-        <span class="flex-1"></span>
+    <!-- HEADER -->
+    <div class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
 
-        <button
-          (click)="ouvrirForm()"
-          class="ml-4 flex-none"
-          color="primary"
-          mat-mini-fab
-          matTooltip="Ajouter une catégorie">
-          <mat-icon svgIcon="mat:add"></mat-icon>
-        </button>
-      </div>
+      <h2 class="title my-0 hidden sm:block flex-none">
+        Catégories
+      </h2>
 
-      <table
-        @stagger
-        [dataSource]="dataSource"
-        class="w-full"
-        mat-table
-        matSort>
-        <ng-container matColumnDef="dateDepense">
-          <th *matHeaderCellDef mat-sort-header>Date</th>
-          <td *matCellDef="let row" mat-cell>
-            {{ row.dateDepense | date: "dd/MM/yyyy" }}
-          </td>
-        </ng-container>
+      <mat-form-field subscriptSizing="dynamic" class="ml-4">
+        <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
+        <input
+          matInput
+          [formControl]="searchCtrl"
+          placeholder="Rechercher une catégorie..."
+          type="text" />
+      </mat-form-field>
 
-        <ng-container matColumnDef="libelle">
-          <th
-            *matHeaderCellDef
-            mat-header-cell
-            mat-sort-header
-            class="uppercase">
-            Libellé
-          </th>
-          <td *matCellDef="let row" mat-cell class="font-medium text-primary">
-            {{ row.libelle }}
-          </td>
-        </ng-container>
+      <span class="flex-1"></span>
 
-        <ng-container matColumnDef="montant">
-          <th *matHeaderCellDef mat-sort-header>Montant</th>
-          <td *matCellDef="let row" mat-cell class="font-bold">
-            {{ row.montant | number: "1.0-0" }} F
-          </td>
-          <!-- <td *matCellDef="let row" mat-cell class="font-bold"> {{row.montant | currency:'XOF':'symbol'}} </td> -->
-        </ng-container>
-        <ng-container matColumnDef="categorie">
-          <th *matHeaderCellDef mat-sort-header>Catégorie</th>
-          <td *matCellDef="let row" mat-cell>
-            {{ row.categorieDepense?.nom }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="anneeScolaire">
-          <th *matHeaderCellDef mat-sort-header>Année Scolaire</th>
-          <td *matCellDef="let row" mat-cell>
-            {{ row.anneeScolaire?.libelle }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th *matHeaderCellDef mat-header-cell></th>
-          <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
-            <div class="flex">
-              <button
-                (click)="$event.stopPropagation(); ouvrirForm(row)"
-                mat-icon-button
-                color="primary">
-                <mat-icon svgIcon="mat:edit"></mat-icon>
-              </button>
-              <button
-                (click)="$event.stopPropagation(); supprimer(row)"
-                mat-icon-button
-                color="warn">
-                <mat-icon svgIcon="mat:delete"></mat-icon>
-              </button>
-            </div>
-          </td>
-        </ng-container>
+      <button
+        (click)="ouvrirForm()"
+        class="ml-4 flex-none"
+        color="primary"
+        mat-mini-fab
+        matTooltip="Ajouter une catégorie">
 
-        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-        <tr
-          *matRowDef="let row; columns: displayedColumns"
-          @fadeInUp
-          class="hover:bg-hover cursor-pointer"
-          mat-row></tr>
-      </table>
-
-      <mat-paginator
-        [pageSizeOptions]="[5, 10, 20]"
-        class="sticky left-0"></mat-paginator>
+        <mat-icon svgIcon="mat:add"></mat-icon>
+      </button>
     </div>
-  </vex-page-layout-content>
-</vex-page-layout>
+
+    <!-- TABLE -->
+    <table
+      @stagger
+      mat-table
+      [dataSource]="dataSource"
+      matSort
+      class="w-full">
+
+      <!-- DATE -->
+      <ng-container matColumnDef="dateDepense">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Date
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.dateDepense | date:'dd/MM/yyyy' }}
+        </td>
+      </ng-container>
+
+      <!-- LIBELLE -->
+      <ng-container matColumnDef="libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="uppercase">
+          Libellé
+        </th>
+        <td mat-cell *matCellDef="let row" class="font-medium text-primary">
+          {{ row.libelle }}
+        </td>
+      </ng-container>
+
+      <!-- MONTANT -->
+      <ng-container matColumnDef="montant">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Montant
+        </th>
+        <td mat-cell *matCellDef="let row" class="font-bold">
+          {{ row.montant | number:'1.0-0' }} F
+        </td>
+      </ng-container>
+
+      <!-- CATEGORIE -->
+      <ng-container matColumnDef="categorie">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Catégorie
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.categorieDepense?.nom }}
+        </td>
+      </ng-container>
+
+      <!-- ANNEE -->
+      <ng-container matColumnDef="anneeScolaire">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Année Scolaire
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.anneeScolaire?.libelle }}
+        </td>
+      </ng-container>
+
+      <!-- FILES -->
+      <ng-container matColumnDef="files">
+        <th mat-header-cell *matHeaderCellDef>
+          Justificatif
+        </th>
+
+        <td mat-cell *matCellDef="let row">
+          <div class="flex items-center gap-2">
+
+            <!-- voir fichier -->
+            <ng-container *ngIf="hasFiles(row.id); else noFile">
+
+              <button
+                mat-icon-button
+                (click)="$event.stopPropagation(); voirFichier(filesMap[row.id][0])"
+                matTooltip="Voir fichier">
+
+                <mat-icon svgIcon="mat:visibility"></mat-icon>
+              </button>
+
+            </ng-container>
+
+            <ng-template #noFile>
+              <span class="text-xs text-gray-400">
+                Aucune justificatif
+              </span>
+            </ng-template>
+
+            <!-- upload -->
+            <button
+              mat-icon-button
+              (click)="$event.stopPropagation(); fileInput.click()">
+
+              <mat-icon svgIcon="mat:upload"></mat-icon>
+            </button>
+
+            <input
+              type="file"
+              hidden
+              #fileInput
+              (change)="onFileSelected($event, row)" />
+
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- ACTIONS -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+
+        <td mat-cell *matCellDef="let row" class="w-10 text-secondary">
+
+          <div class="flex">
+
+            <button mat-icon-button (click)="ouvrirDetail(row)">
+              <mat-icon svgIcon="mat:visibility"></mat-icon>
+            </button>
+
+            <button mat-icon-button color="primary" (click)="ouvrirForm(row)">
+              <mat-icon svgIcon="mat:edit"></mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="supprimer(row)">
+              <mat-icon svgIcon="mat:delete"></mat-icon>
+            </button>
+
+          </div>
+
+        </td>
+      </ng-container>
+
+      <!-- ROWS -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        @fadeInUp
+        class="hover:bg-hover cursor-pointer">
+      </tr>
+
+    </table>
+
+    <!-- PAGINATOR -->
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20]"
+      class="sticky left-0">
+    </mat-paginator>
+
+  </div>
+
+</vex-page-layout-content>

@@ -1,0 +1,109 @@
+<div class="flex items-center p-4 border-b bg-gray-50/50" mat-dialog-title>
+
+  <div class="bg-primary/10 text-primary p-2 rounded-lg mr-4">
+    <mat-icon svgIcon="mat:receipt"></mat-icon>
+  </div>
+
+  <div class="flex-auto">
+    <h2 class="headline m-0 text-lg font-bold">
+      Détails de la dépense
+    </h2>
+    <p class="caption text-secondary m-0">
+      {{ depense.libelle }}
+    </p>
+  </div>
+
+  <button (click)="close()" mat-icon-button>
+    <mat-icon svgIcon="mat:close"></mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="p-6">
+
+  <!-- INFO -->
+  <div class="grid grid-cols-2 gap-4 mb-6">
+
+    <div class="p-3 border rounded">
+      <span class="text-xs text-secondary">Date</span>
+      <div class="font-bold">
+        {{ depense.dateDepense | date:'dd/MM/yyyy' }}
+      </div>
+    </div>
+
+    <div class="p-3 border rounded">
+      <span class="text-xs text-secondary">Montant</span>
+      <div class="font-bold text-primary">
+        {{ depense.montant }} F
+      </div>
+    </div>
+
+    <div class="p-3 border rounded">
+      <span class="text-xs text-secondary">Catégorie</span>
+      <div class="font-medium">
+        {{ depense.categorieDepense?.nom }}
+      </div>
+    </div>
+
+    <div class="p-3 border rounded">
+      <span class="text-xs text-secondary">Année scolaire</span>
+      <div class="font-medium">
+        {{ depense.anneeScolaire?.libelle }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FILES -->
+  <div class="border rounded p-4">
+
+    <div class="flex justify-between items-center mb-3">
+
+      <h4 class="m-0 text-xs uppercase text-secondary">
+        Fichiers justificatifs
+      </h4>
+
+      <button mat-flat-button color="primary" (click)="fileInput.click()">
+        <mat-icon svgIcon="mat:upload"></mat-icon>
+        Ajouter
+      </button>
+
+      <input
+        #fileInput
+        type="file"
+        hidden
+        (change)="uploadFile($event)" />
+
+    </div>
+
+    <div *ngIf="files.length === 0" class="text-sm text-secondary italic">
+      Aucun fichier
+    </div>
+
+    <div *ngFor="let file of files" class="flex justify-between items-center p-2 border-b">
+
+      <div class="flex items-center gap-2">
+        <mat-icon svgIcon="mat:insert_drive_file"></mat-icon>
+        <span class="text-sm">{{ file.fichier }}</span>
+      </div>
+
+      <div class="flex gap-2">
+
+        <button mat-icon-button (click)="voirFile(file)">
+          <mat-icon svgIcon="mat:visibility"></mat-icon>
+        </button>
+
+        <button mat-icon-button color="warn" (click)="deleteFile(file)">
+          <mat-icon svgIcon="mat:delete"></mat-icon>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Fermer</button>
+</mat-dialog-actions>
