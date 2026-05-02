@@ -62,7 +62,7 @@ export class EtudiantListComponent implements OnInit {
     'parent',
     'actions'
   ];
-
+ 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 

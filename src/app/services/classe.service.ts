@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environnement/environment';
+import { Etudiant } from '../models/Etudiant';
 
 @Injectable({
   providedIn: 'root'
@@ -48,6 +49,12 @@ export class ClasseService {
     return this.http.put(`${this.apiUrl}/${id}`, null, { params });
   }
 
+  getEtudiantsParClasse(classeId: number): Observable<Etudiant[]> {
+    return this.http.get<Etudiant[]>(
+      `${this.apiUrl}/${classeId}/etudiants`
+    );
+  }
+  
   // 3️⃣ Supprimer une classe
   supprimerClasse(id: number): Observable<string> {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });

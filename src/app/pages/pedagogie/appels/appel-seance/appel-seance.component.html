@@ -1,1 +1,254 @@
-<p>appel-seance works!</p>
+<vex-page-layout>
+  <!-- HEADER -->
+  <vex-page-layout-header
+    class="pb-10 flex flex-col items-start justify-center">
+    <div
+      [class.container]="layoutCtrl.value === 'boxed'"
+      [class.px-6]="layoutCtrl.value === 'fullwidth'"
+      class="w-full flex flex-col sm:flex-row justify-between items-center gap-4">
+      <!-- TITRE -->
+      <div>
+        <h1 class="title mt-0 mb-1">Gestion des absences & retards</h1>
+
+        <vex-breadcrumbs [crumbs]="['Configuration', 'Absences & Retards']">
+        </vex-breadcrumbs>
+      </div>
+
+      <!-- LAYOUT SWITCH -->
+      <mat-button-toggle-group
+        [formControl]="layoutCtrl"
+        class="hidden sm:flex">
+        <mat-button-toggle value="boxed"> Réduire </mat-button-toggle>
+
+        <mat-button-toggle value="fullwidth"> Plein écran </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </vex-page-layout-header>
+
+  <!-- CONTENT -->
+  <vex-page-layout-content [class.container]="layoutCtrl.value === 'boxed'">
+    <div class="space-y-6">
+      <!-- RECHERCHE -->
+      <div class="card p-6">
+        <div class="flex flex-col md:flex-row gap-4 items-center">
+          <h2 class="title my-0 flex-none">Historique des appels</h2>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="flex-1 w-full">
+            <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
+
+            <input
+              matInput
+              [formControl]="searchCtrl"
+              placeholder="Rechercher un étudiant, matière ou classe"
+              type="text" />
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" (click)="chargerAppels()">
+            Actualiser
+          </button>
+        </div>
+      </div>
+
+      <!-- FILTRES -->
+      <div class="card p-6">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <!-- Année scolaire -->
+          <mat-form-field appearance="outline">
+            <mat-label>Année scolaire</mat-label>
+
+            <mat-select [formControl]="anneeCtrl">
+              <mat-option *ngFor="let annee of annees" [value]="annee.id">
+                {{ annee.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Classe -->
+          <mat-form-field appearance="outline">
+            <mat-label>Classe</mat-label>
+
+            <mat-select [formControl]="classeCtrl">
+              <mat-option value=""> Toutes </mat-option>
+
+              <mat-option *ngFor="let classe of classes" [value]="classe.id">
+                {{ classe.nom }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Statut -->
+          <mat-form-field appearance="outline">
+            <mat-label>Statut</mat-label>
+
+            <mat-select [formControl]="statutCtrl">
+              <mat-option value=""> Tous </mat-option>
+
+              <mat-option value="PRESENT"> Présent </mat-option>
+
+              <mat-option value="ABSENT"> Absent </mat-option>
+
+              <mat-option value="RETARD"> Retard </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Date -->
+          <mat-form-field appearance="outline">
+            <mat-label>Date</mat-label>
+
+            <input matInput [matDatepicker]="picker" [formControl]="dateCtrl" />
+
+            <mat-datepicker-toggle matSuffix [for]="picker">
+            </mat-datepicker-toggle>
+
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <!-- Reset -->
+          <button
+            mat-raised-button
+            color="warn"
+            class="h-[56px]"
+            (click)="resetFiltres()">
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- TOTAL -->
+        <div class="card p-4">
+          <div class="text-xs text-secondary">Total</div>
+
+          <div class="text-2xl font-bold">
+            {{ totalAppels }}
+          </div>
+        </div>
+
+        <!-- ABSENTS -->
+        <div class="card p-4">
+          <div class="text-xs text-secondary">Absences</div>
+
+          <div class="text-2xl font-bold">
+            {{ totalAbsents }}
+          </div>
+        </div>
+
+        <!-- RETARDS -->
+        <div class="card p-4">
+          <div class="text-xs text-secondary">Retards</div>
+
+          <div class="text-2xl font-bold">
+            {{ totalRetards }}
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="card overflow-auto">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full">
+          <!-- DATE -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+
+            <td mat-cell *matCellDef="let row">
+              {{ row.seance.date | date: "dd/MM/yyyy" }}
+            </td>
+          </ng-container>
+
+          <!-- SEANCE -->
+          <ng-container matColumnDef="seance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Séance</th>
+
+            <td mat-cell *matCellDef="let row" class="font-medium text-primary">
+              {{ row.seance.matiere }}
+            </td>
+          </ng-container>
+
+          <!-- CLASSE -->
+          <ng-container matColumnDef="classe">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Classe</th>
+
+            <td mat-cell *matCellDef="let row">
+              {{ row.seance.affectation.classe.nom }}
+            </td>
+          </ng-container>
+
+          <!-- ETUDIANT -->
+          <ng-container matColumnDef="etudiant">
+            <th mat-header-cell *matHeaderCellDef>Étudiant</th>
+
+            <td mat-cell *matCellDef="let row">
+              <div class="flex flex-col" *ngIf="row.etudiant">
+                <span class="font-semibold">
+                  {{ row.etudiant.prenom }}
+                  {{ row.etudiant.nom }}
+                </span>
+
+                <span class="text-xs text-secondary">
+                  {{ row.etudiant.telephone }}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- STATUT -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+
+            <td mat-cell *matCellDef="let row">
+              <span
+                class="px-2 py-1 rounded-full text-xs font-bold"
+                [ngClass]="{
+                  'bg-green-100 text-green-700': row.statut === 'PRESENT',
+                  'bg-red-100 text-red-700': row.statut === 'ABSENT',
+                  'bg-blue-100 text-blue-700': row.statut === 'RETARD'
+                }">
+                {{ row.statut }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- ACTIONS -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+
+            <td mat-cell *matCellDef="let row">
+              <div class="flex items-center gap-2">
+                <button mat-icon-button (click)="ouvrirDetail(row)">
+                  <mat-icon svgIcon="mat:visibility"></mat-icon>
+                </button>
+
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="ouvrirForm(row)">
+                  <mat-icon svgIcon="mat:edit"></mat-icon>
+                </button>
+
+                <button mat-icon-button color="warn" (click)="supprimer(row.id)">
+                  <mat-icon svgIcon="mat:delete"></mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- HEADER ROW -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+          <!-- DATA ROW -->
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="hover:bg-hover cursor-pointer"></tr>
+        </table>
+
+        <!-- PAGINATOR -->
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]"> </mat-paginator>
+      </div>
+    </div>
+  </vex-page-layout-content>
+</vex-page-layout>

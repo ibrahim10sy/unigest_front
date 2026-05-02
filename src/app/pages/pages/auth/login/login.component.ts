@@ -15,6 +15,7 @@ import { NgIf } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { AuthService } from 'src/app/services/auth.service';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'vex-login',
@@ -33,10 +34,14 @@ import { AuthService } from 'src/app/services/auth.service';
     MatIconModule,
     MatCheckboxModule,
     RouterLink,
-    MatSnackBarModule
-  ]
+    MatSnackBarModule,
+    MatProgressSpinnerModule
+]
 })
 export class LoginComponent {
+  // 1. Ajouter la variable ici
+  loading = false; 
+
   form = this.fb.group({
     login: ['', Validators.required],
     password: ['', Validators.required]
@@ -51,22 +56,27 @@ export class LoginComponent {
     private fb: FormBuilder,
     private cd: ChangeDetectorRef,
     private snackbar: MatSnackBar
-  ) {}
-
-
-  
+  ) {
+    
+  }
 
   send() {
-  this.authService.login(this.form.value).subscribe({
-    next: () => {
-      this.router.navigate(['/dashboards/analytics']);
-      this.snackbar.open("Bienvenue !", 'OK', { duration: 3000 });
-    },
-    error: (err) => {
-      this.snackbar.open("Erreur de connexion", 'OK', { duration: 3000 });
-    }
-  });
-}
+    // 2. Activer l'état de chargement
+    this.loading = true;
+
+    this.authService.login(this.form.value).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboards/analytics']);
+        this.snackbar.open("Bienvenue !", 'OK', { duration: 3000 });
+        this.loading = false; // Désactiver
+      },
+      error: (err) => {
+        this.snackbar.open("Erreur de connexion", 'OK', { duration: 3000 });
+        this.loading = false; // Désactiver en cas d'erreur
+      }
+    });
+  }
+
   toggleVisibility() {
     this.inputType = this.visible ? 'password' : 'text';
     this.visible = !this.visible;

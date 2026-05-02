@@ -54,6 +54,10 @@ private apiUrl = `${environment.apiUrl}/api/inscriptions`;
     return this.http.get<any[]>(`${this.apiUrl}/classe/${classeId}/annee/${anneeId}`);
   }
 
+  // 7️⃣ Liste filtrée par étudiant
+  getInscriptionsParEtudiant(etudiantId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/etudiant/${etudiantId}`);
+  }
 
   getAll(): Observable<Inscription[]> {
     return this.http.get<Inscription[]>(this.apiUrl);

@@ -22,6 +22,7 @@ import Swal from 'sweetalert2';
 import { ModePaiement } from 'src/app/models/paiement';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from "@angular/material/icon";
+import { PaiementResumeDTO } from 'src/app/models/PaiementResumeDTO';
 
 @Component({
   selector: 'vex-paiement-form',
@@ -51,11 +52,9 @@ export class PaiementFormComponent implements OnInit {
   searchTerm: string = '';
 
   selectedInscription: any = null;
+resume!: PaiementResumeDTO;
 
-totalBrut = 0;
-totalNet = 0;
-totalPaye = 0;
-reste = 0;
+  loadingResume = false;
 
 
   paymentModes = Object.values(ModePaiement);
@@ -102,31 +101,30 @@ reste = 0;
   this.form.get('inscription')?.valueChanges.subscribe((inscription) => {
     if (inscription) {
       this.selectedInscription = inscription;
-      this.calculerMontants(inscription);
+      this.onSelectInscription(inscription);
     } else {
       this.selectedInscription = null;
     }
   });
 }
 
-calculerMontants(inscription: any) {
-  const filiere = inscription?.classe?.filiere;
+ onSelectInscription(inscription: Inscription) {
+    this.selectedInscription = inscription;
 
-  const fraisInscription = filiere?.fraisInscription || 0;
-  const fraisScolarite = filiere?.fraisScolarite || 0;
-  const reduction = inscription?.montantReduction || 0;
+    if (!inscription?.id) return;
 
-  this.totalBrut = fraisInscription + fraisScolarite;
-  this.totalNet = this.totalBrut - reduction;
+    this.loadingResume = true;
 
-  this.totalPaye =
-    (inscription?.paiements || []).reduce(
-      (sum: number, p: any) => sum + (p.montant || 0),
-      0
-    );
-
-  this.reste = this.totalNet - this.totalPaye;
-}
+    this.pService.getResume(inscription.id).subscribe({
+      next: (res) => {
+        this.resume = res;
+        this.loadingResume = false;
+      },
+      error: () => {
+        this.loadingResume = false;
+      }
+    });
+  }
 
   normalizeMode(mode: any): ModePaiement | null {
     if (!mode) return null;

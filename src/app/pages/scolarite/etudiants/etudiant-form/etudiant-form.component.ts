@@ -30,7 +30,7 @@ export class EtudiantFormComponent implements OnInit {
       id: [defaults?.id || null],
       prenom: [defaults?.prenom || '', Validators.required],
       nom: [defaults?.nom || '', Validators.required],
-      email: [defaults?.email || '', [Validators.required, Validators.email]],
+      email: [defaults?.email || ''],
       telephone: [defaults?.telephone || ''],
       dateNaissance: [defaults?.dateNaissance || '', Validators.required],
       parent: [defaults?.parent || null, Validators.required] // L'objet Parent complet

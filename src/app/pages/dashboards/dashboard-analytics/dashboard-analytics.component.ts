@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { defaultChartOptions } from '@vex/utils/default-chart-options';
 import {
   Order,
@@ -15,6 +15,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { VexSecondaryToolbarComponent } from '@vex/components/vex-secondary-toolbar/vex-secondary-toolbar.component';
+import { DashboardService } from 'src/app/services/DashboardService.service';
+import { DashboardStatsDTO } from 'src/app/models/DashboardStatsDTO';
+import { ApexOptions } from '@vex/components/vex-chart/vex-chart.component';
+import { SeanceDTO } from 'src/app/models/SeanceDTO';
+import { Seance } from 'src/app/models/Seance';
+import { SeanceService } from 'src/app/services/seance.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'vex-dashboard-analytics',
@@ -34,77 +41,86 @@ import { VexSecondaryToolbarComponent } from '@vex/components/vex-secondary-tool
     WidgetTableComponent
   ]
 })
-export class DashboardAnalyticsComponent {
-  tableColumns: TableColumn<Order>[] = [
-    {
-      label: '',
-      property: 'status',
-      type: 'badge'
-    },
-    {
-      label: 'Classe',
-      property: 'name',
-      type: 'text'
-    },
-    {
-      label: 'Professeur',
-      property: 'price',
-      type: 'text',
-      cssClasses: ['font-medium']
-    },
-    {
-      label: 'DATE',
-      property: 'timestamp',
-      type: 'text',
-      cssClasses: ['text-secondary']
-    }
-  ];
-  tableData = tableSalesData;
+export class DashboardComponent implements OnInit {
 
-  series: ApexAxisChartSeries = [
-    {
-      name: 'Subscribers',
-      data: [28, 40, 36, 0, 52, 38, 60, 55, 67, 33, 89, 44]
-    }
-  ];
+  tableColumns: TableColumn<SeanceDTO>[] = [];
+tableData: SeanceDTO[] = [];
+  stats?: DashboardStatsDTO;
 
-  userSessionsSeries: ApexAxisChartSeries = [
-    {
-      name: 'Users',
-      data: [10, 50, 26, 50, 38, 60, 50, 25, 61, 80, 40, 60]
-    },
-    {
-      name: 'Sessions',
-      data: [5, 21, 42, 70, 41, 20, 35, 50, 10, 15, 30, 50]
-    }
-  ];
+  yearLabels: string[] = [];
 
-  salesSeries: ApexAxisChartSeries = [
-    {
-      name: 'Sales',
-      data: [28, 40, 36, 0, 52, 38, 60, 55, 99, 54, 38, 87]
-    }
-  ];
+  salesSeries: number[] = [];
 
-  pageViewsSeries: ApexAxisChartSeries = [
-    {
-      name: 'Page Views',
-      data: [405, 800, 200, 600, 105, 788, 600, 204]
-    }
-  ];
+  userSessionsSeries: any[] = [];
 
-  uniqueUsersSeries: ApexAxisChartSeries = [
-    {
-      name: 'Unique Users',
-      data: [356, 806, 600, 754, 432, 854, 555, 1004]
-    }
-  ];
+  currentYearLabel = '';
 
-  uniqueUsersOptions = defaultChartOptions({
-    chart: {
-      type: 'area',
-      height: 100
-    },
-    colors: ['#ff9800']
+  constructor(
+    private dashboardService: DashboardService,
+    private seanceService: SeanceService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadDashboard();
+    this.loadSeances();
+  }
+
+  loadSeances() {
+  this.seanceService.getSeancesDuJour().subscribe({
+    next: (res:any) => {
+      this.tableData = res;
+
+      this.tableColumns = [
+        { label: 'Professeur', property: 'professeur', type: 'text' },
+        { label: 'Matière', property: 'matiere', type: 'text' },
+        { label: 'Classe', property: 'classe', type: 'text' },
+        { label: 'Filière', property: 'filiere', type: 'text' },
+        { label: 'Début', property: 'heureDebut', type: 'text' },
+        { label: 'Fin', property: 'heureFin', type: 'text' },
+        {
+          label: 'Statut',
+          property: 'statut',
+          type: 'badge'
+        }
+      ];
+    }
   });
+}
+  loadDashboard() {
+    this.dashboardService.getStats().subscribe({
+      next: (res) => {
+        console.log('Dashboard stats:', res);
+
+        this.stats = res;
+
+        // graphique principal
+        this.salesSeries = res.evolutionInscriptions.map(
+          item => item.nombreInscriptions
+        );
+
+        // graphique secondaire
+        this.userSessionsSeries = [
+          {
+            name: 'Inscriptions',
+            data: res.evolutionInscriptions.map(
+              item => item.nombreInscriptions
+            )
+          }
+        ];
+
+        // labels années
+        this.yearLabels = res.evolutionInscriptions.map(
+          item => item.annee
+        );
+
+        // année courante
+        const current =
+          res.evolutionInscriptions[
+            res.evolutionInscriptions.length - 1
+          ];
+
+        this.currentYearLabel = current?.annee || '';
+      }
+    });
+  }
 }

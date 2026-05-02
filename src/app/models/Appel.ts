@@ -16,11 +16,11 @@ export interface Appel {
 
   statut: StatutPresence;
 
-  minutesRetard?: number; // default 0 côté backend
+  minutesRetard?: number;
 
   motif?: string;
 
   justifie?: boolean;
 
-  dateJustification?: string; // LocalDateTime -> string ISO
+  dateJustification?: string;
 }

@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Démarrer une séance</h2>
+
+<mat-dialog-content class="space-y-4">
+
+  <mat-form-field class="w-full">
+    <mat-label>Matière</mat-label>
+    <mat-select [formControl]="matiereCtrl">
+      <mat-option
+        *ngFor="let m of data.matieres"
+        [value]="m.nom">
+        {{ m.nom }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Annuler</button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="demarrer()"
+    [disabled]="!matiereCtrl.value">
+    Démarrer
+  </button>
+</mat-dialog-actions>

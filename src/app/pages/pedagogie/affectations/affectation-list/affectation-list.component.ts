@@ -68,7 +68,7 @@ export class AffectationListComponent implements OnInit {
       (v) => (this.dataSource.filter = v.trim().toLowerCase())
     );
   }
-
+ 
   // Récupération des données
   chargerAffectations() {
     this.affectationService.getAll().subscribe({

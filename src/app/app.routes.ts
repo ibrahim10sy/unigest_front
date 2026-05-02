@@ -31,14 +31,14 @@ export const appRoutes: VexRoutes = [
         loadComponent: () =>
           import(
             './pages/dashboards/dashboard-analytics/dashboard-analytics.component'
-          ).then((m) => m.DashboardAnalyticsComponent)
+          ).then((m) => m.DashboardComponent)
       },
 
       {
         path: 'scolarite',
         canActivate: [AuthGuard], // Ajoute le guard ici
         children: [
-           {
+          {
             path: 'etudiants',
             children: [
               {
@@ -55,7 +55,7 @@ export const appRoutes: VexRoutes = [
               }
             ]
           },
-         
+
           {
             path: 'aio-table',
             loadComponent: () =>
@@ -133,7 +133,7 @@ export const appRoutes: VexRoutes = [
                 './pages/scolarite/filieres/filiere-list/filiere-list.component'
               ).then((m) => m.FiliereListComponent)
           },
-         
+
           {
             canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'niveau',
@@ -200,23 +200,7 @@ export const appRoutes: VexRoutes = [
               }
             ]
           },
-          // {
-          //   canActivate: [AuthGuard], // Ajoute le guard ici
-          //   path: 'affectations',
-          //   loadComponent: () =>
-          //     import(
-          //       './pages/pedagogie/affectations/affectation-list/affectation-list.component'
-          //     ).then((m) => m.AffectationListComponent)
-          // },
-          // {
-          //   path: 'affectations',
-          //   children: [
-          //     {
-          //       path: 'details',
-          //       component: DetailsComponent
-          //     }
-          //   ]
-          // },
+         
           {
             canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'seances',
@@ -229,7 +213,7 @@ export const appRoutes: VexRoutes = [
           // 🔥 APPEL (clé du système)
           {
             canActivate: [AuthGuard], // Ajoute le guard ici
-            path: 'appels/:seanceId',
+            path: 'appels',
             loadComponent: () =>
               import(
                 './pages/pedagogie/appels/appel-seance/appel-seance.component'
@@ -237,7 +221,7 @@ export const appRoutes: VexRoutes = [
           },
 
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
+            canActivate: [AuthGuard],
             path: 'notes',
             loadComponent: () =>
               import(
@@ -270,7 +254,7 @@ export const appRoutes: VexRoutes = [
                 './pages/finance/paiements/paiement-list/paiement-list.component'
               ).then((m) => m.PaiementListComponent)
           },
-           {
+          {
             canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'categorie-depense',
             loadComponent: () =>

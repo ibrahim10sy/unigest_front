@@ -23,19 +23,19 @@ export class NavigationLoaderService {
       // ============================
       // 📊 DASHBOARD
       // ============================
-       {
-      type: 'subheading',
-      label: 'Tableau de bord',
-      children: [
-        {
-          type: 'link',
-          label: 'Tableau de bord',
-          route: '/dashboards/analytics',
-          icon: 'mat:insights',
-          routerLinkActiveOptions: { exact: true }
-        }
-      ]
-    },
+      {
+        type: 'subheading',
+        label: 'Tableau de bord',
+        children: [
+          {
+            type: 'link',
+            label: 'Tableau de bord',
+            route: '/dashboards/analytics',
+            icon: 'mat:insights',
+            routerLinkActiveOptions: { exact: true }
+          }
+        ]
+      },
 
       // ============================
       // 📚 SCOLARITÉ
@@ -44,7 +44,6 @@ export class NavigationLoaderService {
         type: 'subheading',
         label: 'Scolarité',
         children: [
-          
           {
             type: 'link',
             label: 'Étudiants',
@@ -57,7 +56,7 @@ export class NavigationLoaderService {
           //   route: '/scolarite/aio-table',
           //   icon: 'mat:groups'
           // },
-             {
+          {
             type: 'link',
             label: 'Année Scolaire',
             route: '/scolarite/annee-scolaire',
@@ -81,13 +80,13 @@ export class NavigationLoaderService {
             route: '/scolarite/classes',
             icon: 'mat:class'
           },
-       
+
           {
             type: 'link',
             label: 'Inscriptions',
             route: '/scolarite/inscriptions',
             icon: 'mat:assignment_ind'
-          },
+          }
         ]
       },
 
@@ -118,6 +117,12 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
+            label: 'Abscences & Retard',
+            route: '/pedagogie/appels',
+            icon: 'mat:schedule'
+          },
+          {
+            type: 'link',
             label: 'Notes',
             route: '/pedagogie/notes',
             icon: 'mat:grading'
@@ -143,8 +148,7 @@ export class NavigationLoaderService {
             label: 'Paiements',
             route: '/finance/paiements',
             icon: 'mat:payments'
-          }
-          ,
+          },
           {
             type: 'link',
             label: 'Categorie Depense',
@@ -157,7 +161,6 @@ export class NavigationLoaderService {
             route: '/finance/depenses',
             icon: 'mat:payments'
           }
-
         ]
       },
 
@@ -174,7 +177,7 @@ export class NavigationLoaderService {
             route: '/scolarite/parent',
             icon: 'mat:family_restroom'
           },
-         
+
           {
             type: 'link',
             label: 'Enseignants',

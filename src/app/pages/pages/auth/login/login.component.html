@@ -1,67 +1,45 @@
-<div class="w-full h-full bg-pattern flex flex-col items-center justify-center">
-  <div @fadeInUp class="card overflow-hidden w-full max-w-md">
-    <div class="p-6 pb-0 flex flex-col items-center justify-center">
-      <div class="flex flex-row items-center gap-2">
-  <img class="w-32 h-auto mx-auto" src="assets/img/illustrations/data_center.svg" /> 
-  <!-- <p>ITA</p> -->
-</div>
+<div class="w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4">
+  <div class="w-full max-w-md bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border border-white/20">
+    
+    <div class="text-center mb-8">
+      <img class="w-24 h-auto mx-auto mb-4" src="assets/img/illustrations/data_center.svg" />
+      <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Bon retour</h2>
     </div>
 
-    <div class="text-center mt-4">
-      <h2 class="title m-0">Bon retour</h2>
-      <h4 class="body-2 text-secondary m-0">
-        Connectez-vous avec vos identifiants ci-dessous.
-      </h4>
-    </div>
+    <form [formGroup]="form" class="flex flex-col gap-6">
+      
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>E-mail ou numéro de téléphone</mat-label>
+        <input formControlName="login" matInput required placeholder="exemple@domaine.com" />
+        <mat-icon matSuffix svgIcon="mat:mail"></mat-icon>
+      </mat-form-field>
 
-    <div [formGroup]="form" class="p-6 flex flex-col gap-4">
-      <div class="flex flex-col">
-        <mat-form-field class="flex-1">
-          <mat-label>E-mail</mat-label>
-          <input formControlName="login" matInput required />
-          <mat-error *ngIf="form.controls.login.hasError('required')">
-            Nous avons besoin d'une adresse e-mail pour vous connecter
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field class="flex-1">
-          <mat-label>Mot de passe</mat-label>
-          <input
-            [type]="inputType"
-            formControlName="password"
-            matInput
-            required />
-          <button
-            (click)="toggleVisibility()"
-            mat-icon-button
-            matIconSuffix
-            matTooltip="Afficher / Masquer"
-            type="button">
-            <mat-icon *ngIf="visible" svgIcon="mat:visibility"></mat-icon>
-            <mat-icon *ngIf="!visible" svgIcon="mat:visibility_off"></mat-icon>
-          </button>
-          <mat-hint>Cliquez sur l'œil pour afficher ou masquer</mat-hint>
-          <mat-error *ngIf="form.controls.password.hasError('required')">
-            Nous avons besoin d'un mot de passe pour vous connecter
-          </mat-error>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Mot de passe</mat-label>
+        <input [type]="inputType" formControlName="password" matInput required />
+        <button (click)="toggleVisibility()" mat-icon-button matSuffix type="button">
+          <mat-icon *ngIf="visible" svgIcon="mat:visibility"></mat-icon>
+          <mat-icon *ngIf="!visible" svgIcon="mat:visibility_off"></mat-icon>
+        </button>
+      </mat-form-field>
 
       <div class="flex items-center justify-between">
-        <mat-checkbox class="caption" color="primary">Se souvenir de moi</mat-checkbox>
-        <a [routerLink]="['/forgot-password']" class="caption">
+        <mat-checkbox color="primary">Se souvenir de moi</mat-checkbox>
+        <a [routerLink]="['/forgot-password']" class="text-indigo-600 hover:text-indigo-800 font-semibold text-sm">
           Mot de passe oublié ?
         </a>
       </div>
 
-      <button (click)="send()" color="primary" mat-raised-button type="button">
-        SE CONNECTER
+      <button 
+        (click)="send()" 
+        [disabled]="loading"
+        color="primary" 
+        mat-flat-button 
+        class="h-12 text-lg font-bold rounded-xl transition-all duration-300"
+        type="submit">
+        <span *ngIf="!loading">SE CONNECTER</span>
+        <mat-spinner *ngIf="loading" diameter="24" color="accent"></mat-spinner>
       </button>
-
-      <!-- <p class="text-secondary text-center">
-        Vous n'avez pas de compte ?<br />
-        <a [routerLink]="['/register']">Cliquez ici pour en créer un</a>
-      </p> -->
-    </div>
+    </form>
   </div>
 </div>

@@ -57,7 +57,7 @@ export class SidenavComponent implements OnInit {
   items$: Observable<NavigationItem[]> = this.navigationService.items$;
 
   userData: any; // Pour stocker les infos du localStorage
-
+ 
   constructor(
     private navigationService: NavigationService,
     private layoutService: VexLayoutService,

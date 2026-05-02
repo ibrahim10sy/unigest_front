@@ -1,0 +1,108 @@
+<div class="flex items-center p-4 border-b bg-gray-50/50" mat-dialog-title>
+  <div class="bg-primary/10 text-primary p-2 rounded-lg mr-4">
+    <mat-icon svgIcon="mat:receipt"></mat-icon>
+  </div>
+
+  <div class="flex-auto">
+    <h2 class="headline m-0 text-lg font-bold">
+      Détails de l'appel
+    </h2>
+    <p class="caption text-secondary m-0">
+      Présence de {{ appel.etudiant.prenom }} {{ appel.etudiant.nom }}
+    </p>
+  </div>
+
+  <button (click)="close()" mat-icon-button>
+    <mat-icon svgIcon="mat:close"></mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="p-6">
+
+  <!-- INFORMATIONS GENERALES -->
+  <div class="grid grid-cols-2 gap-4 mb-6">
+
+    <!-- Date séance -->
+    <div class="p-3 border rounded-lg">
+      <span class="text-xs text-secondary">Date de séance</span>
+      <div class="font-bold">
+        {{ appel.seance.date | date:'dd/MM/yyyy' }}
+      </div>
+    </div>
+
+    <!-- Statut -->
+    <div class="p-3 border rounded-lg">
+      <span class="text-xs text-secondary">Statut</span>
+      <div class="font-bold"
+           [ngClass]="{
+             'text-green-600': appel.statut === 'PRESENT',
+             'text-red-600': appel.statut === 'ABSENT',
+             'text-orange-500': appel.statut === 'RETARD'
+           }">
+        {{ appel.statut }}
+      </div>
+    </div>
+
+    <!-- Étudiant -->
+    <div class="p-3 border rounded-lg">
+      <span class="text-xs text-secondary">Étudiant</span>
+      <div class="font-medium">
+        {{ appel.etudiant.prenom }} {{ appel.etudiant.nom }}
+      </div>
+    </div>
+
+    <!-- Séance -->
+    <div class="p-3 border rounded-lg">
+      <span class="text-xs text-secondary">Séance</span>
+      <div class="font-medium">
+        {{ appel.seance.matiere }}
+      </div>
+    </div>
+
+    <!-- Minutes de retard -->
+    <div class="p-3 border rounded-lg" *ngIf="appel.statut === 'RETARD'">
+      <span class="text-xs text-secondary">Minutes de retard</span>
+      <div class="font-medium">
+        {{ appel.minutesRetard }} min
+      </div>
+    </div>
+
+    <!-- Justification -->
+    <div class="p-3 border rounded-lg">
+      <span class="text-xs text-secondary">Justifié</span>
+      <div class="font-medium">
+        {{ appel.justifie ? 'Oui' : 'Non' }}
+      </div>
+    </div>
+
+    <!-- Date justification -->
+    <div
+      class="p-3 border rounded-lg"
+      *ngIf="appel.dateJustification"
+    >
+      <span class="text-xs text-secondary">Date justification</span>
+      <div class="font-medium">
+        {{ appel.dateJustification | date:'dd/MM/yyyy HH:mm' }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MOTIF -->
+  <div
+    *ngIf="appel.motif"
+    class="border rounded-lg p-4 bg-gray-50"
+  >
+    <h3 class="font-semibold mb-2">
+      Motif
+    </h3>
+    <p class="text-secondary leading-relaxed">
+      {{ appel.motif }}
+    </p>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-4 border-t">
+  <button mat-button (click)="close()">Fermer</button>
+</mat-dialog-actions>

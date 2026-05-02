@@ -8,7 +8,7 @@
     <div class="flex-auto">
       <h2 class="m-0 text-lg font-bold">Reçu de paiement</h2>
       <p class="text-sm text-secondary m-0">
-        {{ data.inscription?.etudiant?.prenom }} {{ data.inscription?.etudiant?.nom }}
+        {{ data.inscription.etudiant?.prenom }} {{ data.inscription.etudiant?.nom }}
       </p>
     </div>
 
@@ -24,42 +24,42 @@
   <div class="p-3 border rounded">
     <span class="text-xs text-secondary">Étudiant</span>
     <div class="font-bold truncate">
-      {{ data.inscription?.etudiant?.prenom }} {{ data.inscription?.etudiant?.nom }}
+      {{ data.inscription.etudiant?.prenom }} {{ data.inscription.etudiant?.nom }}
     </div>
   </div>
 
   <div class="p-3 border rounded">
     <span class="text-xs text-secondary">Matricule</span>
     <div class="font-bold">
-      {{ data.inscription?.etudiant?.matricule }}
+      {{ data.inscription.etudiant?.matricule }}
     </div>
   </div>
 
   <div class="p-3 border rounded">
     <span class="text-xs text-secondary">Filière</span>
     <div class="font-bold text-primary">
-      {{ data.inscription?.classe?.filiere?.nom || 'N/A' }}
+      {{ data.inscription.classe?.filiere?.nom || 'N/A' }}
     </div>
   </div>
 
   <div class="p-3 border rounded">
     <span class="text-xs text-secondary">Niveau</span>
     <div class="font-medium">
-      {{ data.inscription?.classe?.filiere?.niveau?.nom || 'N/A' }}
+      {{ data.inscription.classe?.filiere?.niveau?.nom || 'N/A' }}
     </div>
   </div>
 
   <div class="p-3 border rounded">
     <span class="text-xs text-secondary">Classe</span>
     <div class="font-medium">
-      {{ data.inscription?.classe?.nom }}
+      {{ data.inscription.classe?.nom }}
     </div>
   </div>
 
   <div class="p-3 border rounded">
     <span class="text-xs text-secondary">Année scolaire</span>
     <div class="font-medium">
-      {{ data.inscription?.anneeScolaire?.libelle }}
+      {{ data.inscription.anneeScolaire?.libelle }}
     </div>
   </div>
 

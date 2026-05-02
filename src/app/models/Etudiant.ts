@@ -1,3 +1,5 @@
+import { Parent } from "./Parent";
+
 export interface Etudiant {
   id?: number;
   matricule: string;
@@ -6,4 +8,5 @@ export interface Etudiant {
   email: string;
   telephone: string;
   dateNaissance: string;
+   parent?: Parent;
 }

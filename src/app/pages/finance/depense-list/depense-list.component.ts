@@ -135,7 +135,7 @@ onFileSelected(event: any, depense: any) {
     }
   });
 }
-
+ 
 voirFichier(media: any) {
   window.open(media.fichierUrl, '_blank');
 }

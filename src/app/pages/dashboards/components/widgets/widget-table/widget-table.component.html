@@ -37,17 +37,19 @@
           </th>
           <td *matCellDef="let row" [ngClass]="column.cssClasses" mat-cell>
             <div
-              *ngIf="row[column.property] === 'ready'"
-              class="w-3 h-3 rounded-full bg-green-600 cursor-pointer"
-              matTooltip="Ready to ship"></div>
+              *ngIf="row[column.property] === 'EN_COURS'"
+              class="w-3 h-3 rounded-full bg-green-600"
+              matTooltip="En cours"></div>
+
             <div
-              *ngIf="row[column.property] === 'pending'"
-              class="w-3 h-3 rounded-full bg-orange-600 cursor-pointer"
-              matTooltip="Pending Payment"></div>
+              *ngIf="row[column.property] === 'TERMINEE'"
+              class="w-3 h-3 rounded-full bg-blue-600"
+              matTooltip="Terminée"></div>
+
             <div
-              *ngIf="row[column.property] === 'warn'"
-              class="w-3 h-3 rounded-full bg-red-600 cursor-pointer"
-              matTooltip="Missing Payment"></div>
+              *ngIf="row[column.property] === 'PLANIFIEE'"
+              class="w-3 h-3 rounded-full bg-gray-600"
+              matTooltip="Planifiée"></div>
           </td>
         </ng-container>
       </ng-container>

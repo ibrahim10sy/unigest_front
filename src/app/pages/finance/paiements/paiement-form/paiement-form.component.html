@@ -14,99 +14,83 @@
         </mat-select>
       </mat-form-field>
 
-    <mat-form-field class="w-full">
-      <mat-label>Sélectionner ÉLÉVE / Étudiant</mat-label>
-      <mat-select formControlName="inscription" [compareWith]="compareInscription">
-        <mat-option *ngFor="let i of filteredInscriptions" [value]="i">
-          <div class="flex flex-col py-1">
-            <span class="font-semibold">{{ i.etudiant?.prenom }} {{ i.etudiant?.nom }}</span> 
-            <span class="text-xs text-gray-500">{{ i.classe?.nom }} - {{ i.anneeScolaire?.libelle }}</span>
-          </div>
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+   <mat-form-field class="w-full">
+  <mat-label>Sélectionner ÉLÈVE / Étudiant</mat-label>
 
-    <!-- 🔥 INFOS AUTOMATIQUES INSCRIPTION -->
-<div *ngIf="selectedInscription" class="border rounded p-4 bg-gray-50 mt-2">
+  <mat-select formControlName="inscription" [compareWith]="compareInscription">
 
-  <h3 class="font-bold text-sm mb-2 flex items-center gap-2">
+    <mat-option *ngFor="let i of filteredInscriptions" [value]="i">
+      <div class="flex flex-col py-1">
+        <span class="font-semibold">
+          {{ i.etudiant?.prenom }} {{ i.etudiant?.nom }}
+        </span>
+        <span class="text-xs text-gray-500">
+          {{ i.classe?.nom }} - {{ i.anneeScolaire?.libelle }}
+        </span>
+      </div>
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
+
+<!-- 🔥 INFOS AUTOMATIQUES -->
+<div *ngIf="resume" class="border rounded p-4 bg-gray-50 mt-2">
+
+  <h3 class="font-bold text-sm mb-3 flex items-center gap-2">
     <mat-icon svgIcon="mat:school"></mat-icon>
-    Informations de scolarité
+    Résumé financier
   </h3>
 
-  <div class="grid grid-cols-2 gap-2 text-sm">
-
-    <div>
-      <span class="text-gray-500">Étudiant</span><br>
-      <span class="font-semibold">
-        {{ selectedInscription.etudiant?.prenom }}
-        {{ selectedInscription.etudiant?.nom }}
-      </span>
-    </div>
-
-    <div>
-      <span class="text-gray-500">Classe</span><br>
-      <span class="font-semibold">
-        {{ selectedInscription.classe?.nom }}
-      </span>
-    </div>
-
-    <div>
-      <span class="text-gray-500">Filière</span><br>
-      <span class="font-semibold">
-        {{ selectedInscription.classe?.filiere?.nom }}
-      </span>
-    </div>
-
-    <div>
-      <span class="text-gray-500">Année</span><br>
-      <span class="font-semibold">
-        {{ selectedInscription.anneeScolaire?.libelle }}
-      </span>
-    </div>
-
-  </div>
-
-  <hr class="my-3">
-
-  <!-- 💰 FINANCE -->
-  <div class="grid grid-cols-2 gap-2 text-sm">
+  <div class="grid grid-cols-2 gap-3 text-sm">
 
     <div>
       <span class="text-gray-500">Total brut</span><br>
       <span class="font-bold text-blue-600">
-        {{ totalBrut | number }} FCFA
+        {{ resume.totalBrut | number }} FCFA
       </span>
     </div>
 
     <div>
       <span class="text-gray-500">Réduction</span><br>
       <span class="font-bold text-red-500">
-        {{ selectedInscription.montantReduction || 0 | number }} FCFA
+        {{ resume.reduction | number }} FCFA
       </span>
     </div>
 
     <div>
       <span class="text-gray-500">Total net</span><br>
       <span class="font-bold text-green-600">
-        {{ totalNet | number }} FCFA
+        {{ resume.totalNet | number }} FCFA
       </span>
     </div>
 
     <div>
       <span class="text-gray-500">Déjà payé</span><br>
       <span class="font-bold text-purple-600">
-        {{ totalPaye | number }} FCFA
+        {{ resume.totalPaye | number }} FCFA
       </span>
     </div>
 
   </div>
 
-  <div class="mt-3 p-3 bg-red-100 rounded text-center">
-    <span class="text-gray-600 text-xs">Reste à payer</span><br>
-    <span class="text-xl font-black text-red-600">
-      {{ reste | number }} FCFA
+  <!-- RESTE -->
+  <div class="mt-4 p-3 rounded text-center"
+       [ngClass]="{
+         'bg-green-100': resume.statutPaiement === 'COMPLET',
+         'bg-yellow-100': resume.statutPaiement === 'PARTIEL',
+         'bg-red-100': resume.statutPaiement === 'IMPAYE'
+       }">
+
+    <span class="text-xs text-gray-600">Reste à payer</span><br>
+
+    <span class="text-2xl font-black">
+      {{ resume.resteAPayer | number }} FCFA
     </span>
+
+    <div class="text-xs mt-1 font-semibold">
+      {{ resume.statutPaiement }}
+    </div>
+
   </div>
 
 </div>
