@@ -5,13 +5,14 @@ import { SeanceService } from 'src/app/services/seance.service';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: 'vex-seance-form',
   standalone: true,
-  imports: [ ReactiveFormsModule,
+  imports: [ReactiveFormsModule,
     MatSelectModule,
-    MatFormFieldModule, MatDialogContent,CommonModule, MatFormFieldModule, MatSelectModule, MatDialogActions],
+    MatFormFieldModule, MatDialogContent, CommonModule, MatFormFieldModule, MatSelectModule, MatDialogActions, MatIconModule],
   templateUrl: './seance-form.component.html',
   styleUrl: './seance-form.component.scss'
 })

@@ -27,6 +27,8 @@ import { AppelFormComponent } from '../../appels/appel-form/appel-form.component
 import { Appel } from 'src/app/models/Appel';
 import { EtudiantService } from 'src/app/services/etudiant.service';
 import { SeanceFormComponent } from '../../seances/seance-form/seance-form.component';
+import { Matiere } from 'src/app/models/Matiere';
+import { NoteFormComponent } from '../../notes/note-form/note-form.component';
 
 @Component({
   selector: 'vex-details',
@@ -155,6 +157,17 @@ export class DetailsComponent implements OnInit {
       }
     });
   }
+
+  ouvrirNotation(matiere: Matiere) {
+  this.dialog.open(NoteFormComponent, {
+    width: '1000px',
+    data: {
+      etudiants: this.etudiants,
+      matiere,
+      affectation: this.affectation
+    }
+  });
+}
 
   terminerSeance(seance: Seance) {
     this.seanceService.terminerSeance(seance.id!).subscribe(() => {

@@ -1,11 +1,14 @@
 <vex-page-layout>
+
   <!-- HEADER -->
-  <vex-page-layout-header class="pb-6 flex flex-col items-start justify-center">
+  <vex-page-layout-header class="pb-8">
+
     <div
       [class.container]="layoutCtrl.value === 'boxed'"
       [class.px-6]="layoutCtrl.value === 'fullwidth'"
-      class="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      class="w-full flex flex-col sm:flex-row justify-between sm:items-center gap-4">
 
+      <!-- TITLE -->
       <div>
         <h1 class="title mt-0 mb-1">Gestion des Séances</h1>
         <vex-breadcrumbs
@@ -13,54 +16,70 @@
         </vex-breadcrumbs>
       </div>
 
+      <!-- LAYOUT TOGGLE -->
       <mat-button-toggle-group
         [formControl]="layoutCtrl"
-        class="sm:mt-0">
-        <mat-button-toggle value="boxed">Réduit</mat-button-toggle>
-        <mat-button-toggle value="fullwidth">Plein écran</mat-button-toggle>
+        class="self-start sm:self-auto">
+
+        <mat-button-toggle value="boxed">
+          Réduit
+        </mat-button-toggle>
+
+        <mat-button-toggle value="fullwidth">
+          Plein écran
+        </mat-button-toggle>
+
       </mat-button-toggle-group>
 
     </div>
+
   </vex-page-layout-header>
 
   <!-- CONTENT -->
   <vex-page-layout-content
     [class.container]="layoutCtrl.value === 'boxed'"
-    class="py-6">
+    class="-mt-6 pb-8">
 
-    <div class="card overflow-hidden">
+    <div class="card overflow-hidden shadow-sm rounded-xl">
 
       <!-- TOOLBAR -->
-      <div class="bg-app-bar px-6 h-16 border-b flex items-center sticky top-0 z-10">
+      <div
+        class="bg-app-bar px-6 py-3 border-b flex items-center gap-4 flex-wrap">
 
-        <h2 class="title my-0 hidden sm:block flex-none">
+        <h2 class="title my-0 flex-none">
           Séances
         </h2>
 
-        <mat-form-field subscriptSizing="dynamic" class="ml-4 flex-1 max-w-md">
-          <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
-          <input matInput [formControl]="searchCtrl" placeholder="Rechercher..." />
+        <!-- SEARCH -->
+        <mat-form-field appearance="outline" class="w-72">
+          <mat-icon matPrefix svgIcon="mat:search"></mat-icon>
+          <input
+            matInput
+            [formControl]="searchCtrl"
+            placeholder="Rechercher une séance..." />
         </mat-form-field>
+
+        <span class="flex-1"></span>
 
       </div>
 
       <!-- TABLE -->
       <div class="overflow-auto">
+
         <table
-          @stagger
-          [dataSource]="dataSource"
-          class="w-full"
           mat-table
-          matSort>
+          [dataSource]="dataSource"
+          matSort
+          class="w-full">
 
           <!-- DATE -->
           <ng-container matColumnDef="date">
-            <th mat-header-cell *matHeaderCellDef class="table-header">
+            <th mat-header-cell *matHeaderCellDef>
               Date
             </th>
-            <td mat-cell *matCellDef="let row" class="table-cell">
+            <td mat-cell *matCellDef="let row">
               <div class="flex items-center gap-2">
-                <mat-icon svgIcon="mat:calendar_today" class="text-slate-300 scale-75"></mat-icon>
+                <mat-icon class="text-slate-400" svgIcon="mat:calendar_today"></mat-icon>
                 {{ row.date | date:'dd MMM yyyy' }}
               </div>
             </td>
@@ -68,11 +87,11 @@
 
           <!-- MATIERE -->
           <ng-container matColumnDef="matiere">
-            <th mat-header-cell *matHeaderCellDef class="table-header">
+            <th mat-header-cell *matHeaderCellDef>
               Matière
             </th>
-            <td mat-cell *matCellDef="let row" class="table-cell">
-              <span class="badge-indigo">
+            <td mat-cell *matCellDef="let row">
+              <span class="px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 text-sm font-medium">
                 {{ row.matiere }}
               </span>
             </td>
@@ -80,46 +99,51 @@
 
           <!-- DEBUT -->
           <ng-container matColumnDef="heureDebut">
-            <th mat-header-cell *matHeaderCellDef class="table-header text-center">
+            <th mat-header-cell *matHeaderCellDef class="text-center">
               Début
             </th>
-            <td mat-cell *matCellDef="let row" class="table-cell text-center font-mono">
+            <td mat-cell *matCellDef="let row" class="text-center font-mono">
               {{ row.heureDebut }}
             </td>
           </ng-container>
 
           <!-- FIN -->
           <ng-container matColumnDef="heureFin">
-            <th mat-header-cell *matHeaderCellDef class="table-header text-center">
+            <th mat-header-cell *matHeaderCellDef class="text-center">
               Fin
             </th>
-            <td mat-cell *matCellDef="let row" class="table-cell text-center font-mono">
+            <td mat-cell *matCellDef="let row" class="text-center font-mono">
               {{ row.heureFin }}
             </td>
           </ng-container>
 
           <!-- STATUT -->
           <ng-container matColumnDef="statut">
-            <th mat-header-cell *matHeaderCellDef class="table-header text-right">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
               Statut
             </th>
-            <td mat-cell *matCellDef="let row" class="table-cell text-right">
+            <td mat-cell *matCellDef="let row" class="text-right">
               <span
-                class="status-badge"
-                [ngClass]="row.statut === 'Terminé'
-                  ? 'status-success'
-                  : 'status-warning'">
+                class="px-2 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="{
+                  'bg-green-100 text-green-700': row.statut === 'Terminé',
+                  'bg-yellow-100 text-yellow-700': row.statut !== 'Terminé'
+                }">
                 {{ row.statut }}
               </span>
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-slate-50"></tr>
+          <!-- HEADER ROW -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"
+              class="bg-slate-50 text-slate-600"></tr>
+
+          <!-- ROW -->
           <tr mat-row *matRowDef="let row; columns: displayedColumns"
-              class="hover:bg-indigo-50/30 transition cursor-pointer">
-          </tr>
+              class="hover:bg-indigo-50/40 transition cursor-pointer"></tr>
 
         </table>
+
       </div>
 
       <!-- PAGINATOR -->
@@ -129,5 +153,7 @@
       </mat-paginator>
 
     </div>
+
   </vex-page-layout-content>
+
 </vex-page-layout>

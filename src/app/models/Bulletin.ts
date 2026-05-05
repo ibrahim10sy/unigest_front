@@ -5,16 +5,16 @@ import { LigneBulletin } from "./LigneBulletin";
 import { TypePeriode } from "./TypePeriode";
 
 export interface Bulletin {
-  id: number;
+  id?: number;
   etudiant: Etudiant;
   classe: Classe;
   anneeScolaire: AnneeScolaire;
   periode: number;
   typePeriode: TypePeriode;
   moyenneGenerale: number;
-  rang: number;
-  appreciation: string;
-  pdfUrl: string;
-  dateGeneration: string;
-  lignes: LigneBulletin[];
+  rang?: number;
+  appreciation?: string;
+  pdfUrl?: string;
+  dateGeneration?: string;
+  lignes?: LigneBulletin[];
 }
