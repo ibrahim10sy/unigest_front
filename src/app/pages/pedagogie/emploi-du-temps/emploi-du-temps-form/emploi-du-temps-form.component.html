@@ -1,0 +1,257 @@
+<form [formGroup]="form">
+
+  <div mat-dialog-title class="flex items-center justify-between">
+
+    <h2 class="headline m-0">
+
+      {{ mode === 'update'
+        ? 'Modifier'
+        : 'Nouvel' }}
+
+      emploi du temps
+
+    </h2>
+
+    <button mat-icon-button mat-dialog-close>
+
+      <mat-icon svgIcon="mat:close"></mat-icon>
+
+    </button>
+
+  </div>
+
+  <mat-divider class="-mx-6 text-border"></mat-divider>
+
+  <mat-dialog-content class="flex flex-col gap-4 mt-4">
+
+    <div class="grid grid-cols-2 gap-4" >
+
+
+        <mat-form-field *ngIf="form.value.type === 'COURS'">
+
+  <mat-label>Classe</mat-label>
+
+  <mat-select formControlName="classe">
+
+    <mat-option
+      *ngFor="let c of classes"
+      [value]="c.id">
+
+      {{ c.nom }}
+
+    </mat-option>
+
+  </mat-select>
+
+</mat-form-field>
+
+<mat-form-field *ngIf="form.value.type === 'COURS'">
+
+  <mat-label>Enseignant</mat-label>
+
+  <mat-select formControlName="enseignant">
+
+    <mat-option
+      *ngFor="let e of enseignants"
+      [value]="e.id">
+
+      {{ e.nom }} {{ e.prenom }}
+
+    </mat-option>
+
+  </mat-select>
+
+</mat-form-field>
+
+<mat-form-field>
+
+  <mat-form-field>
+
+  <mat-label>Type</mat-label>
+
+  <mat-select formControlName="type">
+
+    <mat-option
+      *ngFor="let t of types"
+      [value]="t">
+
+      {{ t }}
+
+    </mat-option>
+
+  </mat-select>
+
+</mat-form-field>
+
+  <mat-label>Matière</mat-label>
+
+  <mat-select formControlName="matiere">
+
+    <mat-option
+      *ngFor="let m of matieres"
+      [value]="m.id">
+
+      {{ m.nom }}
+
+    </mat-option>
+
+  </mat-select>
+
+</mat-form-field>
+
+      <mat-form-field *ngIf="form.value.type === 'COURS'">
+
+        <mat-label>Salle</mat-label>
+
+        <input
+          matInput
+          formControlName="salle">
+
+      </mat-form-field>
+
+      <mat-form-field>
+
+        <mat-label>Jour</mat-label>
+
+        <mat-select formControlName="jour">
+
+          <mat-option
+            *ngFor="let j of jours"
+            [value]="j">
+
+            {{ j }}
+
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
+    </div>
+
+    <div class="grid grid-cols-2 gap-4" *ngIf="form.value.type === 'COURS'">
+
+      <mat-form-field>
+
+        <mat-label>Heure début</mat-label>
+
+        <input
+          type="time"
+          matInput
+          formControlName="heureDebut">
+
+      </mat-form-field>
+
+      <mat-form-field >
+
+        <mat-label>Heure fin</mat-label>
+
+        <input
+          type="time"
+          matInput
+          formControlName="heureFin">
+
+      </mat-form-field>
+
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <mat-form-field *ngIf="form.value.type === 'COURS'">
+
+        <mat-label>Date début</mat-label>
+
+        <input
+          matInput
+          [matDatepicker]="picker1"
+          formControlName="dateDebut">
+
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1">
+        </mat-datepicker-toggle>
+
+        <mat-datepicker #picker1></mat-datepicker>
+
+      </mat-form-field>
+
+      <mat-form-field *ngIf="form.value.type === 'COURS'">
+
+        <mat-label>Date fin</mat-label>
+
+        <input
+          matInput
+          [matDatepicker]="picker2"
+          formControlName="dateFin">
+
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker2">
+        </mat-datepicker-toggle>
+
+        <mat-datepicker #picker2></mat-datepicker>
+
+      </mat-form-field>
+
+    </div>
+
+    <mat-form-field>
+
+      <mat-label>Périodicité</mat-label>
+
+      <mat-select formControlName="periodicite">
+
+        <mat-option
+          *ngFor="let p of periodicites"
+          [value]="p">
+
+          {{ p }}
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+    <mat-form-field>
+
+      <mat-label>Description</mat-label>
+
+      <textarea
+        rows="3"
+        matInput
+        formControlName="description">
+      </textarea>
+
+    </mat-form-field>
+
+  </mat-dialog-content>
+
+  <mat-divider class="-mx-6 text-border"></mat-divider>
+
+  <mat-dialog-actions align="end">
+
+    <button
+      type="button"
+      mat-button
+      mat-dialog-close>
+
+      Annuler
+
+    </button>
+
+  <button
+  mat-flat-button
+  color="primary"
+  type="submit"
+  (click)="save()">
+
+      <mat-icon svgIcon="mat:save"></mat-icon>
+
+      Enregistrer
+
+    </button>
+
+  </mat-dialog-actions>
+
+</form>

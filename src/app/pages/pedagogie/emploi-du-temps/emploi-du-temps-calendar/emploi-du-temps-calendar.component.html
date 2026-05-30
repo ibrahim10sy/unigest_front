@@ -1,0 +1,309 @@
+<vex-page-layout>
+
+  <!-- HEADER -->
+  <vex-page-layout-header
+    class="pb-16 flex flex-col items-start justify-center">
+
+    <div
+      class="w-full flex flex-col sm:flex-row justify-between">
+
+      <div>
+
+        <h1 class="title mt-0 mb-1">
+          Emploi du Temps
+        </h1>
+
+        <vex-breadcrumbs
+          [crumbs]="[
+            'Scolarité',
+            'Emploi du Temps'
+          ]">
+        </vex-breadcrumbs>
+
+      </div>
+
+      <div class="flex items-center gap-3 mt-4 sm:mt-0">
+
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="ajouter()">
+
+          <mat-icon svgIcon="mat:add"></mat-icon>
+
+          Ajouter
+
+        </button>
+
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="exporterPdf()">
+
+          <mat-icon>
+
+            picture_as_pdf
+
+          </mat-icon>
+
+          PDF
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </vex-page-layout-header>
+
+  <!-- CONTENT -->
+  <vex-page-layout-content class="-mt-6">
+
+    <div class="card overflow-hidden -mt-16">
+
+      <!-- TOOLBAR -->
+      <div class="toolbar">
+
+        <mat-form-field appearance="outline">
+
+          <mat-label>
+
+            Classe
+
+          </mat-label>
+
+          <mat-select
+            [(value)]="classeId"
+            (selectionChange)="onClasseChange()">
+
+            <mat-option
+              *ngFor="let c of classes"
+              [value]="c.id">
+
+              {{ c.nom }}
+
+            </mat-option>
+
+          </mat-select>
+
+        </mat-form-field>
+
+      </div>
+
+      <!-- TABLE -->
+      <div class="emploi-wrapper">
+
+        <table class="emploi-table">
+
+          <!-- HEADER -->
+          <thead>
+
+            <tr>
+
+              <th>
+
+                Horaires
+
+              </th>
+
+              <th *ngFor="let jour of jours">
+
+                {{ jour }}
+
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <!-- BODY -->
+          <tbody>
+
+            <tr *ngFor="let h of horaires">
+
+                <!-- SI RECREATION -->
+   <!-- SI PAUSE -->
+  <ng-container *ngIf="isPause(h); else coursTemplate">
+
+    <td
+      class="pause-row"
+      [attr.colspan]="jours.length + 1">
+
+      ☕ RÉCRÉATION
+
+      <div class="pause-time">
+
+        {{ h.debut }} - {{ h.fin }}
+
+      </div>
+
+    </td>
+
+  </ng-container>
+
+       <!-- TEMPLATE NORMAL -->
+    <ng-template #coursTemplate>
+              <!-- HEURE -->
+              <td class="horaire-cell">
+
+                <div>
+
+                  {{ h.debut }}
+
+                </div>
+
+                <div>
+
+                  {{ h.fin }}
+
+                </div>
+
+              </td>
+
+              <!-- CELLS -->
+              <!-- <td
+                *ngFor="let jour of jours">
+
+                <ng-container
+                  *ngIf="
+                    getCours(
+                      jour,
+                      h.debut,
+                      h.fin
+                    ) as cours
+                  ">
+
+                  <div
+                    class="cours-card"
+                    [style.background]="
+                      cours.couleur || '#5c6bc0'
+                    ">
+
+                    <div class="matiere">
+
+                      {{ cours.matiere?.nom }}
+
+                    </div>
+
+                    <div class="prof">
+
+                      {{ cours.enseignant?.nom }}
+                      {{ cours.enseignant?.prenom }}
+
+                    </div>
+
+                    <div class="salle">
+
+                      Salle {{ cours.salle }}
+
+                    </div>
+
+                    <div class="actions">
+
+                      <button
+                        mat-icon-button
+                        (click)="modifier(cours)">
+
+                        <mat-icon>
+
+                          edit
+
+                        </mat-icon>
+
+                      </button>
+
+                      <button
+                        mat-icon-button
+                        (click)="supprimer(cours.id)">
+
+                        <mat-icon>
+
+                          delete
+
+                        </mat-icon>
+
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </ng-container> -->
+
+
+              <!-- </td> -->
+               <td
+  *ngFor="let jour of jours"
+  class="cours-column">
+
+  <ng-container
+    *ngIf="
+      getCours(
+        jour,
+        h.debut,
+        h.fin
+      ) as cours
+    ">
+
+    <div
+      class="cours-card"
+      [style.background]="
+        cours.couleur || '#4f46e5'
+      ">
+
+      <!-- TOP -->
+      <div class="cours-top">
+
+        <div class="heure">
+
+          {{ cours.heureDebut?.substring(0,5) }}
+          -
+          {{ cours.heureFin?.substring(0,5) }}
+
+        </div>
+
+      </div>
+
+      <!-- CENTER -->
+      <div class="cours-center">
+
+        <div class="matiere">
+
+          {{ cours.matiere?.nom }}
+
+        </div>
+
+      </div>
+
+      <!-- BOTTOM -->
+      <div class="cours-bottom">
+
+        <div class="prof">
+
+          {{ cours.enseignant?.nom.toUpperCase() }}
+          {{ cours.enseignant?.prenom.toUpperCase() }}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</td>
+
+</ng-template>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </vex-page-layout-content>
+
+</vex-page-layout>

@@ -129,6 +129,18 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
+            label: 'Liste horaires emploi du temps',
+            route: '/pedagogie/emploi-du-temps',
+            icon: 'mat:description'
+          },
+          {
+            type: 'link',
+            label: 'Emploi du temps',
+            route: '/pedagogie/emploi-du-temps-calendar',
+            icon: 'mat:description'
+          },
+          {
+            type: 'link',
             label: 'Bulletins',
             route: '/pedagogie/bulletins',
             icon: 'mat:description'

@@ -231,6 +231,22 @@ export const appRoutes: VexRoutes = [
 
           {
             canActivate: [AuthGuard], // Ajoute le guard ici
+            path: 'emploi-du-temps',
+            loadComponent: () =>
+              import(
+                './pages/pedagogie/emploi-du-temps/emploi-du-temps-list/emploi-du-temps-list.component'
+              ).then((m) => m.EmploiDuTempsListeComponent)
+          },
+          {
+            canActivate: [AuthGuard], // Ajoute le guard ici
+            path: 'emploi-du-temps-calendar',
+            loadComponent: () =>
+              import(
+                './pages/pedagogie/emploi-du-temps/emploi-du-temps-calendar/emploi-du-temps-calendar.component'
+              ).then((m) => m.EmploiDuTempsCalendarComponent)
+          },
+          {
+            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'bulletins',
             loadComponent: () =>
               import(

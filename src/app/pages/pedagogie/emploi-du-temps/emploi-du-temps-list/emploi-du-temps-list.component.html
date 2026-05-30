@@ -1,0 +1,345 @@
+<vex-page-layout>
+
+  <!-- HEADER -->
+  <vex-page-layout-header
+    class="pb-16 flex flex-col items-start justify-center">
+
+    <div
+      class="w-full flex flex-col sm:flex-row justify-between">
+
+      <div>
+
+        <h1 class="title mt-0 mb-1">
+          Emplois du Temps
+        </h1>
+
+        <vex-breadcrumbs
+          [crumbs]="['Scolarité', 'Emplois du Temps']">
+        </vex-breadcrumbs>
+
+      </div>
+
+      <div class="flex items-center gap-3 mt-4 sm:mt-0">
+
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="ajouter()">
+
+          <mat-icon
+            class="mr-2"
+            svgIcon="mat:add">
+          </mat-icon>
+
+          Nouvel emploi
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </vex-page-layout-header>
+
+  <!-- CONTENT -->
+  <vex-page-layout-content class="-mt-6">
+
+    <div class="card overflow-auto -mt-16">
+
+      <!-- TOOLBAR -->
+      <div
+        class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
+
+        <h2 class="title my-0 hidden sm:block flex-none">
+
+          Liste des emplois du temps
+
+        </h2>
+
+        <span class="flex-1"></span>
+
+      </div>
+
+      <!-- TABLE -->
+      <table
+        class="w-full"
+        mat-table
+        [dataSource]="emplois">
+
+        <!-- JOUR -->
+        <ng-container matColumnDef="jour">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef>
+
+            Jour
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let row">
+
+            <span
+              class="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+
+              {{ row.jour }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <!-- HEURE -->
+        <ng-container matColumnDef="heure">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef>
+
+            Horaire
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let row">
+
+            <div class="flex flex-col">
+
+              <span class="font-medium">
+
+                {{ row.heureDebut }}
+
+              </span>
+
+              <span class="text-secondary text-xs">
+
+                {{ row.heureFin }}
+
+              </span>
+
+            </div>
+
+          </td>
+
+        </ng-container>
+
+        <!-- MATIERE -->
+        <ng-container matColumnDef="matiere">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef>
+
+            Matière
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let row">
+
+            <div class="flex items-center gap-2">
+
+              <div
+                class="w-3 h-3 rounded-full"
+                [style.background]="row.couleur || '#3f51b5'">
+              </div>
+
+              <span class="font-medium">
+
+                {{ row.matiere?.nom }}
+
+              </span>
+
+            </div>
+
+          </td>
+
+        </ng-container>
+
+        <!-- ENSEIGNANT -->
+        <ng-container matColumnDef="enseignant">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef>
+
+            Enseignant
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let row">
+
+            {{ row.enseignant?.nom }}
+            {{ row.enseignant?.prenom }}
+
+          </td>
+
+        </ng-container>
+
+        <!-- SALLE -->
+        <ng-container matColumnDef="salle">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef>
+
+            Salle
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let row">
+
+            <span
+              class="bg-green-600/10 text-green-600 px-2 py-1 rounded text-xs font-bold">
+
+              {{ row.salle }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <!-- PERIODICITE -->
+        <ng-container matColumnDef="periodicite">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef>
+
+            Périodicité
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let row">
+
+            <span
+              class="bg-orange-600/10 text-orange-600 px-2 py-1 rounded text-xs font-bold">
+
+              {{ row.periodicite }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <!-- ACTIONS -->
+        <ng-container matColumnDef="actions">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef>
+
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let row">
+
+            <div class="flex items-center gap-2">
+
+              <!-- PDF -->
+              <button
+                mat-icon-button
+                color="accent"
+                matTooltip="Exporter PDF"
+                (click)="exporterPdf(row.classe?.id)">
+
+                <mat-icon svgIcon="mat:picture_as_pdf"></mat-icon>
+
+              </button>
+
+              <!-- EDIT -->
+              <button
+                mat-icon-button
+                color="primary"
+                matTooltip="Modifier"
+                (click)="modifier(row)">
+
+                <mat-icon svgIcon="mat:edit"></mat-icon>
+
+              </button>
+
+              <!-- DELETE -->
+              <button
+                mat-icon-button
+                color="warn"
+                matTooltip="Supprimer"
+                (click)="supprimer(row.id)">
+
+                <mat-icon svgIcon="mat:delete"></mat-icon>
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </ng-container>
+
+        <!-- HEADER -->
+        <tr
+          mat-header-row
+          *matHeaderRowDef="[
+            'jour',
+            'heure',
+            'matiere',
+            'enseignant',
+            'salle',
+            'periodicite',
+            'actions'
+          ]">
+        </tr>
+
+        <!-- ROW -->
+        <tr
+          mat-row
+          class="hover:bg-hover transition duration-200"
+          *matRowDef="let row; columns: [
+            'jour',
+            'heure',
+            'matiere',
+            'enseignant',
+            'salle',
+            'periodicite',
+            'actions'
+          ]">
+        </tr>
+
+      </table>
+
+      <!-- EMPTY -->
+      <div
+        *ngIf="emplois.length === 0"
+        class="p-12 text-center">
+
+        <mat-icon
+          class="text-6xl text-hint">
+
+          event_busy
+
+        </mat-icon>
+
+        <h3 class="mt-4 text-hint">
+          Aucun emploi du temps disponible
+        </h3>
+
+      </div>
+
+    </div>
+
+  </vex-page-layout-content>
+
+</vex-page-layout>
