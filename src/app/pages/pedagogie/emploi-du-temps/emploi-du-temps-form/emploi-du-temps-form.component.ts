@@ -50,33 +50,16 @@ import { MatiereService } from 'src/app/services/matiere.service';
   styleUrl: './emploi-du-temps-form.component.scss'
 })
 export class EmploiDuTempsFormComponent implements OnInit {
-
   form!: FormGroup;
-  isLoading:boolean = false;
+  isLoading: boolean = false;
 
   mode: 'create' | 'update' = 'create';
 
-  jours = [
-    'LUNDI',
-    'MARDI',
-    'MERCREDI',
-    'JEUDI',
-    'VENDREDI',
-    'SAMEDI'
-  ];
+  jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
 
-  periodicites = [
-    'HEBDOMADAIRE',
-    'QUOTIDIEN',
-    'MENSUEL',
-    'UNIQUE'
-  ];
+  periodicites = ['HEBDOMADAIRE', 'QUOTIDIEN', 'MENSUEL', 'UNIQUE'];
 
-  types = [
-  'COURS',
-  'RECREATION',
-  'PAUSE'
-];
+  types = ['COURS', 'RECREATION', 'PAUSE'];
 
   classes: any[] = [];
   enseignants: any[] = [];
@@ -86,153 +69,101 @@ export class EmploiDuTempsFormComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public defaults: any,
     private dialogRef: MatDialogRef<EmploiDuTempsFormComponent>,
     private fb: FormBuilder,
-      private service: EmploiDuTempsService,
-      private enseignantService: EnseignantService,
-      private classeService: ClasseService,
-      private matiereService: MatiereService,
+    private service: EmploiDuTempsService,
+    private enseignantService: EnseignantService,
+    private classeService: ClasseService,
+    private matiereService: MatiereService
   ) {}
 
   ngOnInit(): void {
-
     if (this.defaults) {
       this.mode = 'update';
     }
 
     this.form = this.fb.group({
-
       id: [this.defaults?.id || null],
 
-//      classe: [
-//   this.defaults?.classe?.id || null,
-//   Validators.required
-// ],
+      classe: [null, Validators.required],
 
-//   enseignant: [
-//   this.defaults?.enseignant?.id || null,
-//   Validators.required
-// ],
+      enseignant: [null],
 
-//   matiere: [
-//   this.defaults?.matiere?.id || null,
-//   Validators.required
-// ],
-  classe: [null, Validators.required],
+      matiere: [null],
 
-  enseignant: [null],
+      jour: [null, Validators.required],
 
-  matiere: [null],
+      heureDebut: [this.defaults?.heureDebut || '', Validators.required],
 
-     salle: [''],
+      heureFin: [this.defaults?.heureFin || '', Validators.required],
 
-      // jour: [
-      //   this.defaults?.jour || '',
-      //   Validators.required
-      // ],
-       jour: [null, Validators.required],
+      periodicite: [null],
 
-      heureDebut: [
-        this.defaults?.heureDebut || '',
-        Validators.required],
+      dateDebut: [null],
 
-      heureFin: [
-        this.defaults?.heureFin || '',
-        Validators.required],
+      dateFin: [null],
 
-  //     dateDebut: [
-  // this.defaults?.dateDebut
-  //   ? new Date(this.defaults.dateDebut)
-  //   : null],
+      description: [this.defaults?.description || ''],
 
-  //     dateFin: [
-  // this.defaults?.dateFin
-  //   ? new Date(this.defaults.dateFin)
-  //   : null ],
+      type: ['COURS']
 
-  //     periodicite: [
-  //       this.defaults?.periodicite || 'HEBDOMADAIRE',
-  //       Validators.required
-  //     ],
-   periodicite: [null],
-
-  dateDebut: [null],
-
-  dateFin: [null],
-
-  description: [''],
-  
-    type: ['COURS']
-
-      // description: [
-      //   this.defaults?.description || ''
-      // ]
     });
     this.loadData();
   }
 
-
   loadData() {
-
-  this.classeService.getAllClasses()
-    .subscribe((res:any) => {
+    this.classeService.getAllClasses().subscribe((res: any) => {
       this.classes = res;
     });
 
-  this.enseignantService.getAllEnseignants()
-    .subscribe((res:any) => {
+    this.enseignantService.getAllEnseignants().subscribe((res: any) => {
       this.enseignants = res;
     });
 
-  this.matiereService.getAllMatieres()
-    .subscribe((res:any) => {
+    this.matiereService.getAllMatieres().subscribe((res: any) => {
       this.matieres = res;
     });
-}
-
-  save() {
-
-  console.log("🔥 SAVE CLICKED");
-
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
   }
 
-  this.isLoading = true;
+  save() {
+    console.log('🔥 SAVE CLICKED');
 
-  const v = this.form.value;
-
-  const payload = {
-
-    ...v,
-
-    classe: {
-      id: v.classe
-    },
-
-    enseignant: {
-      id: v.enseignant
-    },
-
-    matiere: {
-      id: v.matiere
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
-  };
 
-  console.log("📦 PAYLOAD =>", payload);
+    this.isLoading = true;
 
-  this.service.save(payload)
-    .subscribe({
+    const v = this.form.value;
 
+    const payload = {
+      ...v,
+
+      classe: {
+        id: v.classe
+      },
+
+      enseignant: {
+        id: v.enseignant
+      },
+
+      matiere: {
+        id: v.matiere
+      }
+    };
+
+    console.log('📦 PAYLOAD =>', payload);
+
+    this.service.save(payload).subscribe({
       next: (res: any) => {
-
         this.isLoading = false;
 
         Swal.fire({
           icon: 'success',
           title: 'Succès',
-          text: this.mode === 'create'
-            ? 'Emploi du temps ajouté'
-            : 'Emploi du temps modifié',
+          text:
+            this.mode === 'create'
+              ? 'Emploi du temps ajouté'
+              : 'Emploi du temps modifié',
           timer: 2000,
           showConfirmButton: false
         });
@@ -241,7 +172,6 @@ export class EmploiDuTempsFormComponent implements OnInit {
       },
 
       error: (err: any) => {
-
         console.log(err);
 
         this.isLoading = false;
@@ -249,12 +179,9 @@ export class EmploiDuTempsFormComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           title: 'Erreur',
-          text:
-            err?.error?.message ||
-            'Une erreur est survenue'
+          text: err?.error?.message || 'Une erreur est survenue'
         });
       }
     });
-}
-
+  }
 }

@@ -7,7 +7,7 @@ export const environment = {
   apiUrl: "http://localhost:5200",
   // apiUrl: 'https://api.lyuni-gest.com'
 };
-
+  
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

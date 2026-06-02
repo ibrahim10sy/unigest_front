@@ -10,11 +10,12 @@ import { VexBreadcrumbsComponent } from "@vex/components/vex-breadcrumbs/vex-bre
 import { VexPageLayoutComponent } from "@vex/components/vex-page-layout/vex-page-layout.component";
 import { VexPageLayoutContentDirective } from "@vex/components/vex-page-layout/vex-page-layout-content.directive";
 import { MatTableModule } from '@angular/material/table';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'vex-emploi-du-temps-list',
   standalone: true,
-  imports: [MatIconModule, MatTableModule,VexPageLayoutHeaderDirective, VexBreadcrumbsComponent, VexPageLayoutComponent, VexPageLayoutContentDirective],
+  imports: [ CommonModule, MatIconModule, MatTableModule,VexPageLayoutHeaderDirective, VexBreadcrumbsComponent, VexPageLayoutComponent, VexPageLayoutContentDirective],
   templateUrl: './emploi-du-temps-list.component.html',
   styleUrl: './emploi-du-temps-list.component.scss'
 })
@@ -32,20 +33,17 @@ export class EmploiDuTempsListeComponent implements OnInit {
   }
 
   refresh() {
-
     this.service.getAll()
       .subscribe(res => {
-
         this.emplois = res;
       });
   }
 
   ajouter() {
-
     this.dialog.open(
       EmploiDuTempsFormComponent,
       {
-        width: '700px'
+        width: '800px'
       }
     ).afterClosed().subscribe(val => {
 
@@ -71,7 +69,7 @@ export class EmploiDuTempsListeComponent implements OnInit {
     this.dialog.open(
       EmploiDuTempsFormComponent,
       {
-        width: '700px',
+        width: '800px',
         data: row
       }
     ).afterClosed().subscribe(val => {

@@ -9,8 +9,6 @@ export interface EmploiDuTemps {
 
   matiere: any;
 
-  salle: string;
-
   jour: string;
 
   heureDebut: string;
