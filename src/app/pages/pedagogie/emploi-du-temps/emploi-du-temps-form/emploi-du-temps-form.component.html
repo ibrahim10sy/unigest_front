@@ -14,7 +14,7 @@
 
   <mat-dialog-content class="flex flex-col gap-4 mt-4">
     <div class="grid grid-cols-2 gap-4">
-      <mat-form-field *ngIf="form.value.type === 'COURS'">
+      <mat-form-field>
         <mat-label>Classe</mat-label>
         <mat-select formControlName="classe">
           <mat-option *ngFor="let c of classes" [value]="c.id">
@@ -23,7 +23,7 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field *ngIf="form.value.type === 'COURS'">
+      <mat-form-field>
         <mat-label>Enseignant</mat-label>
         <mat-select formControlName="enseignant">
           <mat-option *ngFor="let e of enseignants" [value]="e.id">
@@ -54,8 +54,9 @@
     <!-- Ligne Jour / Périodicité -->
     <div class="grid grid-cols-2 gap-4">
       <mat-form-field>
-        <mat-label>Jour</mat-label>
-        <mat-select formControlName="jour">
+        <mat-label>Jours</mat-label>
+
+        <mat-select formControlName="jours" multiple>
           <mat-option *ngFor="let j of jours" [value]="j">
             {{ j }}
           </mat-option>
@@ -72,7 +73,7 @@
       </mat-form-field>
     </div>
 
-    <div class="grid grid-cols-2 gap-4" *ngIf="form.value.type === 'COURS'">
+    <div class="grid grid-cols-2 gap-4">
       <mat-form-field>
         <mat-label>Heure début</mat-label>
         <input type="time" matInput formControlName="heureDebut" />
@@ -85,7 +86,7 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <mat-form-field *ngIf="form.value.type === 'COURS'">
+      <mat-form-field>
         <mat-label>Date début</mat-label>
         <input matInput [matDatepicker]="picker1" formControlName="dateDebut" />
 
@@ -95,7 +96,7 @@
         <mat-datepicker #picker1></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field *ngIf="form.value.type === 'COURS'">
+      <mat-form-field>
         <mat-label>Date fin</mat-label>
         <input matInput [matDatepicker]="picker2" formControlName="dateFin" />
 

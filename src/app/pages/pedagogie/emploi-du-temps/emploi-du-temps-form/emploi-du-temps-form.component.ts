@@ -78,34 +78,34 @@ export class EmploiDuTempsFormComponent implements OnInit {
   ngOnInit(): void {
     if (this.defaults) {
       this.mode = 'update';
+      console.log('DEFAULTS', this.defaults);
     }
 
     this.form = this.fb.group({
-      id: [this.defaults?.id || null],
+  id: [this.defaults?.id || null],
 
-      classe: [null, Validators.required],
+  classe: [this.defaults?.classe?.id || null, Validators.required],
 
-      enseignant: [null],
+  enseignant: [this.defaults?.enseignant?.id || null, Validators.required],
 
-      matiere: [null],
+  matiere: [this.defaults?.matiere?.id || null, Validators.required],
 
-      jour: [null, Validators.required],
+  jours: [this.defaults?.jours || [], Validators.required],
 
-      heureDebut: [this.defaults?.heureDebut || '', Validators.required],
+  heureDebut: [this.defaults?.heureDebut || '', Validators.required],
 
-      heureFin: [this.defaults?.heureFin || '', Validators.required],
+  heureFin: [this.defaults?.heureFin || '', Validators.required],
 
-      periodicite: [null],
+  periodicite: [this.defaults?.periodicite || '', Validators.required],
 
-      dateDebut: [null],
+  dateDebut: [this.defaults?.dateDebut || '', Validators.required],
 
-      dateFin: [null],
+  dateFin: [this.defaults?.dateFin || '', Validators.required],
 
-      description: [this.defaults?.description || ''],
+  description: [this.defaults?.description || ''],
 
-      type: ['COURS']
-
-    });
+  type: [this.defaults?.type || 'COURS', Validators.required]
+});
     this.loadData();
   }
 

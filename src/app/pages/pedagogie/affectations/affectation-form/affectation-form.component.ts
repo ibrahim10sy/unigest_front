@@ -84,17 +84,17 @@ export class AffectationFormComponent implements OnInit {
     return p1 && p2 ? p1.id === p2.id : p1 === p2;
   }
 
- save() {
-  if (this.form.valid) {
-    const value = this.form.value;
+  save() {
+    if (this.form.valid) {
+      const value = this.form.value;
 
-    const payload = {
-      enseignantId: value.enseignant?.id,
-      classeId: value.classe?.id,
-      matiereIds: value.matieres?.map((m: any) => m.id) || []
-    };
+      const payload = {
+        enseignantId: value.enseignant?.id,
+        classeId: value.classe?.id,
+        matiereIds: value.matieres?.map((m: any) => m.id) || []
+      };
 
-    this.dialogRef.close(payload);
+      this.dialogRef.close(payload);
+    }
   }
-}
 }

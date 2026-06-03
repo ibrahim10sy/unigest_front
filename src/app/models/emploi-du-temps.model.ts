@@ -1,29 +1,38 @@
+import { Enseignant } from "../services/enseignant.service";
+import { Matiere } from "../services/matiere.service";
+import { Classe } from "./Classe";
 
+export enum JourSemaine {
+  LUNDI = 'LUNDI',
+  MARDI = 'MARDI',
+  MERCREDI = 'MERCREDI',
+  JEUDI = 'JEUDI',
+  VENDREDI = 'VENDREDI',
+  SAMEDI = 'SAMEDI',
+  DIMANCHE = 'DIMANCHE'
+}
 export interface EmploiDuTemps {
-
   id?: number;
 
-  classe: any;
+  classe?: Classe;
+  enseignant?: Enseignant;
+  matiere?: Matiere;
 
-  enseignant: any;
+  jours: JourSemaine[];
 
-  matiere: any;
+  heureDebut?: string;
+  heureFin?: string;
 
-  jour: string;
-
-  heureDebut: string;
-
-  heureFin: string;
-
-  dateDebut: Date;
-
-  dateFin: Date;
-
-  periodicite: string;
+  dateDebut?: string;
+  dateFin?: string;
 
   couleur?: string;
 
-  description?: string;
+  type?: any;
 
   actif?: boolean;
+
+  periodicite?: any;
+
+  description?: string;
 }
