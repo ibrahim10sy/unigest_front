@@ -50,12 +50,7 @@ export class NavigationLoaderService {
             route: '/scolarite/etudiants',
             icon: 'mat:groups'
           },
-          // {
-          //   type: 'link',
-          //   label: 'tables',
-          //   route: '/scolarite/aio-table',
-          //   icon: 'mat:groups'
-          // },
+         
           {
             type: 'link',
             label: 'Année Scolaire',
@@ -127,10 +122,16 @@ export class NavigationLoaderService {
             route: '/pedagogie/notes',
             icon: 'mat:grading'
           },
+          // {
+          //   type: 'link',
+          //   label: 'Liste horaires emploi du temps',
+          //   route: '/pedagogie/emploi-du-temps',
+          //   icon: 'mat:description'
+          // },
           {
             type: 'link',
-            label: 'Liste horaires emploi du temps',
-            route: '/pedagogie/emploi-du-temps',
+            label: 'Calendrier',
+            route: '/pedagogie/calendar',
             icon: 'mat:description'
           },
           {

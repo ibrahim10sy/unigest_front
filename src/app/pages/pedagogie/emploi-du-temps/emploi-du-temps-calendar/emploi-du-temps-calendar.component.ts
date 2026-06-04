@@ -1,488 +1,241 @@
-// import {
-//   Component,
-//   OnInit
-// } from '@angular/core';
-
-// import { CommonModule } from '@angular/common';
-
-// import { MatIconModule } from '@angular/material/icon';
-// import { MatButtonModule } from '@angular/material/button';
-
-// import { MatDialog } from '@angular/material/dialog';
-
-// import Swal from 'sweetalert2';
-
-// import { EmploiDuTempsService } from 'src/app/services/emploi-du-temps.service';
-
-// import { EmploiDuTempsFormComponent } from '../emploi-du-temps-form/emploi-du-temps-form.component';
-
-// import {
-//   VexPageLayoutComponent
-// } from '@vex/components/vex-page-layout/vex-page-layout.component';
-
-// import {
-//   VexPageLayoutHeaderDirective
-// } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
-
-// import {
-//   VexPageLayoutContentDirective
-// } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
-
-// import {
-//   VexBreadcrumbsComponent
-// } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
-
-// @Component({
-//   selector: 'vex-emploi-du-temps-calendar',
-//   standalone: true,
-
-//   imports: [
-//     CommonModule,
-//     MatIconModule,
-//     MatButtonModule,
-
-//     VexPageLayoutComponent,
-//     VexPageLayoutHeaderDirective,
-//     VexPageLayoutContentDirective,
-//     VexBreadcrumbsComponent
-//   ],
-
-//   templateUrl: './emploi-du-temps-calendar.component.html',
-//   styleUrl: './emploi-du-temps-calendar.component.scss'
-// })
-// export class EmploiDuTempsCalendarComponent
-//   implements OnInit {
-
-//   emplois: any[] = [];
-
-//   jours = [
-//     'LUNDI',
-//     'MARDI',
-//     'MERCREDI',
-//     'JEUDI',
-//     'VENDREDI',
-//     'SAMEDI'
-//   ];
-
-//   horaires = [
-//     {
-//       debut: '08:00',
-//       fin: '10:00'
-//     },
-//     {
-//       debut: '10:00',
-//       fin: '12:00'
-//     },
-//     {
-//       debut: '12:00',
-//       fin: '14:00'
-//     },
-//     {
-//       debut: '14:00',
-//       fin: '16:00'
-//     },
-//     {
-//       debut: '16:00',
-//       fin: '18:00'
-//     }
-//   ];
-
-//   constructor(
-//     private service: EmploiDuTempsService,
-//     private dialog: MatDialog
-//   ) {}
-
-//   ngOnInit(): void {
-
-//     this.refresh();
-//   }
-
-//   refresh(): void {
-
-//     this.service.getAll()
-//       .subscribe({
-
-//         next: (res:any) => {
-
-//           this.emplois = res;
-//         },
-
-//         error: () => {
-
-//           Swal.fire(
-//             'Erreur',
-//             'Impossible de charger les emplois',
-//             'error'
-//           );
-//         }
-//       });
-//   }
-
-//   getCours(
-//     jour: string,
-//     debut: string,
-//     fin: string
-//   ) {
-
-//     return this.emplois.find(e => {
-
-//       return (
-//         e.jour === jour &&
-//         e.heureDebut === debut &&
-//         e.heureFin === fin
-//       );
-//     });
-//   }
-
-//   ajouter(): void {
-
-//     this.dialog.open(
-//       EmploiDuTempsFormComponent,
-//       {
-//         width: '750px'
-//       }
-//     ).afterClosed()
-//       .subscribe(result => {
-
-//         if (result) {
-
-//           this.refresh();
-//         }
-//       });
-//   }
-
-//   modifier(cours: any): void {
-
-//     this.dialog.open(
-//       EmploiDuTempsFormComponent,
-//       {
-//         width: '750px',
-//         data: cours
-//       }
-//     ).afterClosed()
-//       .subscribe(result => {
-
-//         if (result) {
-
-//           this.refresh();
-//         }
-//       });
-//   }
-
-//   supprimer(id: number): void {
-
-//     Swal.fire({
-
-//       title: 'Supprimer ?',
-
-//       text: 'Cette action est irréversible',
-
-//       icon: 'warning',
-
-//       showCancelButton: true,
-
-//       confirmButtonText: 'Supprimer',
-
-//       cancelButtonText: 'Annuler'
-
-//     }).then(result => {
-
-//       if (result.isConfirmed) {
-
-//         this.service.delete(id)
-//           .subscribe({
-
-//             next: () => {
-
-//               Swal.fire(
-//                 'Succès',
-//                 'Cours supprimé',
-//                 'success'
-//               );
-
-//               this.refresh();
-//             },
-
-//             error: () => {
-
-//               Swal.fire(
-//                 'Erreur',
-//                 'Suppression impossible',
-//                 'error'
-//               );
-//             }
-//           });
-//       }
-//     });
-//   }
-
-//   exporterPdf(classeId: number): void {
-
-//     this.service.exportPdf(classeId)
-//       .subscribe((blob:any) => {
-
-//         const url =
-//           window.URL.createObjectURL(blob);
-
-//         window.open(url);
-//       });
-//   }
-// }
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject } from 'rxjs';
 
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
+import {
+  CalendarView,
+  CalendarEvent,
+  CalendarEventTimesChangedEvent,
+  CalendarModule,
+  CalendarCommonModule,
+  CalendarMonthModule,
+  CalendarWeekModule,
+  CalendarDayModule,
+  CalendarEventTitleFormatter,
+  CalendarDateFormatter,
+  CalendarUtils,
+  CalendarA11y,
+  DateAdapter
+} from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
 import Swal from 'sweetalert2';
 
 import { EmploiDuTempsService } from 'src/app/services/emploi-du-temps.service';
 import { ClasseService } from 'src/app/services/classe.service';
-
 import { EmploiDuTempsFormComponent } from '../emploi-du-temps-form/emploi-du-temps-form.component';
 
 import { VexPageLayoutComponent } from '@vex/components/vex-page-layout/vex-page-layout.component';
 import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
 import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
+import { VexScrollbarComponent } from '@vex/components/vex-scrollbar/vex-scrollbar.component';
 
 @Component({
   selector: 'vex-emploi-du-temps-calendar',
   standalone: true,
   templateUrl: './emploi-du-temps-calendar.component.html',
   styleUrls: ['./emploi-du-temps-calendar.component.scss'],
+  providers: [
+    {
+      provide: DateAdapter,
+      useFactory: adapterFactory
+    },
+    CalendarEventTitleFormatter,
+    CalendarDateFormatter,
+    CalendarUtils,
+    CalendarA11y
+  ],
   imports: [
     CommonModule,
-    MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatSnackBarModule,
+
+    CalendarCommonModule,
+    CalendarMonthModule,
+    CalendarWeekModule,
+    CalendarDayModule,
+    CalendarModule,
 
     VexPageLayoutComponent,
     VexPageLayoutContentDirective,
     VexPageLayoutHeaderDirective,
-    VexBreadcrumbsComponent
+    VexBreadcrumbsComponent,
+    VexScrollbarComponent
   ]
 })
+export class EmploiDuTempsCalendarComponent implements OnInit {
 
-export class EmploiDuTempsCalendarComponent
-  implements OnInit {
+  // ── Angular Calendar ──────────────────────────────────────
+  view: CalendarView = CalendarView.Week;
+  CalendarView = CalendarView;
+  viewDate: Date = new Date();
+  refresh: Subject<any> = new Subject();
+  events: CalendarEvent[] = [];
+  activeDayIsOpen = false;
 
-  emplois: any[] = [];
-
+  // ── Données métier ────────────────────────────────────────
   classes: any[] = [];
-
   classeId!: number;
-
-  jours = [
-    'LUNDI',
-    'MARDI',
-    'MERCREDI',
-    'JEUDI',
-    'VENDREDI',
-    'SAMEDI'
-  ];
-
-  horaires = [
-    { debut: '08:00', fin: '10:00' },
-    { debut: '10:00', fin: '12:00' },
-    { debut: '12:00', fin: '14:00' },
-    { debut: '14:00', fin: '16:00' },
-    { debut: '16:00', fin: '18:00' }
-  ];
-
-   isPause(h: any): boolean {
-
-  return this.emplois.some(e =>
-    e.type === 'RECREATION' &&
-    e.heureDebut === h.debut &&
-    e.heureFin === h.fin
-  );
-
-}
 
   constructor(
     private service: EmploiDuTempsService,
     private classeService: ClasseService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-
     this.loadClasses();
   }
 
+  // ── Chargement ────────────────────────────────────────────
+
   loadClasses() {
-
-    this.classeService.getAllClasses()
-      .subscribe((res:any) => {
-
-        this.classes = res;
-
-        if (this.classes.length > 0) {
-
-          this.classeId = this.classes[0].id;
-
-          this.loadEmplois();
-        }
-      });
+    this.classeService.getAllClasses().subscribe((res: any) => {
+      this.classes = res;
+      if (this.classes.length > 0) {
+        this.classeId = this.classes[0].id;
+        this.loadEmplois();
+      }
+    });
   }
 
   loadEmplois() {
+    if (!this.classeId) return;
 
-  if (!this.classeId) return;
-
-  this.service
-    .getByClasse(this.classeId)
-    .subscribe((res:any) => {
-
-      console.log("EMPLOIS =>", res);
-
-      this.emplois = res;
-
-      this.generateHoraires();
+    this.service.getByClasse(this.classeId).subscribe((res: any[]) => {
+      this.events = this.mapEmploisToEvents(res);
+      this.refresh.next(null);
     });
-}
-
-generateHoraires() {
-
-  const map = new Map();
-
-  this.emplois.forEach((e:any) => {
-
-    const debut =
-      e.heureDebut?.substring(0, 5);
-
-    const fin =
-      e.heureFin?.substring(0, 5);
-
-    const key = `${debut}-${fin}`;
-
-    if (!map.has(key)) {
-
-      map.set(key, {
-        debut,
-        fin
-      });
-    }
-  });
-
-  this.horaires = Array
-    .from(map.values())
-    .sort((a:any, b:any) =>
-      a.debut.localeCompare(b.debut)
-    );
-
-  console.log(
-    "HORAIRES =>",
-    this.horaires
-  );
-}
+  }
 
   onClasseChange() {
-
     this.loadEmplois();
   }
 
-  getCours(
-  jour: string,
-  debut: string,
-  fin: string
-) {
+  // ── Mapping emploi → CalendarEvent ───────────────────────
 
-  return this.emplois.find((e:any) => {
+  private mapEmploisToEvents(emplois: any[]): CalendarEvent[] {
+    // Jour de référence : lundi de la semaine affichée
+    const joursMap: Record<string, number> = {
+      LUNDI: 1, MARDI: 2, MERCREDI: 3,
+      JEUDI: 4, VENDREDI: 5, SAMEDI: 6
+    };
 
-    const heureDebut =
-      e.heureDebut?.substring(0, 5);
+    return emplois.map(e => {
+      const jourOffset = joursMap[e.jour] ?? 1;
 
-    const heureFin =
-      e.heureFin?.substring(0, 5);
+      // Trouver le lundi de la semaine courante
+      const lundi = this.getMondayOf(this.viewDate);
+      const date = new Date(lundi);
+      date.setDate(lundi.getDate() + (jourOffset - 1));
 
-    return (
-      e.jour === jour &&
-      heureDebut === debut &&
-      heureFin === fin
+      const [hDebut, mDebut] = (e.heureDebut ?? '08:00').split(':').map(Number);
+      const [hFin,   mFin  ] = (e.heureFin  ?? '10:00').split(':').map(Number);
+
+      const start = new Date(date);
+      start.setHours(hDebut, mDebut, 0, 0);
+
+      const end = new Date(date);
+      end.setHours(hFin, mFin, 0, 0);
+
+      return {
+        id:    e.id,
+        title: `${e.matiere?.nom ?? ''} — ${e.enseignant?.nom ?? ''} ${e.enseignant?.prenom ?? ''}`,
+        start,
+        end,
+        color: {
+          primary:   e.couleur ?? '#4f46e5',
+          secondary: e.couleur ?? '#e0e7ff'
+        },
+        meta: e   // garde les données brutes pour modifier/supprimer
+      } as CalendarEvent;
+    });
+  }
+
+  private getMondayOf(date: Date): Date {
+    const d = new Date(date);
+    const day = d.getDay(); // 0=dim, 1=lun …
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    return d;
+  }
+
+  // ── Interactions calendrier ───────────────────────────────
+
+  dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
+    this.activeDayIsOpen = !(
+      (this.isSameDay(this.viewDate, date) && this.activeDayIsOpen) ||
+      events.length === 0
     );
-  });
-}
+    this.viewDate = date;
+  }
+
+  eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
+    this.events = this.events.map(e =>
+      e === event ? { ...event, start: newStart, end: newEnd! } : e
+    );
+  }
+
+  handleEvent(action: string, event: CalendarEvent): void {
+    // Clic sur un cours → ouvrir le formulaire de modification
+    this.modifier(event.meta);
+  }
+
+  private isSameDay(a: Date, b: Date): boolean {
+    return a.toDateString() === b.toDateString();
+  }
+
+  // ── CRUD ──────────────────────────────────────────────────
 
   ajouter() {
-
-    this.dialog.open(
-      EmploiDuTempsFormComponent,
-      {
-        width: '700px',
-        data: {
-          classe: this.classeId
-        }
-      }
-    ).afterClosed()
-      .subscribe((val:any) => {
-
-        if (val) {
-
-          this.loadEmplois();
-        }
-      });
+    this.dialog.open(EmploiDuTempsFormComponent, {
+      width: '700px',
+      data: { classe: this.classeId }
+    }).afterClosed().subscribe((val: any) => {
+      if (val) this.loadEmplois();
+    });
   }
 
-  modifier(row:any) {
-
-    this.dialog.open(
-      EmploiDuTempsFormComponent,
-      {
-        width: '700px',
-        data: row
-      }
-    ).afterClosed()
-      .subscribe((val:any) => {
-
-        if (val) {
-
-          this.loadEmplois();
-        }
-      });
+  modifier(row: any) {
+    this.dialog.open(EmploiDuTempsFormComponent, {
+      width: '700px',
+      data: row
+    }).afterClosed().subscribe((val: any) => {
+      if (val) this.loadEmplois();
+    });
   }
 
-  supprimer(id:number) {
-
+  supprimer(id: number) {
     Swal.fire({
       title: 'Supprimer ce cours ?',
       icon: 'warning',
       showCancelButton: true
     }).then(r => {
-
       if (r.isConfirmed) {
-
-        this.service.delete(id)
-          .subscribe(() => {
-
-            Swal.fire(
-              'Supprimé',
-              '',
-              'success'
-            );
-
-            this.loadEmplois();
-          });
+        this.service.delete(id).subscribe(() => {
+          Swal.fire('Supprimé', '', 'success');
+          this.loadEmplois();
+        });
       }
     });
   }
 
   exporterPdf() {
-
-    this.service.exportPdf(this.classeId)
-      .subscribe((blob:any) => {
-
-        const url =
-          window.URL.createObjectURL(blob);
-
-        window.open(url);
-      });
+    this.service.exportPdf(this.classeId).subscribe((blob: any) => {
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+    });
   }
 }

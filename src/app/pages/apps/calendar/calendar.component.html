@@ -1,71 +1,171 @@
 <div class="h-full flex flex-col">
   <div class="calendar-bg relative text-white flex-none">
-    <div
-      class="bg-black opacity-25 absolute top-0 left-0 right-0 bottom-0 z-0 w-full h-full"></div>
+    <div class="bg-black opacity-25 absolute top-0 left-0 right-0 bottom-0 z-0 w-full h-full"></div>
+
     <div class="container py-4 px-6 h-40 z-10 relative flex items-end">
-      <div
-        class="flex-auto flex flex-col sm:flex-row justify-between items-center">
-        <div class="headline">
-          {{ viewDate | calendarDate: view + "ViewTitle" : "en" }}
+      <div class="flex-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+
+        <div class="headline text-xl font-semibold">
+          {{ viewDate | calendarDate:(view + 'ViewTitle'):'fr' }}
         </div>
 
-        <div class="actions flex flex-col sm:flex-row justify-end items-center">
-          <div class="chevrons">
-            <button
-              [(viewDate)]="viewDate"
+        <div class="actions flex flex-col sm:flex-row items-center gap-3">
+
+          <!-- Sélecteur de classe -->
+          <mat-form-field appearance="outline" class="w-48">
+            <mat-label>Classe</mat-label>
+            <mat-select [(ngModel)]="classeId" (selectionChange)="onClasseChange()">
+              <mat-option *ngFor="let c of classes" [value]="c.id">
+                {{ c.nom }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Navigation -->
+          <div class="flex items-center">
+            <button mat-icon-button
+              mwlCalendarPreviousView
               [view]="view"
-              mat-icon-button
-              mwlCalendarPreviousView>
+              [(viewDate)]="viewDate"
+              (viewDateChange)="onViewDateChange()">
               <mat-icon svgIcon="mat:chevron_left"></mat-icon>
             </button>
-            <button
-              [(viewDate)]="viewDate"
+            <button mat-icon-button
+              mwlCalendarNextView
               [view]="view"
-              mat-icon-button
-              mwlCalendarNextView>
+              [(viewDate)]="viewDate"
+              (viewDateChange)="onViewDateChange()">
               <mat-icon svgIcon="mat:chevron_right"></mat-icon>
             </button>
           </div>
-          <div class="flex gap-1">
-            <button (click)="view = CalendarView.Month" mat-button>
-              Month
+
+          <!-- Boutons de vue -->
+          <div class="flex gap-1 bg-white/20 rounded-lg p-1">
+            <button mat-button
+              [class.bg-white]="view === CalendarView.Month"
+              [class.text-primary]="view === CalendarView.Month"
+              [class.rounded]="true"
+              (click)="setView(CalendarView.Month)">
+              Mois
             </button>
-            <button (click)="view = CalendarView.Week" mat-button>Week</button>
-            <button (click)="view = CalendarView.Day" mat-button>Day</button>
+            <button mat-button
+              [class.bg-white]="view === CalendarView.Week"
+              [class.text-primary]="view === CalendarView.Week"
+              [class.rounded]="true"
+              (click)="setView(CalendarView.Week)">
+              Semaine
+            </button>
+            <button mat-button
+              [class.bg-white]="view === CalendarView.Day"
+              [class.text-primary]="view === CalendarView.Day"
+              [class.rounded]="true"
+              (click)="setView(CalendarView.Day)">
+              Jour
+            </button>
           </div>
+
         </div>
       </div>
     </div>
   </div>
 
-  <vex-scrollbar
-    [ngSwitch]="view"
-    class="px-0 shadow flex-auto relative container">
-    <mwl-calendar-month-view
-      (dayClicked)="dayClicked($event.day)"
-      (eventClicked)="handleEvent('Clicked', $event.event)"
-      (eventTimesChanged)="eventTimesChanged($event)"
-      *ngSwitchCase="'month'"
-      [activeDayIsOpen]="activeDayIsOpen"
-      [events]="events"
-      [refresh]="refresh"
-      [viewDate]="viewDate">
-    </mwl-calendar-month-view>
-    <mwl-calendar-week-view
-      (eventClicked)="handleEvent('Clicked', $event.event)"
-      (eventTimesChanged)="eventTimesChanged($event)"
-      *ngSwitchCase="'week'"
-      [events]="events"
-      [refresh]="refresh"
-      [viewDate]="viewDate">
-    </mwl-calendar-week-view>
-    <mwl-calendar-day-view
-      (eventClicked)="handleEvent('Clicked', $event.event)"
-      (eventTimesChanged)="eventTimesChanged($event)"
-      *ngSwitchCase="'day'"
-      [events]="events"
-      [refresh]="refresh"
-      [viewDate]="viewDate">
-    </mwl-calendar-day-view>
+  <!-- Templates d'événements personnalisés -->
+
+  <!-- Vue Semaine / Jour -->
+  <ng-template #weekEventTemplate let-weekEvent="weekEvent" let-tooltipPlacement="tooltipPlacement">
+    <div class="cal-event-container h-full rounded-md overflow-hidden p-1"
+         [style.background-color]="weekEvent.event.color?.secondary"
+         [style.border-left]="'4px solid ' + weekEvent.event.color?.primary">
+      <div class="text-xs font-bold truncate" [style.color]="weekEvent.event.color?.primary">
+        {{ weekEvent.event.meta?.matiere?.nom }}
+      </div>
+      <div class="text-xs truncate text-gray-700 mt-0.5">
+        {{ weekEvent.event.meta?.enseignant?.nom }} {{ weekEvent.event.meta?.enseignant?.prenom }}
+      </div>
+      <div class="text-xs truncate text-gray-600 mt-0.5">
+        {{ weekEvent.event.meta?.classe?.nom }}
+      </div>
+      <div class="text-xs text-gray-500 mt-0.5">
+        {{ weekEvent.event.start | date:'HH:mm' }} – {{ weekEvent.event.end | date:'HH:mm' }}
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Vue Mois -->
+  <ng-template #monthEventTemplate let-event="event">
+    <div class="flex items-center gap-1 px-1 rounded w-full overflow-hidden"
+         [style.background-color]="event.color?.primary">
+      <span class="text-white text-xs font-semibold truncate">
+        {{ event.meta?.matiere?.nom }} · {{ event.start | date:'HH:mm' }}
+      </span>
+    </div>
+  </ng-template>
+
+  <!-- Calendrier -->
+  <vex-scrollbar class="px-0 shadow flex-auto relative container">
+
+    <ng-container [ngSwitch]="view">
+
+      <!-- VUE MOIS -->
+      <mwl-calendar-month-view
+        *ngSwitchCase="CalendarView.Month"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refresh"
+        [locale]="'fr'"
+        [activeDayIsOpen]="activeDayIsOpen"
+        [cellTemplate]="monthCellTemplate"
+        (dayClicked)="dayClicked($event.day)"
+        (eventClicked)="handleEvent('Clicked', $event.event)"
+        (eventTimesChanged)="eventTimesChanged($event)">
+      </mwl-calendar-month-view>
+
+      <!-- VUE SEMAINE -->
+      <mwl-calendar-week-view
+        *ngSwitchCase="CalendarView.Week"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refresh"
+        [locale]="'fr'"
+        [eventTemplate]="weekEventTemplate"
+        (eventClicked)="handleEvent('Clicked', $event.event)"
+        (eventTimesChanged)="eventTimesChanged($event)">
+      </mwl-calendar-week-view>
+
+      <!-- VUE JOUR -->
+      <mwl-calendar-day-view
+        *ngSwitchCase="CalendarView.Day"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refresh"
+        [locale]="'fr'"
+        [eventTemplate]="weekEventTemplate"
+        (eventClicked)="handleEvent('Clicked', $event.event)"
+        (eventTimesChanged)="eventTimesChanged($event)">
+      </mwl-calendar-day-view>
+
+    </ng-container>
+
   </vex-scrollbar>
 </div>
+
+<!-- Template cellule mois (détail au survol) -->
+<ng-template #monthCellTemplate let-day="day" let-openDay="openDay"
+             let-locale="locale" let-tooltipPlacement="tooltipPlacement"
+             let-highlightDay="highlightDay" let-unhighlightDay="unhighlightDay"
+             let-eventClicked="eventClicked">
+  <div class="cal-cell-top">
+    <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+    <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':'fr' }}</span>
+  </div>
+  <div class="cal-events" *ngIf="day.events.length > 0">
+    <div *ngFor="let event of day.events"
+         class="cal-event-month-item rounded px-1 mb-0.5 text-white text-xs truncate cursor-pointer"
+         [style.background-color]="event.color?.primary"
+         (click)="eventClicked.emit({ event: event })">
+      <strong>{{ event.meta?.matiere?.nom }}</strong>
+      · {{ event.start | date:'HH:mm' }}–{{ event.end | date:'HH:mm' }}
+      · {{ event.meta?.enseignant?.nom }}
+    </div>
+  </div>
+</ng-template>

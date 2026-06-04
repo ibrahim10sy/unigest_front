@@ -246,6 +246,14 @@ export const appRoutes: VexRoutes = [
               ).then((m) => m.EmploiDuTempsCalendarComponent)
           },
           {
+            canActivate: [AuthGuard],
+            path: 'calendar',
+            loadComponent: () =>
+              import(
+                './pages/apps/calendar/calendar.component'
+              ).then((m) => m.CalendarComponent)
+          },
+          {
             canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'bulletins',
             loadComponent: () =>
