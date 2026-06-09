@@ -6,9 +6,9 @@ import { TypePeriode } from "./TypePeriode";
 
 export interface Bulletin {
   id?: number;
-  etudiant: Etudiant;
-  classe: Classe;
-  anneeScolaire: AnneeScolaire;
+  etudiant?: Etudiant;
+  classe?: Classe;
+  anneeScolaire?: AnneeScolaire;
   periode: number;
   typePeriode: TypePeriode;
   moyenneGenerale: number;

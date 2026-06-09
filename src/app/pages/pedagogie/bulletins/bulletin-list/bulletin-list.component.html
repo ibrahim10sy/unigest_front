@@ -1,16 +1,13 @@
 <vex-page-layout>
   <vex-page-layout-header class="pb-16 flex flex-col items-start justify-center">
-
     <div
       [class.container]="layoutCtrl.value === 'boxed'"
       [class.px-6]="layoutCtrl.value === 'fullwidth'"
       class="w-full flex justify-between">
-
       <div>
         <h1 class="title mt-0 mb-1">Gestion des Bulletins</h1>
         <vex-breadcrumbs [crumbs]="['Pédagogie', 'Bulletins']"></vex-breadcrumbs>
       </div>
-
     </div>
   </vex-page-layout-header>
 
@@ -23,54 +20,62 @@
       <!-- HEADER FILTRES -->
       <div class="bg-app-bar px-6 py-3 border-b flex flex-wrap items-center gap-4">
 
-        <!-- titre -->
-        <h2 class="title my-0 mr-4">Bulletins</h2>
+        <h2 class="title my-0 mr-2">Bulletins</h2>
 
-        <!-- recherche -->
-        <mat-form-field appearance="outline" class="w-64">
+        <!-- Recherche -->
+        <mat-form-field appearance="outline" class="w-56">
           <mat-icon matPrefix svgIcon="mat:search"></mat-icon>
           <input matInput [formControl]="searchCtrl" placeholder="Rechercher..." />
         </mat-form-field>
 
-        <!-- classe -->
-        <mat-form-field appearance="outline" class="w-44">
+        <!-- Classe -->
+        <mat-form-field appearance="outline" class="w-40">
           <mat-label>Classe</mat-label>
           <mat-select [(value)]="selectedClasseId" (selectionChange)="onFilterChange()">
-            <mat-option *ngFor="let c of classes" [value]="c.id">
-              {{ c.nom }}
-            </mat-option>
+            <mat-option *ngFor="let c of classes" [value]="c.id">{{ c.nom }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        <!-- année -->
+        <!-- Année -->
         <mat-form-field appearance="outline" class="w-44">
-          <mat-label>Année</mat-label>
+          <mat-label>Année scolaire</mat-label>
           <mat-select [(value)]="selectedAnneeId" (selectionChange)="onFilterChange()">
-            <mat-option *ngFor="let a of annees" [value]="a.id">
-              {{ a.libelle }}
-            </mat-option>
+            <mat-option *ngFor="let a of annees" [value]="a.id">{{ a.libelle }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        <!-- période -->
-        <mat-form-field appearance="outline" class="w-36">
-          <mat-label>Période</mat-label>
-          <mat-select [(value)]="selectedPeriode" (selectionChange)="onFilterChange()">
-            <mat-option *ngFor="let p of periodes" [value]="p">
-              {{ p }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- type -->
-        <mat-form-field appearance="outline" class="w-44">
+        <!-- Type période -->
+        <mat-form-field appearance="outline" class="w-40">
           <mat-label>Type</mat-label>
           <mat-select [(value)]="selectedTypePeriode" (selectionChange)="onFilterChange()">
-            <mat-option *ngFor="let t of typesPeriode" [value]="t">
-              {{ t }}
-            </mat-option>
+            <mat-option *ngFor="let t of typesPeriode" [value]="t">{{ t }}</mat-option>
           </mat-select>
         </mat-form-field>
+
+        <!-- Période n° -->
+        <mat-form-field appearance="outline" class="w-28">
+          <mat-label>Période</mat-label>
+          <mat-select [(value)]="selectedPeriode" (selectionChange)="onFilterChange()">
+            <mat-option *ngFor="let p of periodes" [value]="p">{{ p }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <span class="flex-1"></span>
+
+        <!-- Bouton Générer -->
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="genererTousBulletins()"
+          [disabled]="isGenerating"
+          matTooltip="Générer les bulletins pour tous les étudiants de la classe">
+          <mat-icon svgIcon="mat:description"></mat-icon>
+          <span *ngIf="!isGenerating">Générer les bulletins</span>
+          <span *ngIf="isGenerating" class="flex items-center gap-2">
+            <mat-spinner diameter="16" color="accent"></mat-spinner>
+            Génération...
+          </span>
+        </button>
 
       </div>
 
@@ -78,22 +83,20 @@
       <table mat-table [dataSource]="dataSource" matSort class="w-full">
 
         <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
           <td mat-cell *matCellDef="let row">{{ row.id }}</td>
         </ng-container>
 
         <ng-container matColumnDef="etudiant">
-          <th mat-header-cell *matHeaderCellDef>Étudiant</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Étudiant</th>
           <td mat-cell *matCellDef="let row">
-            {{ row.etudiant?.nom }} {{ row.etudiant?.prenom }}
+            {{ row.etudiant?.prenom }} {{ row.etudiant?.nom }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="classe">
           <th mat-header-cell *matHeaderCellDef>Classe</th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.classe?.nom }}
-          </td>
+          <td mat-cell *matCellDef="let row">{{ row.classe?.nom }}</td>
         </ng-container>
 
         <ng-container matColumnDef="periode">
@@ -107,38 +110,72 @@
         </ng-container>
 
         <ng-container matColumnDef="moyenneGenerale">
-          <th mat-header-cell *matHeaderCellDef>Moyenne</th>
-          <td mat-cell *matCellDef="let row">{{ row.moyenneGenerale }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Moyenne</th>
+          <td mat-cell *matCellDef="let row">
+            <span
+              class="font-semibold"
+              [class.text-green-600]="row.moyenneGenerale >= 10"
+              [class.text-red-600]="row.moyenneGenerale < 10">
+              {{ row.moyenneGenerale | number: '1.2-2' }}
+            </span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="rang">
-          <th mat-header-cell *matHeaderCellDef>Rang</th>
-          <td mat-cell *matCellDef="let row">{{ row.rang }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rang</th>
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.rang">{{ row.rang }}<sup>e</sup></span>
+            <span *ngIf="!row.rang" class="text-secondary">—</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="dateGeneration">
           <th mat-header-cell *matHeaderCellDef>Date</th>
           <td mat-cell *matCellDef="let row">
-            {{ row.dateGeneration | date:'dd/MM/yyyy' }}
+            {{ row.dateGeneration | date: 'dd/MM/yyyy' }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let row">
-            <button mat-icon-button color="warn" (click)="supprimer(row)">
-              <mat-icon svgIcon="mat:delete"></mat-icon>
-            </button>
+            <div class="flex items-center gap-1">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="voirDetail(row)"
+                matTooltip="Voir le détail">
+                <mat-icon svgIcon="mat:visibility"></mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="supprimer(row)"
+                matTooltip="Supprimer">
+                <mat-icon svgIcon="mat:delete"></mat-icon>
+              </button>
+            </div>
           </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
+        <!-- Ligne vide -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center py-8 text-secondary" [attr.colspan]="displayedColumns.length">
+            <ng-container *ngIf="dataSource.data.length === 0">
+              Aucun bulletin — cliquez sur <strong>Générer les bulletins</strong> pour les créer.
+            </ng-container>
+            <ng-container *ngIf="dataSource.data.length > 0">
+              Aucun résultat pour « {{ searchCtrl.value }} »
+            </ng-container>
+          </td>
+        </tr>
+
       </table>
 
-      <!-- PAGINATION -->
-      <mat-paginator [pageSizeOptions]="[5,10,20]"></mat-paginator>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
 
     </div>
 

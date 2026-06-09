@@ -158,24 +158,26 @@ export class NoteListComponent implements OnInit {
   }
 
   ajouter() {
-    this.openDialog(null);
+    this.dialog
+      .open(NoteFormComponent, {
+        width: '700px',
+        data: null
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) this.chargerNotes();
+      });
   }
 
   modifier(note: Note) {
-    this.openDialog(note);
-  }
-
-  private openDialog(note: Note | null) {
     this.dialog
       .open(NoteFormComponent, {
-        width: '600px',
+        width: '700px',
         data: note
       })
       .afterClosed()
       .subscribe((res) => {
-        if (res) {
-          this.chargerNotes();
-        }
+        if (res) this.chargerNotes();
       });
   }
 
