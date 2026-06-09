@@ -5,15 +5,12 @@ import {
   Validators,
   ReactiveFormsModule
 } from '@angular/forms';
-
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
   MatDialogRef
 } from '@angular/material/dialog';
-
 import { CommonModule } from '@angular/common';
-
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +28,6 @@ import { MatiereService } from 'src/app/services/matiere.service';
 @Component({
   selector: 'vex-emploi-du-temps-form',
   standalone: true,
-
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -45,25 +41,21 @@ import { MatiereService } from 'src/app/services/matiere.service';
     MatDatepickerModule,
     MatNativeDateModule
   ],
-
   templateUrl: './emploi-du-temps-form.component.html',
   styleUrl: './emploi-du-temps-form.component.scss'
 })
 export class EmploiDuTempsFormComponent implements OnInit {
   form!: FormGroup;
-  isLoading: boolean = false;
-
+  isLoading = false;
   mode: 'create' | 'update' = 'create';
 
-  jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-
+  jours        = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
   periodicites = ['HEBDOMADAIRE', 'QUOTIDIEN', 'MENSUEL', 'UNIQUE'];
+  types        = ['COURS', 'RECREATION', 'PAUSE'];
 
-  types = ['COURS', 'RECREATION', 'PAUSE'];
-
-  classes: any[] = [];
+  classes:     any[] = [];
   enseignants: any[] = [];
-  matieres: any[] = [];
+  matieres:    any[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public defaults: any,
@@ -78,104 +70,92 @@ export class EmploiDuTempsFormComponent implements OnInit {
   ngOnInit(): void {
     if (this.defaults) {
       this.mode = 'update';
-      console.log('DEFAULTS', this.defaults);
     }
 
     this.form = this.fb.group({
-  id: [this.defaults?.id || null],
+      id:          [this.defaults?.id ?? null],
+      classe:      [this.defaults?.classe?.id ?? null],
+      enseignant:  [this.defaults?.enseignant?.id ?? null],
+      matiere:     [this.defaults?.matiere?.id ?? null],
+      jours:       [this.defaults?.jours ?? [],    Validators.required],
+      heureDebut:  [this.defaults?.heureDebut ?? '', Validators.required],
+      heureFin:    [this.defaults?.heureFin   ?? '', Validators.required],
+      periodicite: [this.defaults?.periodicite ?? '', Validators.required],
+      dateDebut:   [this.defaults?.dateDebut   ?? '', Validators.required],
+      dateFin:     [this.defaults?.dateFin     ?? '', Validators.required],
+      description: [this.defaults?.description ?? ''],
+      type:        [this.defaults?.type        ?? 'COURS', Validators.required]
+    });
 
-  classe: [this.defaults?.classe?.id || null, Validators.required],
+    // Mettre à jour les validateurs quand le type change
+    this.form.get('type')!.valueChanges.subscribe(type => {
+      this.mettreAJourValidateurs(type);
+    });
 
-  enseignant: [this.defaults?.enseignant?.id || null, Validators.required],
+    // Appliquer les validateurs au type initial
+    this.mettreAJourValidateurs(this.form.get('type')!.value);
 
-  matiere: [this.defaults?.matiere?.id || null, Validators.required],
-
-  jours: [this.defaults?.jours || [], Validators.required],
-
-  heureDebut: [this.defaults?.heureDebut || '', Validators.required],
-
-  heureFin: [this.defaults?.heureFin || '', Validators.required],
-
-  periodicite: [this.defaults?.periodicite || '', Validators.required],
-
-  dateDebut: [this.defaults?.dateDebut || '', Validators.required],
-
-  dateFin: [this.defaults?.dateFin || '', Validators.required],
-
-  description: [this.defaults?.description || ''],
-
-  type: [this.defaults?.type || 'COURS', Validators.required]
-});
     this.loadData();
   }
 
-  loadData() {
-    this.classeService.getAllClasses().subscribe((res: any) => {
-      this.classes = res;
-    });
-
-    this.enseignantService.getAllEnseignants().subscribe((res: any) => {
-      this.enseignants = res;
-    });
-
-    this.matiereService.getAllMatieres().subscribe((res: any) => {
-      this.matieres = res;
-    });
+  get isCours(): boolean {
+    return this.form.get('type')!.value === 'COURS';
   }
 
-  save() {
-    console.log('🔥 SAVE CLICKED');
+  mettreAJourValidateurs(type: string): void {
+    const champsCours = ['classe', 'enseignant', 'matiere'];
 
+    if (type === 'COURS') {
+      champsCours.forEach(champ => {
+        this.form.get(champ)!.setValidators(Validators.required);
+        this.form.get(champ)!.updateValueAndValidity();
+      });
+    } else {
+      // RECREATION / PAUSE : on vide et on retire les validateurs
+      champsCours.forEach(champ => {
+        this.form.get(champ)!.clearValidators();
+        this.form.get(champ)!.setValue(null);
+        this.form.get(champ)!.updateValueAndValidity();
+      });
+    }
+  }
+
+  loadData(): void {
+    this.classeService.getAllClasses().subscribe((res: any)     => this.classes     = res);
+    this.enseignantService.getAllEnseignants().subscribe((res: any) => this.enseignants = res);
+    this.matiereService.getAllMatieres().subscribe((res: any)   => this.matieres    = res);
+  }
+
+  save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.isLoading = true;
-
     const v = this.form.value;
 
-    const payload = {
+    const payload: any = {
       ...v,
-
-      classe: {
-        id: v.classe
-      },
-
-      enseignant: {
-        id: v.enseignant
-      },
-
-      matiere: {
-        id: v.matiere
-      }
+      classe:     v.classe     ? { id: v.classe }     : null,
+      enseignant: v.enseignant ? { id: v.enseignant } : null,
+      matiere:    v.matiere    ? { id: v.matiere }    : null
     };
-
-    console.log('📦 PAYLOAD =>', payload);
 
     this.service.save(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-
         Swal.fire({
           icon: 'success',
           title: 'Succès',
-          text:
-            this.mode === 'create'
-              ? 'Emploi du temps ajouté'
-              : 'Emploi du temps modifié',
+          text: this.mode === 'create' ? 'Emploi du temps ajouté' : 'Emploi du temps modifié',
           timer: 2000,
           showConfirmButton: false
         });
-
         this.dialogRef.close(res);
       },
-
       error: (err: any) => {
-        console.log(err);
-
         this.isLoading = false;
-
         Swal.fire({
           icon: 'error',
           title: 'Erreur',

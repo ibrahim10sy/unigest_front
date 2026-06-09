@@ -1,19 +1,17 @@
 import {
   Component,
-  TemplateRef,
-  ViewChild,
   ViewEncapsulation,
   OnInit,
   LOCALE_ID
 } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import {
   CalendarA11y,
   CalendarCommonModule,
   CalendarDateFormatter,
   CalendarDayModule,
   CalendarEvent,
-  CalendarEventAction,
   CalendarEventTimesChangedEvent,
   CalendarEventTitleFormatter,
   CalendarModule,
@@ -23,7 +21,6 @@ import {
   CalendarWeekModule,
   DateAdapter
 } from 'angular-calendar';
-import { addDays, addHours, endOfDay, startOfDay } from 'date-fns';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CalendarEditComponent } from './calendar-edit/calendar-edit.component';
@@ -37,9 +34,8 @@ import { FormsModule } from '@angular/forms';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { EmploiDuTempsService } from 'src/app/services/emploi-du-temps.service';
 import { ClasseService } from 'src/app/services/classe.service';
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CustomEventTitleFormatter } from 'src/app/services/CustomEventTitleFormatter.service';
-             // ← adapter le chemin
 
 @Component({
   selector: 'vex-calendar',
@@ -64,26 +60,17 @@ import { CustomEventTitleFormatter } from 'src/app/services/CustomEventTitleForm
     NgSwitch,
     NgSwitchCase,
     MatProgressSpinnerModule
-],
-providers: [
-  { provide: DateAdapter, useFactory: adapterFactory },
-  { provide: LOCALE_ID, useValue: 'fr' },
-  { provide: CalendarEventTitleFormatter, useClass: CustomEventTitleFormatter },
-  CalendarDateFormatter,
-  CalendarUtils,
-  CalendarA11y
-]
-  // providers: [
-  //   { provide: DateAdapter, useFactory: adapterFactory },
-  //   CalendarEventTitleFormatter,
-  //   CalendarDateFormatter,
-  //   CalendarUtils,
-  //   CalendarA11y
-  // ]
+  ],
+  providers: [
+    { provide: DateAdapter, useFactory: adapterFactory },
+    { provide: LOCALE_ID, useValue: 'fr' },
+    { provide: CalendarEventTitleFormatter, useClass: CustomEventTitleFormatter },
+    CalendarDateFormatter,
+    CalendarUtils,
+    CalendarA11y
+  ]
 })
 export class CalendarComponent implements OnInit {
-
-  // ── Angular Calendar ──────────────────────────────────────
   view: CalendarView = CalendarView.Month;
   CalendarView = CalendarView;
   viewDate: Date = new Date();
@@ -91,7 +78,6 @@ export class CalendarComponent implements OnInit {
   events: CalendarEvent[] = [];
   activeDayIsOpen = false;
 
-  // ── Données métier ────────────────────────────────────────
   classes: any[] = [];
   classeId!: number;
   loading = false;
@@ -107,8 +93,6 @@ export class CalendarComponent implements OnInit {
     this.loadClasses();
   }
 
-  // ── Chargement ────────────────────────────────────────────
-
   loadClasses(): void {
     this.classeService.getAllClasses().subscribe((res: any[]) => {
       this.classes = res;
@@ -123,14 +107,33 @@ export class CalendarComponent implements OnInit {
     if (!this.classeId) return;
     this.loading = true;
 
-    this.emploiService.getByClasse(this.classeId).subscribe({
-      next: (res: any[]) => {
-        this.events = this.mapEmploisToEvents(res);
+    // ── Charge en parallèle :
+    //    1. les cours de la classe
+    //    2. tous les emplois (pour récupérer pauses/récréations sans classe)
+    // Si votre API expose un endpoint dédié aux pauses, remplacez getAll() par celui-ci.
+    forkJoin({
+      parClasse: this.emploiService.getByClasse(this.classeId).pipe(catchError(() => of([]))),
+      tous:      this.emploiService.getAll().pipe(catchError(() => of([])))
+    }).subscribe({
+      next: ({ parClasse, tous }) => {
+        // Garde les cours de la classe + toutes les pauses/récréations (classe null ou non)
+        const pausesEtRecreations = (tous as any[]).filter(
+          e => e.type === 'PAUSE' || e.type === 'RECREATION'
+        );
+
+        // Fusionne sans doublons (par id)
+        const ids = new Set((parClasse as any[]).map((e: any) => e.id));
+        const merged = [
+          ...(parClasse as any[]),
+          ...pausesEtRecreations.filter((e: any) => !ids.has(e.id))
+        ];
+
+        this.events = this.mapEmploisToEvents(merged);
         this.refresh.next(null);
         this.loading = false;
       },
       error: () => {
-        this.snackbar.open('Erreur lors du chargement des emplois du temps', 'Fermer', { duration: 3000 });
+        this.snackbar.open('Erreur lors du chargement', 'Fermer', { duration: 3000 });
         this.loading = false;
       }
     });
@@ -141,52 +144,85 @@ export class CalendarComponent implements OnInit {
     this.loadEmplois();
   }
 
-  // Appelé par les boutons prev/next du calendrier
   onViewDateChange(): void {
     this.loadEmplois();
   }
 
+  // ── Helpers type ─────────────────────────────────────────
+
+  isRecreation(emploi: any): boolean {
+    return emploi?.type === 'RECREATION' || emploi?.type === 'PAUSE';
+  }
+
+  private getTitreEmploi(e: any): string {
+    switch (e.type) {
+      case 'PAUSE':
+        return `Pause${e.description ? ' – ' + e.description : ''}`;
+      case 'RECREATION':
+        return `Récréation${e.description ? ' – ' + e.description : ''}`;
+      default:
+        const matiere    = e.matiere?.nom ?? '';
+        const enseignant = e.enseignant
+          ? `${e.enseignant.nom} ${e.enseignant.prenom}`.trim()
+          : '';
+        return [matiere, enseignant].filter(Boolean).join(' — ');
+    }
+  }
+
+  private getCouleurEmploi(e: any): { primary: string; secondary: string } {
+    if (e.type === 'RECREATION') {
+      return { primary: '#10b981', secondary: 'rgba(16,185,129,0.15)' }; // vert
+    }
+    if (e.type === 'PAUSE') {
+      return { primary: '#f59e0b', secondary: 'rgba(245,158,11,0.15)' }; // amber
+    }
+    const primary = e.couleur ?? '#4f46e5';
+    return { primary, secondary: this.lightenColor(primary) };
+  }
+
   // ── Mapping emploi → CalendarEvent ───────────────────────
 
-  private mapEmploisToEvents(emplois: any[]): CalendarEvent[] {
-    const joursMap: Record<string, number> = {
-      LUNDI: 1, MARDI: 2, MERCREDI: 3,
-      JEUDI: 4, VENDREDI: 5, SAMEDI: 6, DIMANCHE: 7
-    };
+  private readonly JOURS_OFFSET: Record<string, number> = {
+    LUNDI: 0, MARDI: 1, MERCREDI: 2,
+    JEUDI: 3, VENDREDI: 4, SAMEDI: 5, DIMANCHE: 6
+  };
 
+  private mapEmploisToEvents(emplois: any[]): CalendarEvent[] {
     const lundi = this.getMondayOf(this.viewDate);
     const events: CalendarEvent[] = [];
 
     for (const e of emplois) {
-      // Un emploi peut couvrir plusieurs jours (jours: JourSemaine[])
-      const jours: string[] = Array.isArray(e.jours) ? e.jours : [e.jour];
+      // Normalise jours : supporte tableau "jours" et chaîne "jour"
+      const jours: string[] = Array.isArray(e.jours) && e.jours.length
+        ? e.jours
+        : e.jour
+          ? [e.jour]
+          : [];
+
+      if (jours.length === 0) continue; // entrée sans jour → ignorée
+
+      const [hDebut, mDebut] = (e.heureDebut ?? '08:00').split(':').map(Number);
+      const [hFin,   mFin  ] = (e.heureFin   ?? '10:00').split(':').map(Number);
 
       for (const jour of jours) {
-        const jourOffset = joursMap[jour] ?? 1;
-        const date = new Date(lundi);
-        date.setDate(lundi.getDate() + (jourOffset - 1));
-
-        const [hDebut, mDebut] = (e.heureDebut ?? '08:00').split(':').map(Number);
-        const [hFin,   mFin  ] = (e.heureFin  ?? '10:00').split(':').map(Number);
+        const offset = this.JOURS_OFFSET[jour] ?? 0;
+        const date   = new Date(lundi);
+        date.setDate(lundi.getDate() + offset);
 
         const start = new Date(date);
         start.setHours(hDebut, mDebut, 0, 0);
-
         const end = new Date(date);
         end.setHours(hFin, mFin, 0, 0);
 
         events.push({
-          id: `${e.id}-${jour}`,
-          title: `${e.matiere?.nom ?? ''} — ${e.enseignant?.nom ?? ''} ${e.enseignant?.prenom ?? ''}`,
+          id:       `${e.id}-${jour}`,
+          title:    this.getTitreEmploi(e),
           start,
           end,
-          color: {
-            primary:   e.couleur ?? '#4f46e5',
-            secondary: this.lightenColor(e.couleur ?? '#4f46e5')
-          },
-          draggable: false,
-          resizable: { beforeStart: false, afterEnd: false },
-          meta: e
+          color:    this.getCouleurEmploi(e),
+          draggable:  false,
+          resizable:  { beforeStart: false, afterEnd: false },
+          meta:     { ...e, _jour: jour }
         } as CalendarEvent);
       }
     }
@@ -195,14 +231,13 @@ export class CalendarComponent implements OnInit {
   }
 
   private getMondayOf(date: Date): Date {
-    const d = new Date(date);
+    const d   = new Date(date);
     const day = d.getDay();
-    const diff = day === 0 ? -6 : 1 - day;
-    d.setDate(d.getDate() + diff);
+    d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+    d.setHours(0, 0, 0, 0);
     return d;
   }
 
-  /** Génère une couleur secondaire (fond clair) depuis la couleur primaire */
   private lightenColor(hex: string): string {
     try {
       const r = parseInt(hex.slice(1, 3), 16);
@@ -214,7 +249,7 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  // ── Interactions calendrier ───────────────────────────────
+  // ── Interactions ─────────────────────────────────────────
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
     const same = date.toDateString() === this.viewDate.toDateString();
@@ -222,28 +257,33 @@ export class CalendarComponent implements OnInit {
     this.viewDate = date;
   }
 
-  eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
-    // Lecture seule ici — pas de drag & drop pour les emplois du temps
-  }
+  eventTimesChanged(_: CalendarEventTimesChangedEvent): void {}
 
   handleEvent(action: string, event: CalendarEvent): void {
-    // Ouvre le détail / modification via CalendarEditComponent existant
-    const dialogRef = this.dialog.open(CalendarEditComponent, {
-      data: event.meta ?? event
-    });
+    if (this.isRecreation(event.meta)) {
+      this.snackbar.open(
+        `${event.title}  ·  ${event.meta.heureDebut} – ${event.meta.heureFin}`,
+        'OK',
+        { duration: 3000 }
+      );
+      return;
+    }
 
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (result) {
-        this.snackbar.open('Cours mis à jour : ' + event.title, 'OK', { duration: 2000 });
-        this.loadEmplois(); // recharge depuis l'API
-      }
-    });
+    this.dialog
+      .open(CalendarEditComponent, { data: event.meta ?? event })
+      .afterClosed()
+      .subscribe((result: any) => {
+        if (result) {
+          this.snackbar.open('Cours mis à jour : ' + event.title, 'OK', { duration: 2000 });
+          this.loadEmplois();
+        }
+      });
   }
 
   setView(view: CalendarView): void {
-  this.view = view;
-  this.refresh.next(null);
-}
+    this.view = view;
+    this.refresh.next(null);
+  }
 
   closeOpenMonthViewDay(): void {
     this.activeDayIsOpen = false;

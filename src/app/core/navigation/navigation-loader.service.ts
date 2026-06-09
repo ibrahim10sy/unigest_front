@@ -122,24 +122,19 @@ export class NavigationLoaderService {
             route: '/pedagogie/notes',
             icon: 'mat:grading'
           },
-          // {
-          //   type: 'link',
-          //   label: 'Liste horaires emploi du temps',
-          //   route: '/pedagogie/emploi-du-temps',
-          //   icon: 'mat:description'
-          // },
+          {
+            type: 'link',
+            label: 'Emploi du temps',
+            route: '/pedagogie/emploi-du-temps',
+            icon: 'mat:description'
+          },
           {
             type: 'link',
             label: 'Calendrier',
             route: '/pedagogie/calendar',
             icon: 'mat:description'
           },
-          {
-            type: 'link',
-            label: 'Emploi du temps',
-            route: '/pedagogie/emploi-du-temps-calendar',
-            icon: 'mat:description'
-          },
+          
           {
             type: 'link',
             label: 'Bulletins',

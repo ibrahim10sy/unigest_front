@@ -38,16 +38,21 @@ import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/ve
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { VexScrollbarComponent } from '@vex/components/vex-scrollbar/vex-scrollbar.component';
 
+/** Couleurs par type de créneau */
+const TYPE_COLORS: Record<string, { primary: string; secondary: string }> = {
+  COURS:      { primary: '#4f46e5', secondary: '#e0e7ff' }, // indigo
+  PAUSE:      { primary: '#f59e0b', secondary: '#fef3c7' }, // amber
+  RECREATION: { primary: '#10b981', secondary: '#d1fae5' }, // emerald
+  DEFAULT:    { primary: '#6b7280', secondary: '#f3f4f6' }, // gray
+};
+
 @Component({
   selector: 'vex-emploi-du-temps-calendar',
   standalone: true,
   templateUrl: './emploi-du-temps-calendar.component.html',
   styleUrls: ['./emploi-du-temps-calendar.component.scss'],
   providers: [
-    {
-      provide: DateAdapter,
-      useFactory: adapterFactory
-    },
+    { provide: DateAdapter, useFactory: adapterFactory },
     CalendarEventTitleFormatter,
     CalendarDateFormatter,
     CalendarUtils,
@@ -126,49 +131,92 @@ export class EmploiDuTempsCalendarComponent implements OnInit {
 
   // ── Mapping emploi → CalendarEvent ───────────────────────
 
+  /**
+   * Correspondance jour textuel → offset depuis lundi (0-based).
+   * LUNDI = 0, MARDI = 1 … SAMEDI = 5
+   */
+  private readonly JOURS_OFFSET: Record<string, number> = {
+    LUNDI: 0, MARDI: 1, MERCREDI: 2,
+    JEUDI: 3, VENDREDI: 4, SAMEDI: 5
+  };
+
   private mapEmploisToEvents(emplois: any[]): CalendarEvent[] {
-    // Jour de référence : lundi de la semaine affichée
-    const joursMap: Record<string, number> = {
-      LUNDI: 1, MARDI: 2, MERCREDI: 3,
-      JEUDI: 4, VENDREDI: 5, SAMEDI: 6
-    };
+    const lundi = this.getMondayOf(this.viewDate);
+    const calendarEvents: CalendarEvent[] = [];
 
-    return emplois.map(e => {
-      const jourOffset = joursMap[e.jour] ?? 1;
+    for (const e of emplois) {
+      // Normalise : supporte "jours" (tableau) et "jour" (chaîne) pour rétro-compatibilité
+      const jours: string[] = Array.isArray(e.jours)
+        ? e.jours
+        : e.jour
+          ? [e.jour]
+          : [];
 
-      // Trouver le lundi de la semaine courante
-      const lundi = this.getMondayOf(this.viewDate);
-      const date = new Date(lundi);
-      date.setDate(lundi.getDate() + (jourOffset - 1));
+      const type: string = (e.type ?? 'DEFAULT').toUpperCase();
+      const color = e.couleur
+        ? { primary: e.couleur, secondary: e.couleur + '33' }
+        : (TYPE_COLORS[type] ?? TYPE_COLORS['DEFAULT']);
 
       const [hDebut, mDebut] = (e.heureDebut ?? '08:00').split(':').map(Number);
       const [hFin,   mFin  ] = (e.heureFin  ?? '10:00').split(':').map(Number);
 
-      const start = new Date(date);
-      start.setHours(hDebut, mDebut, 0, 0);
+      // Construit le titre selon le type
+      const title = this.buildTitle(e, type);
 
-      const end = new Date(date);
-      end.setHours(hFin, mFin, 0, 0);
+      // Un événement par jour de la liste
+      for (const jour of jours) {
+        const offset = this.JOURS_OFFSET[jour] ?? 0;
 
-      return {
-        id:    e.id,
-        title: `${e.matiere?.nom ?? ''} — ${e.enseignant?.nom ?? ''} ${e.enseignant?.prenom ?? ''}`,
-        start,
-        end,
-        color: {
-          primary:   e.couleur ?? '#4f46e5',
-          secondary: e.couleur ?? '#e0e7ff'
-        },
-        meta: e   // garde les données brutes pour modifier/supprimer
-      } as CalendarEvent;
-    });
+        const date = new Date(lundi);
+        date.setDate(lundi.getDate() + offset);
+
+        const start = new Date(date);
+        start.setHours(hDebut, mDebut, 0, 0);
+
+        const end = new Date(date);
+        end.setHours(hFin, mFin, 0, 0);
+
+        calendarEvents.push({
+          id:    `${e.id}-${jour}`,
+          title,
+          start,
+          end,
+          color,
+          resizable: { beforeStart: false, afterEnd: false },
+          draggable:  false,
+          meta: { ...e, _jourCourant: jour, _type: type }
+        } as CalendarEvent);
+      }
+    }
+
+    return calendarEvents;
+  }
+
+  /** Construit le libellé affiché dans la bulle du calendrier */
+  private buildTitle(e: any, type: string): string {
+    switch (type) {
+      case 'COURS': {
+        const matiere    = e.matiere?.nom ?? '';
+        const enseignant = e.enseignant
+          ? `${e.enseignant.nom} ${e.enseignant.prenom}`
+          : '';
+        return [matiere, enseignant].filter(Boolean).join(' — ');
+      }
+      case 'PAUSE':
+        return `Pause${e.description ? ' – ' + e.description : ''}`;
+      case 'RECREATION':
+        return `Récréation${e.description ? ' – ' + e.description : ''}`;
+      default:
+        return e.description ?? type;
+    }
   }
 
   private getMondayOf(date: Date): Date {
     const d = new Date(date);
-    const day = d.getDay(); // 0=dim, 1=lun …
+    const day = d.getDay(); // 0=dim
     const diff = day === 0 ? -6 : 1 - day;
     d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
     return d;
   }
 
@@ -183,14 +231,18 @@ export class EmploiDuTempsCalendarComponent implements OnInit {
   }
 
   eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
+    // Drag & drop désactivé côté data, on met juste à jour localement si besoin
     this.events = this.events.map(e =>
       e === event ? { ...event, start: newStart, end: newEnd! } : e
     );
   }
 
   handleEvent(action: string, event: CalendarEvent): void {
-    // Clic sur un cours → ouvrir le formulaire de modification
-    this.modifier(event.meta);
+    const meta = event.meta;
+    // Les pauses/récréations ne sont pas modifiables via le formulaire cours
+    if (meta?._type === 'COURS') {
+      this.modifier(meta);
+    }
   }
 
   private isSameDay(a: Date, b: Date): boolean {
@@ -219,9 +271,11 @@ export class EmploiDuTempsCalendarComponent implements OnInit {
 
   supprimer(id: number) {
     Swal.fire({
-      title: 'Supprimer ce cours ?',
+      title: 'Supprimer ce créneau ?',
       icon: 'warning',
-      showCancelButton: true
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler'
     }).then(r => {
       if (r.isConfirmed) {
         this.service.delete(id).subscribe(() => {

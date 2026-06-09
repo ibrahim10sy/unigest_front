@@ -1,11 +1,10 @@
 <form [formGroup]="form">
+  <!-- Titre -->
   <div mat-dialog-title class="flex items-center justify-between">
     <h2 class="headline m-0">
-      {{ mode === "update" ? "Modifier" : "Nouvel" }}
-      emploi du temps
+      {{ mode === "update" ? "Modifier" : "Nouvel" }} emploi du temps
     </h2>
-
-    <button mat-icon-button mat-dialog-close>
+    <button mat-icon-button mat-dialog-close type="button">
       <mat-icon svgIcon="mat:close"></mat-icon>
     </button>
   </div>
@@ -13,114 +12,144 @@
   <mat-divider class="-mx-6 text-border"></mat-divider>
 
   <mat-dialog-content class="flex flex-col gap-4 mt-4">
-    <div class="grid grid-cols-2 gap-4">
-      <mat-form-field>
-        <mat-label>Classe</mat-label>
-        <mat-select formControlName="classe">
-          <mat-option *ngFor="let c of classes" [value]="c.id">
-            {{ c.nom }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>Enseignant</mat-label>
-        <mat-select formControlName="enseignant">
-          <mat-option *ngFor="let e of enseignants" [value]="e.id">
-            {{ e.nom }} {{ e.prenom }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <!-- Type en premier : conditionne l'affichage du reste -->
+    <mat-form-field class="w-full">
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="type">
+        <mat-option *ngFor="let t of types" [value]="t">
+          <span [ngSwitch]="t">
+            <ng-container *ngSwitchCase="'COURS'">Cours</ng-container>
+            <ng-container *ngSwitchCase="'RECREATION'">Récréation</ng-container>
+            <ng-container *ngSwitchCase="'PAUSE'">Pause</ng-container>
+          </span>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type">
-          <mat-option *ngFor="let t of types" [value]="t">
-            {{ t }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <!-- Champs uniquement pour les COURS -->
+    <ng-container *ngIf="isCours">
+      <div class="grid grid-cols-2 gap-4">
+        <mat-form-field>
+          <mat-label>Classe</mat-label>
+          <mat-select formControlName="classe">
+            <mat-option *ngFor="let c of classes" [value]="c.id">
+              {{ c.nom }}
+            </mat-option>
+          </mat-select>
+          <mat-error>Classe requise</mat-error>
+        </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>Matière</mat-label>
-        <mat-select formControlName="matiere">
-          <mat-option *ngFor="let m of matieres" [value]="m.id">
-            {{ m.nom }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field>
+          <mat-label>Enseignant</mat-label>
+          <mat-select formControlName="enseignant">
+            <mat-option *ngFor="let e of enseignants" [value]="e.id">
+              {{ e.nom }} {{ e.prenom }}
+            </mat-option>
+          </mat-select>
+          <mat-error>Enseignant requis</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-span-2">
+          <mat-label>Matière</mat-label>
+          <mat-select formControlName="matiere">
+            <mat-option *ngFor="let m of matieres" [value]="m.id">
+              {{ m.nom }}
+            </mat-option>
+          </mat-select>
+          <mat-error>Matière requise</mat-error>
+        </mat-form-field>
+      </div>
+    </ng-container>
+
+    <!-- Petite info contextuelle pour récréation/pause -->
+    <div
+      *ngIf="!isCours"
+      class="flex items-center gap-2 px-4 py-3 rounded bg-orange-50 text-orange-700 text-sm">
+      <mat-icon class="text-orange-400" svgIcon="mat:info"></mat-icon>
+      <span>
+        Une <strong>{{ form.get('type')!.value | lowercase }}</strong>
+        ne nécessite pas de classe, d'enseignant ni de matière.
+      </span>
     </div>
 
-    <!-- Ligne Jour / Périodicité -->
+    <!-- Jours / Périodicité -->
     <div class="grid grid-cols-2 gap-4">
       <mat-form-field>
         <mat-label>Jours</mat-label>
-
         <mat-select formControlName="jours" multiple>
           <mat-option *ngFor="let j of jours" [value]="j">
-            {{ j }}
+            {{ j | titlecase }}
           </mat-option>
         </mat-select>
+        <mat-error>Sélectionnez au moins un jour</mat-error>
       </mat-form-field>
 
       <mat-form-field>
-        <mat-label>Période</mat-label>
+        <mat-label>Périodicité</mat-label>
         <mat-select formControlName="periodicite">
           <mat-option *ngFor="let p of periodicites" [value]="p">
-            {{ p }}
+            {{ p | titlecase }}
           </mat-option>
         </mat-select>
+        <mat-error>Périodicité requise</mat-error>
       </mat-form-field>
     </div>
 
+    <!-- Horaires -->
     <div class="grid grid-cols-2 gap-4">
       <mat-form-field>
         <mat-label>Heure début</mat-label>
         <input type="time" matInput formControlName="heureDebut" />
+        <mat-error>Heure de début requise</mat-error>
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>Heure fin</mat-label>
         <input type="time" matInput formControlName="heureFin" />
+        <mat-error>Heure de fin requise</mat-error>
       </mat-form-field>
     </div>
 
+    <!-- Dates de validité -->
     <div class="grid grid-cols-2 gap-4">
       <mat-form-field>
         <mat-label>Date début</mat-label>
         <input matInput [matDatepicker]="picker1" formControlName="dateDebut" />
-
-        <mat-datepicker-toggle matSuffix [for]="picker1">
-        </mat-datepicker-toggle>
-
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
         <mat-datepicker #picker1></mat-datepicker>
+        <mat-error>Date de début requise</mat-error>
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>Date fin</mat-label>
         <input matInput [matDatepicker]="picker2" formControlName="dateFin" />
-
-        <mat-datepicker-toggle matSuffix [for]="picker2">
-        </mat-datepicker-toggle>
-
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
         <mat-datepicker #picker2></mat-datepicker>
+        <mat-error>Date de fin requise</mat-error>
       </mat-form-field>
     </div>
 
+    <!-- Description -->
     <mat-form-field>
       <mat-label>Description</mat-label>
-      <textarea rows="3" matInput formControlName="description"> </textarea>
+      <textarea rows="3" matInput formControlName="description"></textarea>
     </mat-form-field>
+
   </mat-dialog-content>
 
   <mat-divider class="-mx-6 text-border"></mat-divider>
 
   <mat-dialog-actions align="end">
     <button type="button" mat-button mat-dialog-close>Annuler</button>
-
-    <button mat-flat-button color="primary" type="submit" (click)="save()">
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="save()"
+      [disabled]="isLoading">
       <mat-icon svgIcon="mat:save"></mat-icon>
-      Enregistrer
+      {{ isLoading ? 'Enregistrement...' : 'Enregistrer' }}
     </button>
   </mat-dialog-actions>
 </form>

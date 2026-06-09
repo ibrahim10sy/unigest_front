@@ -23,6 +23,12 @@ export class EmploiDuTempsService {
       `${this.apiUrl}/classe/${classeId}`
     );
   }
+  
+  getToday(): Observable<EmploiDuTemps[]> {
+    return this.http.get<EmploiDuTemps[]>(
+      `${this.apiUrl}/all`
+    );
+  }
 
   save(data: EmploiDuTemps): Observable<EmploiDuTemps> {
       console.log("📡 HTTP SAVE CALL =>", data);
