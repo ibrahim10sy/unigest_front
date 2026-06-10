@@ -149,6 +149,13 @@
               </button>
               <button
                 mat-icon-button
+                style="color: #c0392b"
+                (click)="telechargerPdf(row)"
+                matTooltip="Télécharger le PDF">
+                <mat-icon svgIcon="mat:picture_as_pdf"></mat-icon>
+              </button>
+              <button
+                mat-icon-button
                 color="warn"
                 (click)="supprimer(row)"
                 matTooltip="Supprimer">

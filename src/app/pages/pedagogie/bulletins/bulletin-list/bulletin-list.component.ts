@@ -233,6 +233,24 @@ export class BulletinListComponent implements OnInit {
     });
   }
 
+  // ─── Téléchargement PDF ───────────────────────────────────────────────────
+
+  telechargerPdf(bulletin: Bulletin) {
+    this.bulletinService.telechargerPdf(bulletin.id!).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a   = document.createElement('a');
+        const nom = `bulletin_${bulletin.etudiant?.nom}_${bulletin.etudiant?.prenom}_${bulletin.typePeriode}${bulletin.periode}.pdf`
+          .toLowerCase().replace(/ /g, '_');
+        a.href     = url;
+        a.download = nom;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => Swal.fire('Erreur', 'Impossible de générer le PDF', 'error')
+    });
+  }
+
   // ─── Supprimer ────────────────────────────────────────────────────────────
 
   supprimer(bulletin: Bulletin) {

@@ -131,5 +131,14 @@
 <mat-divider class="-mx-6 text-border"></mat-divider>
 
 <mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    (click)="telechargerPdf()"
+    [disabled]="isDownloading || !bulletin"
+    matTooltip="Télécharger le bulletin en PDF">
+    <mat-icon svgIcon="mat:picture_as_pdf"></mat-icon>
+    {{ isDownloading ? 'Génération...' : 'Télécharger PDF' }}
+  </button>
   <button mat-flat-button color="primary" mat-dialog-close>Fermer</button>
 </mat-dialog-actions>

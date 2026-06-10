@@ -6684,6 +6684,8 @@ var TypeNote;
   TypeNote["EXAMEN"] = "EXAMEN";
   TypeNote["TP"] = "TP";
   TypeNote["PARTICIPATION"] = "PARTICIPATION";
+  TypeNote["INTERROGATION"] = "INTERROGATION";
+  TypeNote["TRIMESTRE"] = "TRIMESTRE";
 })(TypeNote || (TypeNote = {}));
 
 /***/ }),
@@ -6702,6 +6704,7 @@ var TypePeriode;
 (function (TypePeriode) {
   TypePeriode["SEMESTRE"] = "SEMESTRE";
   TypePeriode["TRIMESTRE"] = "TRIMESTRE";
+  TypePeriode["MENSUEL"] = "MENSUEL";
 })(TypePeriode || (TypePeriode = {}));
 
 /***/ }),

@@ -131,6 +131,15 @@ export class BulletinService {
   }
 
   /**
+   * Télécharger le PDF d'un bulletin
+   */
+  telechargerPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/pdf`, {
+      responseType: 'blob'
+    });
+  }
+
+  /**
    * Supprimer bulletin
    */
   supprimerBulletin(id: number): Observable<void> {
