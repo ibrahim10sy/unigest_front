@@ -14,7 +14,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
 import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
@@ -24,7 +25,7 @@ import { TypePeriode } from 'src/app/models/TypePeriode';
 import { AnneeScolaireService } from 'src/app/services/annee-scolaire.service';
 import { BulletinService } from 'src/app/services/BulletinService.service';
 import { ClasseService } from 'src/app/services/classe.service';
-import { InscriptionService } from 'src/app/services/inscription.service';
+import { EtudiantService } from 'src/app/services/etudiant.service';
 import { BulletinDetailComponent } from '../bulletin-detail/bulletin-detail.component';
 import Swal from 'sweetalert2';
 
@@ -93,7 +94,7 @@ export class BulletinListComponent implements OnInit {
     private bulletinService: BulletinService,
     private classeService: ClasseService,
     private anneeService: AnneeScolaireService,
-    private inscriptionService: InscriptionService,
+    private etudiantService: EtudiantService,
     private dialog: MatDialog
   ) {}
 
@@ -162,14 +163,14 @@ export class BulletinListComponent implements OnInit {
   // ─── Génération des bulletins pour toute la classe ───────────────────────
 
   genererTousBulletins() {
-    if (!this.selectedClasseId || !this.selectedAnneeId) {
-      Swal.fire('Attention', 'Sélectionnez une classe et une année', 'warning');
+    if (!this.selectedClasseId) {
+      Swal.fire('Attention', 'Sélectionnez une classe', 'warning');
       return;
     }
 
     Swal.fire({
       title: 'Générer les bulletins ?',
-      text: `Générer les bulletins pour toute la classe — Période ${this.selectedPeriode} (${this.selectedTypePeriode})`,
+      text: `Période ${this.selectedPeriode} (${this.selectedTypePeriode}) — les bulletins déjà existants seront ignorés.`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Générer',
@@ -179,46 +180,48 @@ export class BulletinListComponent implements OnInit {
 
       this.isGenerating = true;
 
-      this.inscriptionService
-        .getEtudiantsParClasseEtAnnee(this.selectedClasseId, this.selectedAnneeId)
+      // Utilise getEtudiantsParClasse — retourne Etudiant[] directement
+      this.etudiantService.getEtudiantsParClasse(this.selectedClasseId)
         .subscribe({
-          next: (inscriptions: any[]) => {
-            const etudiants = inscriptions.filter((ins) => ins.etudiant?.id);
-
+          next: (etudiants: any[]) => {
             if (etudiants.length === 0) {
               this.isGenerating = false;
-              Swal.fire('Info', 'Aucun étudiant inscrit dans cette classe', 'info');
+              Swal.fire('Info', 'Aucun étudiant trouvé dans cette classe', 'info');
               return;
             }
 
-            const appels = etudiants.map((ins) =>
+            // catchError sur chaque appel → on ignore les bulletins déjà existants
+            const appels = etudiants.map((etu) =>
               this.bulletinService.genererBulletin(
-                ins.etudiant.id,
+                etu.id,
                 this.selectedPeriode,
                 this.selectedTypePeriode
-              )
+              ).pipe(catchError(() => of(null)))
             );
 
             forkJoin(appels).subscribe({
-              next: () => {
+              next: (resultats) => {
                 this.isGenerating = false;
-                Swal.fire({
-                  icon: 'success',
-                  title: `${etudiants.length} bulletin(s) généré(s)`,
-                  timer: 2000,
-                  showConfirmButton: false
-                });
+                const nbGeneres  = resultats.filter(r => r !== null).length;
+                const nbIgnores  = resultats.filter(r => r === null).length;
+
+                let message = `${nbGeneres} bulletin(s) généré(s)`;
+                if (nbIgnores > 0) {
+                  message += ` · ${nbIgnores} déjà existant(s) ignoré(s)`;
+                }
+
+                Swal.fire({ icon: 'success', title: message, timer: 2500, showConfirmButton: false });
                 this.chargerBulletins();
               },
-              error: (err) => {
+              error: () => {
                 this.isGenerating = false;
-                Swal.fire('Erreur', err?.error?.message ?? 'Génération échouée', 'error');
+                Swal.fire('Erreur', 'Une erreur est survenue pendant la génération', 'error');
               }
             });
           },
           error: () => {
             this.isGenerating = false;
-            Swal.fire('Erreur', 'Impossible de récupérer les étudiants', 'error');
+            Swal.fire('Erreur', 'Impossible de récupérer les étudiants de la classe', 'error');
           }
         });
     });
