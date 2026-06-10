@@ -1,4 +1,5 @@
 export enum TypePeriode {
   SEMESTRE = 'SEMESTRE',
-  TRIMESTRE = 'TRIMESTRE' 
+  TRIMESTRE = 'TRIMESTRE',
+  MENSUEL = 'MENSUEL'
 }

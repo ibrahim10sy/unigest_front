@@ -356,5 +356,66 @@
     </mat-paginator>
 
   </div>
+
+  <!-- ─── Section Saisie des notes ──────────────────────────────────────── -->
+  <div class="card overflow-hidden rounded-3xl bg-white shadow-xl border border-slate-100 mt-6">
+
+    <div class="px-4 sm:px-6 py-4 border-b bg-white flex items-center gap-4">
+      <div>
+        <h2 class="text-lg sm:text-xl font-bold text-slate-900">Saisie des notes</h2>
+        <p class="text-xs sm:text-sm text-slate-500">
+          Notez les étudiants de la classe par matière
+        </p>
+      </div>
+      <span class="flex-1"></span>
+      <span class="text-xs text-slate-400">
+        {{ etudiants.length }} étudiant(s) dans la classe
+      </span>
+    </div>
+
+    <div class="px-6 py-5">
+
+      <!-- Aucune matière -->
+      <div
+        *ngIf="!affectation?.matieres || affectation.matieres.length === 0"
+        class="text-center py-6 text-slate-400 text-sm">
+        Aucune matière assignée à cette affectation.
+      </div>
+
+      <!-- Grille des matières -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+           *ngIf="affectation?.matieres?.length">
+        <div
+          *ngFor="let matiere of affectation.matieres"
+          class="group border border-slate-200 rounded-2xl p-5 hover:border-indigo-300 hover:shadow-md transition-all duration-200 bg-slate-50 hover:bg-white">
+
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+                <mat-icon svgIcon="mat:menu_book" class="text-indigo-600 scale-90"></mat-icon>
+              </div>
+              <div>
+                <p class="font-bold text-slate-800 leading-tight">{{ matiere.nom }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">Matière</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            mat-flat-button
+            color="primary"
+            class="w-full"
+            (click)="ouvrirNotation(matiere)">
+            <mat-icon svgIcon="mat:edit_note"></mat-icon>
+            Saisir les notes
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- ────────────────────────────────────────────────────────────────────── -->
+
 </vex-page-layout-content>
 </vex-page-layout>

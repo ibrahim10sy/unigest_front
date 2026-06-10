@@ -1,7 +1,15 @@
 <form [formGroup]="form">
+
   <!-- Titre -->
   <div mat-dialog-title class="flex items-center justify-between">
-    <h2 class="headline m-0">Saisie des notes</h2>
+    <div>
+      <h2 class="headline m-0">Saisie des notes</h2>
+      <p class="text-secondary text-xs mt-0.5" *ngIf="modePreRempli">
+        {{ data.affectation?.classe?.nom }} —
+        {{ data.affectation?.enseignant?.nom }} {{ data.affectation?.enseignant?.prenom }} —
+        <strong>{{ data.matiere?.nom }}</strong>
+      </p>
+    </div>
     <button mat-icon-button mat-dialog-close type="button">
       <mat-icon svgIcon="mat:close"></mat-icon>
     </button>
@@ -11,8 +19,9 @@
 
   <mat-dialog-content class="flex flex-col gap-4 mt-4" style="min-width: 560px;">
 
-    <!-- Classe + Année -->
-    <div class="grid grid-cols-2 gap-4">
+    <!-- ── Mode autonome : sélecteurs classe / affectation / matière ───────── -->
+    <ng-container *ngIf="!modePreRempli">
+
       <mat-form-field>
         <mat-label>Classe</mat-label>
         <mat-select formControlName="classeId" (selectionChange)="onClasseChange()">
@@ -21,41 +30,34 @@
         <mat-error>Classe requise</mat-error>
       </mat-form-field>
 
+      <!-- Affectation -->
       <mat-form-field>
-        <mat-label>Année scolaire</mat-label>
-        <mat-select formControlName="anneeId" (selectionChange)="onAnneeChange()">
-          <mat-option *ngFor="let a of annees" [value]="a.id">{{ a.libelle }}</mat-option>
+        <mat-label>Enseignant / Affectation</mat-label>
+        <mat-select formControlName="affectationId" (selectionChange)="onAffectationChange()">
+          <mat-option *ngFor="let a of affectations" [value]="a.id">
+            {{ getAffectationLabel(a) }}
+          </mat-option>
         </mat-select>
-        <mat-error>Année requise</mat-error>
+        <mat-hint *ngIf="affectations.length === 0 && form.get('classeId')?.value">
+          Aucune affectation pour cette classe
+        </mat-hint>
+        <mat-error>Affectation requise</mat-error>
       </mat-form-field>
-    </div>
 
-    <!-- Affectation -->
-    <mat-form-field>
-      <mat-label>Enseignant / Affectation</mat-label>
-      <mat-select formControlName="affectationId" (selectionChange)="onAffectationChange()">
-        <mat-option *ngFor="let a of affectations" [value]="a.id">
-          {{ getAffectationLabel(a) }}
-        </mat-option>
-      </mat-select>
-      <mat-hint *ngIf="affectations.length === 0 && form.get('classeId')?.value">
-        Aucune affectation pour cette classe
-      </mat-hint>
-      <mat-error>Affectation requise</mat-error>
-    </mat-form-field>
+      <!-- Matière de l'affectation -->
+      <mat-form-field *ngIf="selectedAffectation">
+        <mat-label>Matière</mat-label>
+        <mat-select formControlName="matiereId">
+          <mat-option *ngFor="let m of selectedAffectation.matieres" [value]="m.id">
+            {{ m.nom }}
+          </mat-option>
+        </mat-select>
+        <mat-error>Matière requise</mat-error>
+      </mat-form-field>
 
-    <!-- Matière de l'affectation choisie -->
-    <mat-form-field *ngIf="selectedAffectation">
-      <mat-label>Matière</mat-label>
-      <mat-select formControlName="matiereId">
-        <mat-option *ngFor="let m of selectedAffectation.matieres" [value]="m.id">
-          {{ m.nom }}
-        </mat-option>
-      </mat-select>
-      <mat-error>Matière requise</mat-error>
-    </mat-form-field>
+    </ng-container>
 
-    <!-- Type période + Période + Type note -->
+    <!-- ── Période + Type de note (communs aux deux modes) ────────────────── -->
     <div class="grid grid-cols-3 gap-4">
       <mat-form-field>
         <mat-label>Type de période</mat-label>
@@ -75,56 +77,56 @@
         <mat-label>Type de note</mat-label>
         <mat-select formControlName="typeNote">
           <mat-option value="DEVOIR">Devoir</mat-option>
-          <mat-option value="EXAMEN">Examen / Composition</mat-option>
+          <mat-option value="EXAMEN">Composition</mat-option>
           <mat-option value="TP">TP</mat-option>
           <mat-option value="PARTICIPATION">Participation</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
 
-    <!-- Spinner chargement étudiants -->
+    <!-- ── Chargement étudiants (mode autonome) ────────────────────────────── -->
     <div *ngIf="isLoadingStudents" class="flex justify-center py-6">
       <mat-spinner diameter="36"></mat-spinner>
     </div>
 
-    <!-- Aucun étudiant -->
     <div
-      *ngIf="!isLoadingStudents && form.get('classeId')?.value && etudiantNotes.length === 0"
+      *ngIf="!isLoadingStudents && !modePreRempli && form.get('classeId')?.value && etudiantNotes.length === 0"
       class="text-center py-4 text-secondary text-sm">
-      Aucun étudiant inscrit dans cette classe pour l'année sélectionnée.
+      Aucun étudiant trouvé dans cette classe.
     </div>
 
-    <!-- Tableau de saisie des notes -->
+    <!-- ── Tableau de saisie des notes ─────────────────────────────────────── -->
     <ng-container *ngIf="!isLoadingStudents && etudiantNotes.length > 0">
       <mat-divider></mat-divider>
 
       <div class="flex items-center justify-between">
         <span class="text-sm font-medium">
-          Étudiants ({{ etudiantNotes.length }}) —
-          <span class="text-primary font-semibold">{{ notesRenseignees }}</span> note(s) saisie(s)
+          {{ etudiantNotes.length }} étudiant(s) —
+          <span class="text-primary font-semibold">{{ notesRenseignees }}</span>
+          note(s) saisie(s)
         </span>
-        <button type="button" mat-stroked-button class="text-xs" (click)="effacerTout()">
-          <mat-icon svgIcon="mat:clear_all"></mat-icon>
+        <button type="button" mat-stroked-button class="text-xs h-8" (click)="effacerTout()">
+          <mat-icon svgIcon="mat:clear_all" class="scale-75"></mat-icon>
           Effacer tout
         </button>
       </div>
 
-      <div class="overflow-auto border rounded" style="max-height: 280px;">
+      <div class="overflow-auto border rounded" style="max-height: 320px;">
         <table class="w-full text-sm">
           <thead class="bg-app-bar sticky top-0 z-10">
             <tr>
-              <th class="px-4 py-2 text-left text-xs font-medium text-secondary uppercase">#</th>
-              <th class="px-4 py-2 text-left text-xs font-medium text-secondary uppercase">Étudiant</th>
-              <th class="px-4 py-2 text-center text-xs font-medium text-secondary uppercase">Note /20</th>
+              <th class="px-4 py-2.5 text-left text-xs font-semibold text-secondary uppercase w-10">#</th>
+              <th class="px-4 py-2.5 text-left text-xs font-semibold text-secondary uppercase">Étudiant</th>
+              <th class="px-4 py-2.5 text-center text-xs font-semibold text-secondary uppercase w-28">Note /20</th>
             </tr>
           </thead>
           <tbody>
             <tr
               *ngFor="let e of etudiantNotes; let i = index; trackBy: trackByEtudiant"
               class="border-t hover:bg-hover transition-colors">
-              <td class="px-4 py-2 text-secondary text-xs">{{ i + 1 }}</td>
-              <td class="px-4 py-2 font-medium">{{ e.prenom }} {{ e.nom }}</td>
-              <td class="px-4 py-2 text-center">
+              <td class="px-4 py-2.5 text-secondary text-xs">{{ i + 1 }}</td>
+              <td class="px-4 py-2.5 font-medium">{{ e.prenom }} {{ e.nom }}</td>
+              <td class="px-4 py-2.5 text-center">
                 <input
                   type="number"
                   [(ngModel)]="e.valeur"
@@ -133,7 +135,8 @@
                   max="20"
                   step="0.25"
                   placeholder="—"
-                  class="w-20 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-primary"
+                  class="w-20 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                  [class.border-primary]="e.valeur !== null"
                 />
               </td>
             </tr>
@@ -158,4 +161,5 @@
       {{ isLoading ? 'Enregistrement...' : 'Enregistrer les notes' }}
     </button>
   </mat-dialog-actions>
+
 </form>

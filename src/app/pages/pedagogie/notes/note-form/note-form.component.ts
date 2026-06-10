@@ -10,23 +10,34 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import Swal from 'sweetalert2';
 
 import { ClasseService } from 'src/app/services/classe.service';
 import { AffectationService } from 'src/app/services/affectation.service';
-import { InscriptionService } from 'src/app/services/inscription.service';
+import { EtudiantService } from 'src/app/services/etudiant.service';
 import { NoteService } from 'src/app/services/note.service';
 import { AnneeScolaireService } from 'src/app/services/annee-scolaire.service';
 import { TypePeriode } from 'src/app/models/TypePeriode';
 import { TypeNote } from 'src/app/models/TypeNote';
 import { NoteBatchRequest } from 'src/app/models/NoteBatchRequest';
+import { Etudiant } from 'src/app/models/Etudiant';
 
 interface EtudiantNote {
   etudiantId: number;
   nom: string;
   prenom: string;
   valeur: number | null;
+}
+
+/**
+ * Données reçues selon le contexte d'ouverture :
+ *  - Depuis la page détail affectation : { etudiants, matiere, affectation }
+ *  - Depuis la page notes (autonome)    : null
+ */
+interface NoteFormData {
+  etudiants?: Etudiant[];
+  matiere?: { id: number; nom: string };
+  affectation?: { id: number; classe: { id: number; nom: string }; enseignant: any; matieres: any[] };
 }
 
 @Component({
@@ -43,8 +54,7 @@ interface EtudiantNote {
     MatSelectModule,
     MatIconModule,
     MatDividerModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule
+    MatProgressSpinnerModule
   ],
   templateUrl: './note-form.component.html',
   styleUrl: './note-form.component.scss'
@@ -54,6 +64,7 @@ export class NoteFormComponent implements OnInit {
   isLoading = false;
   isLoadingStudents = false;
 
+  // Mode autonome
   classes: any[] = [];
   affectations: any[] = [];
   annees: any[] = [];
@@ -64,7 +75,13 @@ export class NoteFormComponent implements OnInit {
 
   etudiantNotes: EtudiantNote[] = [];
 
+  // true = ouvert depuis détail affectation (étudiants déjà fournis)
+  get modePreRempli(): boolean {
+    return !!(this.data?.affectation && this.data?.etudiants);
+  }
+
   get selectedAffectation(): any {
+    if (this.modePreRempli) return this.data.affectation;
     const id = this.form?.get('affectationId')?.value;
     return this.affectations.find(a => a.id === id) ?? null;
   }
@@ -74,36 +91,57 @@ export class NoteFormComponent implements OnInit {
   }
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: NoteFormData,
     private dialogRef: MatDialogRef<NoteFormComponent>,
     private fb: FormBuilder,
     private classeService: ClasseService,
     private affectationService: AffectationService,
-    private inscriptionService: InscriptionService,
+    private etudiantService: EtudiantService,
     private noteService: NoteService,
     private anneeService: AnneeScolaireService
   ) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      classeId:     [null, Validators.required],
-      anneeId:      [null, Validators.required],
-      affectationId:[null, Validators.required],
-      matiereId:    [null, Validators.required],
-      typePeriode:  [TypePeriode.TRIMESTRE, Validators.required],
-      periode:      [1, Validators.required],
-      typeNote:     [TypeNote.DEVOIR, Validators.required]
-    });
-
-    this.loadInitialData();
+    if (this.modePreRempli) {
+      this.initModePreRempli();
+    } else {
+      this.initModeAutonome();
+    }
   }
 
-  loadInitialData(): void {
+  // ─── Mode pré-rempli (depuis détail affectation) ──────────────────────────
+
+  private initModePreRempli(): void {
+    this.form = this.fb.group({
+      typePeriode: [TypePeriode.TRIMESTRE, Validators.required],
+      periode:     [1, Validators.required],
+      typeNote:    [TypeNote.DEVOIR, Validators.required]
+    });
+
+    // Étudiants déjà fournis par le parent
+    this.etudiantNotes = (this.data.etudiants ?? []).map(e => ({
+      etudiantId: e.id!,
+      nom: e.nom,
+      prenom: e.prenom,
+      valeur: null
+    }));
+  }
+
+  // ─── Mode autonome (depuis page notes) ────────────────────────────────────
+
+  private initModeAutonome(): void {
+    this.form = this.fb.group({
+      classeId:      [null, Validators.required],
+      affectationId: [null, Validators.required],
+      matiereId:     [null, Validators.required],
+      typePeriode:   [TypePeriode.TRIMESTRE, Validators.required],
+      periode:       [1, Validators.required],
+      typeNote:      [TypeNote.DEVOIR, Validators.required]
+    });
+
     this.classeService.getAllClasses().subscribe((c: any[]) => (this.classes = c));
     this.anneeService.getAll().subscribe((a: any[]) => {
       this.annees = a;
-      const active = a.find(x => x.active);
-      if (active) this.form.patchValue({ anneeId: active.id });
     });
   }
 
@@ -118,11 +156,7 @@ export class NoteFormComponent implements OnInit {
       this.affectations = a;
     });
 
-    this.chargerEtudiants();
-  }
-
-  onAnneeChange(): void {
-    this.chargerEtudiants();
+    this.chargerEtudiants(classeId);
   }
 
   onAffectationChange(): void {
@@ -133,22 +167,16 @@ export class NoteFormComponent implements OnInit {
     }
   }
 
-  chargerEtudiants(): void {
-    const classeId = this.form.get('classeId')?.value;
-    const anneeId = this.form.get('anneeId')?.value;
-    if (!classeId || !anneeId) return;
-
+  private chargerEtudiants(classeId: number): void {
     this.isLoadingStudents = true;
-    this.inscriptionService.getEtudiantsParClasseEtAnnee(classeId, anneeId).subscribe({
-      next: (inscriptions: any[]) => {
-        this.etudiantNotes = inscriptions
-          .filter(ins => ins.etudiant?.id)
-          .map(ins => ({
-            etudiantId: ins.etudiant.id,
-            nom: ins.etudiant.nom ?? '',
-            prenom: ins.etudiant.prenom ?? '',
-            valeur: null
-          }));
+    this.etudiantService.getEtudiantsParClasse(classeId).subscribe({
+      next: (etudiants: Etudiant[]) => {
+        this.etudiantNotes = etudiants.map(e => ({
+          etudiantId: e.id!,
+          nom: e.nom,
+          prenom: e.prenom,
+          valeur: null
+        }));
         this.isLoadingStudents = false;
       },
       error: () => {
@@ -161,10 +189,6 @@ export class NoteFormComponent implements OnInit {
     const ens = a.enseignant ? `${a.enseignant.nom} ${a.enseignant.prenom}` : '';
     const mat = a.matieres?.map((m: any) => m.nom).join(', ') ?? '';
     return ens + (mat ? ` — ${mat}` : '');
-  }
-
-  toutRemplir(valeur: number): void {
-    this.etudiantNotes.forEach(e => (e.valeur = valeur));
   }
 
   effacerTout(): void {
@@ -191,14 +215,23 @@ export class NoteFormComponent implements OnInit {
     }
 
     const v = this.form.value;
+
+    const affectationId = this.modePreRempli
+      ? this.data.affectation!.id
+      : v.affectationId;
+
+    const matiereId = this.modePreRempli
+      ? this.data.matiere!.id
+      : v.matiereId;
+
     const batch: NoteBatchRequest[] = notesToSave.map(e => ({
-      etudiantId: e.etudiantId,
-      affectationId: v.affectationId,
-      matiereId: v.matiereId,
-      valeur: Number(e.valeur),
-      type: v.typeNote,
-      periode: v.periode,
-      typePeriode: v.typePeriode
+      etudiantId:    e.etudiantId,
+      affectationId,
+      matiereId,
+      valeur:        Number(e.valeur),
+      type:          v.typeNote,
+      periode:       v.periode,
+      typePeriode:   v.typePeriode
     }));
 
     this.isLoading = true;
