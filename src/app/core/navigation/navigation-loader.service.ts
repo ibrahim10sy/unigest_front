@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { VexLayoutService } from '@vex/services/vex-layout.service';
 import { NavigationItem } from './navigation-item.interface';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,12 +14,82 @@ export class NavigationLoaderService {
     return this._items.asObservable();
   }
 
-  constructor(private readonly layoutService: VexLayoutService) {
+  constructor(private readonly authService: AuthService) {
     this.loadNavigation();
   }
 
   loadNavigation(): void {
-    this._items.next([
+    if (this.authService.isEnseignant()) {
+      this._items.next(this.buildEnseignantNav());
+    } else if (this.authService.isComptable()) {
+      this._items.next(this.buildComptableNav());
+    } else {
+      this._items.next(this.buildAdminNav());
+    }
+  }
+
+  private buildEnseignantNav(): NavigationItem[] {
+    return [
+      {
+        type: 'subheading',
+        label: 'Mon espace',
+        children: [
+          {
+            type: 'link',
+            label: 'Mes Affectations',
+            route: '/enseignant/mes-affectations',
+            icon: 'mat:assignment',
+            routerLinkActiveOptions: { exact: true }
+          },
+          {
+            type: 'link',
+            label: 'Emploi du Temps',
+            route: '/enseignant/emploi-du-temps',
+            icon: 'mat:calendar_today'
+          },
+          {
+            type: 'link',
+            label: 'Classes',
+            route: '/enseignant/classes',
+            icon: 'mat:class'
+          }
+        ]
+      }
+    ];
+  }
+
+  private buildComptableNav(): NavigationItem[] {
+    return [
+      {
+        type: 'subheading',
+        label: 'Finance',
+        children: [
+          {
+            type: 'link',
+            label: 'Paiements',
+            route: '/finance/paiements',
+            icon: 'mat:payments',
+            routerLinkActiveOptions: { exact: true }
+          },
+          {
+            type: 'link',
+            label: 'Dépenses',
+            route: '/finance/depenses',
+            icon: 'mat:account_balance_wallet'
+          },
+          {
+            type: 'link',
+            label: 'Catégorie Dépense',
+            route: '/finance/categorie-depense',
+            icon: 'mat:category'
+          }
+        ]
+      }
+    ];
+  }
+
+  private buildAdminNav(): NavigationItem[] {
+    return [
       // ============================
       // 📊 DASHBOARD
       // ============================
@@ -50,7 +120,6 @@ export class NavigationLoaderService {
             route: '/scolarite/etudiants',
             icon: 'mat:groups'
           },
-         
           {
             type: 'link',
             label: 'Année Scolaire',
@@ -75,7 +144,6 @@ export class NavigationLoaderService {
             route: '/scolarite/classes',
             icon: 'mat:class'
           },
-
           {
             type: 'link',
             label: 'Inscriptions',
@@ -112,9 +180,9 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
-            label: 'Abscences & Retard',
+            label: 'Absences & Retard',
             route: '/pedagogie/appels',
-            icon: 'mat:schedule'
+            icon: 'mat:how_to_reg'
           },
           {
             type: 'link',
@@ -125,16 +193,9 @@ export class NavigationLoaderService {
           {
             type: 'link',
             label: 'Emploi du temps',
-            route: '/pedagogie/emploi-du-temps',
-            icon: 'mat:description'
+            route: '/pedagogie/emploi-du-temps-calendar',
+            icon: 'mat:calendar_today'
           },
-          {
-            type: 'link',
-            label: 'Calendrier',
-            route: '/pedagogie/calendar',
-            icon: 'mat:description'
-          },
-          
           {
             type: 'link',
             label: 'Bulletins',
@@ -159,15 +220,15 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
-            label: 'Categorie Depense',
+            label: 'Catégorie Dépense',
             route: '/finance/categorie-depense',
-            icon: 'mat:payments'
+            icon: 'mat:category'
           },
           {
             type: 'link',
             label: 'Dépenses',
             route: '/finance/depenses',
-            icon: 'mat:payments'
+            icon: 'mat:account_balance_wallet'
           }
         ]
       },
@@ -181,11 +242,10 @@ export class NavigationLoaderService {
         children: [
           {
             type: 'link',
-            label: 'Parent',
+            label: 'Parents',
             route: '/scolarite/parent',
             icon: 'mat:family_restroom'
           },
-
           {
             type: 'link',
             label: 'Enseignants',
@@ -194,6 +254,6 @@ export class NavigationLoaderService {
           }
         ]
       }
-    ]);
+    ];
   }
 }

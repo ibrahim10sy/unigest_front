@@ -37,6 +37,7 @@
         <span class="flex-1"></span>
 
         <button
+          *ngIf="isAdmin"
           (click)="ajouter()"
           class="ml-4 flex-none"
           color="primary"
@@ -126,18 +127,20 @@
                 (click)="details(row); $event.stopPropagation()">
                 <mat-icon svgIcon="mat:visibility"></mat-icon>
               </button>
-              <button
-                (click)="$event.stopPropagation(); modifier(row)"
-                mat-icon-button
-                color="primary">
-                <mat-icon svgIcon="mat:edit"></mat-icon>
-              </button>
-              <button
-                (click)="$event.stopPropagation(); supprimer(row)"
-                mat-icon-button
-                color="warn">
-                <mat-icon svgIcon="mat:delete"></mat-icon>
-              </button>
+              <ng-container *ngIf="isAdmin">
+                <button
+                  (click)="$event.stopPropagation(); modifier(row)"
+                  mat-icon-button
+                  color="primary">
+                  <mat-icon svgIcon="mat:edit"></mat-icon>
+                </button>
+                <button
+                  (click)="$event.stopPropagation(); supprimer(row)"
+                  mat-icon-button
+                  color="warn">
+                  <mat-icon svgIcon="mat:delete"></mat-icon>
+                </button>
+              </ng-container>
             </div>
           </td>
         </ng-container>
@@ -146,7 +149,7 @@
         <tr
           *matRowDef="let row; columns: displayedColumns"
           @fadeInUp
-          (click)="modifier(row)"
+          (click)="isAdmin && modifier(row)"
           class="hover:bg-hover cursor-pointer"
           mat-row></tr>
       </table>

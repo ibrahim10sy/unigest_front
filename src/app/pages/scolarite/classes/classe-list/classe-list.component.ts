@@ -22,6 +22,7 @@ import { stagger40ms } from '@vex/animations/stagger.animation';
 
 import Swal from 'sweetalert2';
 import { ClasseService } from 'src/app/services/classe.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { ClasseFormComponent } from '../classe-form/classe-form.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NiveauService } from 'src/app/services/niveau.service';
@@ -45,14 +46,22 @@ import { Router } from '@angular/router';
 export class ClasseListComponent implements OnInit {
   layoutCtrl = new UntypedFormControl('boxed');
   searchCtrl = new UntypedFormControl();
-  
+  isAdmin = false;
+
   displayedColumns: string[] = ['checkbox', 'nom', 'niveau', 'filiere', 'actions'];
   dataSource = new MatTableDataSource<any>();
   selection = new SelectionModel<any>(true, []);
   @ViewChild(MatPaginator, { static: true }) paginator?: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort?: MatSort;
 
-  constructor(private classeService: ClasseService, private dialog: MatDialog,private router: Router) {}
+  constructor(
+    private classeService: ClasseService,
+    private dialog: MatDialog,
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.isAdmin = this.authService.isAdmin();
+  }
 
   ngOnInit(): void {
     this.chargerClasses();

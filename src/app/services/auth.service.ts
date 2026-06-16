@@ -21,11 +21,11 @@ login(credentials: any): Observable<any> {
       tap((res: any) => {
         if (res && res.token) {
           localStorage.setItem('auth_token', res.token);
-          // On stocke l'utilisateur sous forme de chaîne JSON
           localStorage.setItem('user_data', JSON.stringify({
             nom: res.nom,
             prenom: res.prenom,
-            role: res.role
+            role: res.role,
+            enseignantId: res.enseignantId ?? null
           }));
         }
       })
@@ -50,9 +50,29 @@ login(credentials: any): Observable<any> {
     return user ? JSON.parse(user) : null;
 }
 
-// Dans ton AuthService
 getToken(): string | null {
   return localStorage.getItem('auth_token');
+}
+
+getRole(): string | null {
+  return this.getUserData()?.role ?? null;
+}
+
+getEnseignantId(): number | null {
+  const id = this.getUserData()?.enseignantId;
+  return id != null ? Number(id) : null;
+}
+
+isAdmin(): boolean {
+  return this.getRole() === 'ADMIN';
+}
+
+isEnseignant(): boolean {
+  return this.getRole() === 'ENSEIGNANT';
+}
+
+isComptable(): boolean {
+  return this.getRole() === 'COMPTABLE';
 }
 
 

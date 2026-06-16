@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import {
   CalendarView,
@@ -31,6 +30,7 @@ import Swal from 'sweetalert2';
 import { EmploiDuTempsService } from 'src/app/services/emploi-du-temps.service';
 import { ClasseService } from 'src/app/services/classe.service';
 import { EmploiDuTempsFormComponent } from '../emploi-du-temps-form/emploi-du-temps-form.component';
+import { AuthService } from 'src/app/services/auth.service';
 
 import { VexPageLayoutComponent } from '@vex/components/vex-page-layout/vex-page-layout.component';
 import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
@@ -64,7 +64,6 @@ const TYPE_COLORS: Record<string, { primary: string; secondary: string }> = {
     MatIconModule,
     MatSelectModule,
     MatFormFieldModule,
-    MatSnackBarModule,
 
     CalendarCommonModule,
     CalendarMonthModule,
@@ -92,13 +91,16 @@ export class EmploiDuTempsCalendarComponent implements OnInit {
   // ── Données métier ────────────────────────────────────────
   classes: any[] = [];
   classeId!: number;
+  isAdmin = false;
 
   constructor(
     private service: EmploiDuTempsService,
     private classeService: ClasseService,
     private dialog: MatDialog,
-    private snackbar: MatSnackBar
-  ) {}
+    private authService: AuthService
+  ) {
+    this.isAdmin = this.authService.isAdmin();
+  }
 
   ngOnInit(): void {
     this.loadClasses();
@@ -237,9 +239,9 @@ export class EmploiDuTempsCalendarComponent implements OnInit {
     );
   }
 
-  handleEvent(action: string, event: CalendarEvent): void {
+  handleEvent(_action: string, event: CalendarEvent): void {
+    if (!this.isAdmin) return;
     const meta = event.meta;
-    // Les pauses/récréations ne sont pas modifiables via le formulaire cours
     if (meta?._type === 'COURS') {
       this.modifier(meta);
     }

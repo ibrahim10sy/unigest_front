@@ -1,4 +1,5 @@
 import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard } from './guards/role.guard';
 import { LayoutComponent } from './layouts/layout/layout.component';
 import { VexRoutes } from '@vex/interfaces/vex-route.interface';
 import { DetailsComponent } from './pages/pedagogie/affectations/details/details.component';
@@ -25,29 +26,33 @@ export const appRoutes: VexRoutes = [
     path: '',
     component: LayoutComponent,
     children: [
+
+      // ============================
+      // 📊 DASHBOARD (admin only)
+      // ============================
       {
-        canActivate: [AuthGuard], // Ajoute le guard ici
         path: 'dashboards/analytics',
+        canActivate: [RoleGuard(['ADMIN'])],
         loadComponent: () =>
-          import(
-            './pages/dashboards/dashboard-analytics/dashboard-analytics.component'
-          ).then((m) => m.DashboardComponent)
+          import('./pages/dashboards/dashboard-analytics/dashboard-analytics.component')
+            .then((m) => m.DashboardComponent)
       },
 
+      // ============================
+      // 📚 SCOLARITÉ (admin only)
+      // ============================
       {
         path: 'scolarite',
-        canActivate: [AuthGuard], // Ajoute le guard ici
+        canActivate: [RoleGuard(['ADMIN'])],
         children: [
           {
             path: 'etudiants',
             children: [
               {
                 path: '',
-                canActivate: [AuthGuard],
                 loadComponent: () =>
-                  import(
-                    './pages/scolarite/etudiants/etudiant-list/etudiant-list.component'
-                  ).then((m) => m.EtudiantListComponent)
+                  import('./pages/scolarite/etudiants/etudiant-list/etudiant-list.component')
+                    .then((m) => m.EtudiantListComponent)
               },
               {
                 path: 'details',
@@ -55,36 +60,20 @@ export const appRoutes: VexRoutes = [
               }
             ]
           },
-
           {
-            path: 'aio-table',
-            loadComponent: () =>
-              import('./pages/apps/aio-table/aio-table.component').then(
-                (m) => m.AioTableComponent
-              ),
-            data: {
-              toolbarShadowEnabled: false
-            }
-          },
-          {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'etudiants/new',
             loadComponent: () =>
-              import(
-                './pages/scolarite/etudiants/etudiant-form/etudiant-form.component'
-              ).then((m) => m.EtudiantFormComponent)
+              import('./pages/scolarite/etudiants/etudiant-form/etudiant-form.component')
+                .then((m) => m.EtudiantFormComponent)
           },
-
           {
             path: 'classes',
             children: [
               {
                 path: '',
-                canActivate: [AuthGuard],
                 loadComponent: () =>
-                  import(
-                    './pages/scolarite/classes/classe-list/classe-list.component'
-                  ).then((m) => m.ClasseListComponent)
+                  import('./pages/scolarite/classes/classe-list/classe-list.component')
+                    .then((m) => m.ClasseListComponent)
               },
               {
                 path: 'details',
@@ -92,107 +81,74 @@ export const appRoutes: VexRoutes = [
               }
             ]
           },
-          // {
-          //   canActivate: [AuthGuard], // Ajoute le guard ici
-          //   path: 'classes',
-          //   loadComponent: () =>
-          //     import(
-          //       './pages/scolarite/classes/classe-list/classe-list.component'
-          //     ).then((m) => m.ClasseListComponent)
-          // },
           {
             path: 'classes/new',
             loadComponent: () =>
-              import(
-                './pages/scolarite/classes/classe-form/classe-form.component'
-              ).then((m) => m.ClasseFormComponent)
+              import('./pages/scolarite/classes/classe-form/classe-form.component')
+                .then((m) => m.ClasseFormComponent)
           },
-
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'inscriptions',
             loadComponent: () =>
-              import(
-                './pages/scolarite/inscriptions/inscription-list/inscription-list.component'
-              ).then((m) => m.InscriptionListComponent)
+              import('./pages/scolarite/inscriptions/inscription-list/inscription-list.component')
+                .then((m) => m.InscriptionListComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'inscriptions/new',
             loadComponent: () =>
-              import(
-                './pages/scolarite/inscriptions/inscription-form/inscription-form.component'
-              ).then((m) => m.InscriptionFormComponent)
+              import('./pages/scolarite/inscriptions/inscription-form/inscription-form.component')
+                .then((m) => m.InscriptionFormComponent)
           },
-
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'filieres',
             loadComponent: () =>
-              import(
-                './pages/scolarite/filieres/filiere-list/filiere-list.component'
-              ).then((m) => m.FiliereListComponent)
+              import('./pages/scolarite/filieres/filiere-list/filiere-list.component')
+                .then((m) => m.FiliereListComponent)
           },
-
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'niveau',
             loadComponent: () =>
-              import(
-                './pages/scolarite/niveau/niveau-list/niveau-list.component'
-              ).then((m) => m.NiveauListComponent)
+              import('./pages/scolarite/niveau/niveau-list/niveau-list.component')
+                .then((m) => m.NiveauListComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'parent',
             loadComponent: () =>
-              import(
-                './pages/scolarite/parent/parent-list/parent-list.component'
-              ).then((m) => m.ParentListComponent)
+              import('./pages/scolarite/parent/parent-list/parent-list.component')
+                .then((m) => m.ParentListComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
-            path: 'niveau',
-            loadComponent: () =>
-              import(
-                './pages/scolarite/niveau/niveau-list/niveau-list.component'
-              ).then((m) => m.NiveauListComponent)
-          },
-          {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'annee-scolaire',
             loadComponent: () =>
-              import(
-                './pages/scolarite/annee-scolaire/annee-scolaire-liste/annee-scolaire-liste.component'
-              ).then((m) => m.AnneeScolaireListeComponent)
+              import('./pages/scolarite/annee-scolaire/annee-scolaire-liste/annee-scolaire-liste.component')
+                .then((m) => m.AnneeScolaireListeComponent)
           }
         ]
       },
 
       // ============================
-      // 🎓 PEDAGOGIE
+      // 🎓 PÉDAGOGIE
       // ============================
       {
         path: 'pedagogie',
+        canActivate: [AuthGuard],
         children: [
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'matieres',
+            canActivate: [RoleGuard(['ADMIN'])],
             loadComponent: () =>
-              import(
-                './pages/pedagogie/matieres/matiere-list/matiere-list.component'
-              ).then((m) => m.MatiereListComponent)
+              import('./pages/pedagogie/matieres/matiere-list/matiere-list.component')
+                .then((m) => m.MatiereListComponent)
           },
           {
             path: 'affectations',
             children: [
               {
                 path: '',
-                canActivate: [AuthGuard],
+                canActivate: [RoleGuard(['ADMIN'])],
                 loadComponent: () =>
-                  import(
-                    './pages/pedagogie/affectations/affectation-list/affectation-list.component'
-                  ).then((m) => m.AffectationListComponent)
+                  import('./pages/pedagogie/affectations/affectation-list/affectation-list.component')
+                    .then((m) => m.AffectationListComponent)
               },
               {
                 path: 'details',
@@ -200,149 +156,154 @@ export const appRoutes: VexRoutes = [
               }
             ]
           },
-         
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'seances',
+            canActivate: [RoleGuard(['ADMIN'])],
             loadComponent: () =>
-              import(
-                './pages/pedagogie/seances/seance-list/seance-list.component'
-              ).then((m) => m.SeanceListComponent)
+              import('./pages/pedagogie/seances/seance-list/seance-list.component')
+                .then((m) => m.SeanceListComponent)
           },
-
-          // 🔥 APPEL (clé du système)
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'appels',
+            canActivate: [RoleGuard(['ADMIN'])],
             loadComponent: () =>
-              import(
-                './pages/pedagogie/appels/appel-seance/appel-seance.component'
-              ).then((m) => m.AppelSeanceComponent)
+              import('./pages/pedagogie/appels/appel-seance/appel-seance.component')
+                .then((m) => m.AppelSeanceComponent)
           },
-
           {
-            canActivate: [AuthGuard],
             path: 'notes',
+            canActivate: [RoleGuard(['ADMIN'])],
             loadComponent: () =>
-              import(
-                './pages/pedagogie/notes/note-list/note-list.component'
-              ).then((m) => m.NoteListComponent)
+              import('./pages/pedagogie/notes/note-list/note-list.component')
+                .then((m) => m.NoteListComponent)
           },
-
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'emploi-du-temps',
+            canActivate: [RoleGuard(['ADMIN'])],
             loadComponent: () =>
-              import(
-                './pages/pedagogie/emploi-du-temps/emploi-du-temps-list/emploi-du-temps-list.component'
-              ).then((m) => m.EmploiDuTempsListeComponent)
+              import('./pages/pedagogie/emploi-du-temps/emploi-du-temps-list/emploi-du-temps-list.component')
+                .then((m) => m.EmploiDuTempsListeComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'emploi-du-temps-calendar',
+            canActivate: [RoleGuard(['ADMIN'])],
             loadComponent: () =>
-              import(
-                './pages/pedagogie/emploi-du-temps/emploi-du-temps-calendar/emploi-du-temps-calendar.component'
-              ).then((m) => m.EmploiDuTempsCalendarComponent)
+              import('./pages/pedagogie/emploi-du-temps/emploi-du-temps-calendar/emploi-du-temps-calendar.component')
+                .then((m) => m.EmploiDuTempsCalendarComponent)
           },
           {
-            canActivate: [AuthGuard],
             path: 'calendar',
+            canActivate: [RoleGuard(['ADMIN'])],
             loadComponent: () =>
-              import(
-                './pages/apps/calendar/calendar.component'
-              ).then((m) => m.CalendarComponent)
+              import('./pages/apps/calendar/calendar.component')
+                .then((m) => m.CalendarComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'bulletins',
+            canActivate: [RoleGuard(['ADMIN'])],
             loadComponent: () =>
-              import(
-                './pages/pedagogie/bulletins/bulletin-list/bulletin-list.component'
-              ).then((m) => m.BulletinListComponent)
+              import('./pages/pedagogie/bulletins/bulletin-list/bulletin-list.component')
+                .then((m) => m.BulletinListComponent)
           }
         ]
       },
 
       // ============================
-      // 💰 FINANCE
+      // 💰 FINANCE (admin + comptable)
       // ============================
       {
         path: 'finance',
+        canActivate: [RoleGuard(['ADMIN', 'COMPTABLE'])],
         children: [
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'paiements',
             loadComponent: () =>
-              import(
-                './pages/finance/paiements/paiement-list/paiement-list.component'
-              ).then((m) => m.PaiementListComponent)
+              import('./pages/finance/paiements/paiement-list/paiement-list.component')
+                .then((m) => m.PaiementListComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'categorie-depense',
             loadComponent: () =>
-              import(
-                './pages/scolarite/categorie-depense/categorie-depense-list/categorie-depense-list.component'
-              ).then((m) => m.CategorieListComponent)
+              import('./pages/scolarite/categorie-depense/categorie-depense-list/categorie-depense-list.component')
+                .then((m) => m.CategorieListComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'depenses',
             loadComponent: () =>
-              import(
-                './pages/finance/depense-list/depense-list.component'
-              ).then((m) => m.DepenseListComponent)
+              import('./pages/finance/depense-list/depense-list.component')
+                .then((m) => m.DepenseListComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'categorie',
             loadComponent: () =>
-              import(
-                './pages/finance/categorie-list/categorie-list.component'
-              ).then((m) => m.CategorieListComponent)
+              import('./pages/finance/categorie-list/categorie-list.component')
+                .then((m) => m.CategorieListComponent)
           }
         ]
       },
 
       // ============================
-      // 👤 UTILISATEURS
+      // 👤 UTILISATEURS (admin only)
       // ============================
       {
-        canActivate: [AuthGuard], // Ajoute le guard ici
         path: 'utilisateurs',
+        canActivate: [RoleGuard(['ADMIN'])],
         children: [
           {
             path: 'parents',
             loadComponent: () =>
-              import(
-                './pages/utilisateurs/parents/parent-list/parent-list.component'
-              ).then((m) => m.ParentListComponent)
+              import('./pages/utilisateurs/parents/parent-list/parent-list.component')
+                .then((m) => m.ParentListComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'parents/new',
             loadComponent: () =>
-              import(
-                './pages/utilisateurs/parents/parent-form/parent-form.component'
-              ).then((m) => m.ParentFormComponent)
+              import('./pages/utilisateurs/parents/parent-form/parent-form.component')
+                .then((m) => m.ParentFormComponent)
           },
-
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'enseignants',
             loadComponent: () =>
-              import(
-                './pages/utilisateurs/enseignants/enseignant-list/enseignant-list.component'
-              ).then((m) => m.EnseignantListComponent)
+              import('./pages/utilisateurs/enseignants/enseignant-list/enseignant-list.component')
+                .then((m) => m.EnseignantListComponent)
           },
           {
-            canActivate: [AuthGuard], // Ajoute le guard ici
             path: 'enseignants/new',
             loadComponent: () =>
-              import(
-                './pages/utilisateurs/enseignants/enseignant-form/enseignant-form.component'
-              ).then((m) => m.EnseignantFormComponent)
+              import('./pages/utilisateurs/enseignants/enseignant-form/enseignant-form.component')
+                .then((m) => m.EnseignantFormComponent)
+          }
+        ]
+      },
+
+      // ============================
+      // 👨‍🏫 ESPACE ENSEIGNANT
+      // ============================
+      {
+        path: 'enseignant',
+        canActivate: [RoleGuard(['ENSEIGNANT'])],
+        children: [
+          {
+            path: 'mes-affectations',
+            loadComponent: () =>
+              import('./pages/enseignant/mes-affectations/mes-affectations.component')
+                .then((m) => m.MesAffectationsComponent)
+          },
+          {
+            path: 'emploi-du-temps',
+            loadComponent: () =>
+              import('./pages/pedagogie/emploi-du-temps/emploi-du-temps-calendar/emploi-du-temps-calendar.component')
+                .then((m) => m.EmploiDuTempsCalendarComponent)
+          },
+          {
+            path: 'classes',
+            loadComponent: () =>
+              import('./pages/scolarite/classes/classe-list/classe-list.component')
+                .then((m) => m.ClasseListComponent)
+          },
+          {
+            path: 'affectations/details',
+            component: DetailsComponent
           }
         ]
       },
@@ -351,9 +312,8 @@ export const appRoutes: VexRoutes = [
       {
         path: '**',
         loadComponent: () =>
-          import('./pages/pages/errors/error-404/error-404.component').then(
-            (m) => m.Error404Component
-          )
+          import('./pages/pages/errors/error-404/error-404.component')
+            .then((m) => m.Error404Component)
       }
     ]
   }

@@ -15,6 +15,7 @@ import { NgIf } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { AuthService } from 'src/app/services/auth.service';
+import { NavigationLoaderService } from 'src/app/core/navigation/navigation-loader.service';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @Component({
@@ -53,26 +54,30 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private navLoader: NavigationLoaderService,
     private fb: FormBuilder,
     private cd: ChangeDetectorRef,
     private snackbar: MatSnackBar
-  ) {
-    
-  }
+  ) {}
 
   send() {
-    // 2. Activer l'état de chargement
     this.loading = true;
 
     this.authService.login(this.form.value).subscribe({
       next: () => {
-        this.router.navigate(['/dashboards/analytics']);
-        this.snackbar.open("Bienvenue !", 'OK', { duration: 3000 });
-        this.loading = false; // Désactiver
+        this.navLoader.loadNavigation();
+        const role = this.authService.getRole();
+        const destination =
+          role === 'ENSEIGNANT' ? '/enseignant/mes-affectations' :
+          role === 'COMPTABLE'  ? '/finance/paiements' :
+          '/dashboards/analytics';
+        this.router.navigate([destination]);
+        this.snackbar.open('Bienvenue !', 'OK', { duration: 3000 });
+        this.loading = false;
       },
-      error: (err) => {
-        this.snackbar.open("Erreur de connexion", 'OK', { duration: 3000 });
-        this.loading = false; // Désactiver en cas d'erreur
+      error: () => {
+        this.snackbar.open('Identifiants incorrects', 'OK', { duration: 3000 });
+        this.loading = false;
       }
     });
   }
