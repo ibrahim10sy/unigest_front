@@ -308,6 +308,22 @@ export const appRoutes: VexRoutes = [
         ]
       },
 
+      // ============================
+      // ⚙️ PARAMÈTRES (admin only)
+      // ============================
+      {
+        path: 'parametres',
+        canActivate: [RoleGuard(['ADMIN'])],
+        children: [
+          {
+            path: 'ecole',
+            loadComponent: () =>
+              import('./pages/parametres/parametre-ecole/parametre-ecole.component')
+                .then((m) => m.ParametreEcoleComponent)
+          }
+        ]
+      },
+
       // 404
       {
         path: '**',

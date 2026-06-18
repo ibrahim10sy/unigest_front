@@ -253,6 +253,22 @@ export class NavigationLoaderService {
             icon: 'mat:person'
           }
         ]
+      },
+
+      // ============================
+      // ⚙️ PARAMÈTRES
+      // ============================
+      {
+        type: 'subheading',
+        label: 'Paramètres',
+        children: [
+          {
+            type: 'link',
+            label: 'École & Bulletins',
+            route: '/parametres/ecole',
+            icon: 'mat:settings'
+          }
+        ]
       }
     ];
   }

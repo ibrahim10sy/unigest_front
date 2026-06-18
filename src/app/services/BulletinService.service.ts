@@ -140,6 +140,15 @@ export class BulletinService {
   }
 
   /**
+   * Télécharger le Word d'un bulletin
+   */
+  telechargerWord(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/word`, {
+      responseType: 'blob'
+    });
+  }
+
+  /**
    * Supprimer bulletin
    */
   supprimerBulletin(id: number): Observable<void> {

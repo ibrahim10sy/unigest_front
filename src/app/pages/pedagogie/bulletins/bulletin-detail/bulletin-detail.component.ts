@@ -32,37 +32,23 @@ export class BulletinDetailComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { bulletinId: number },
-    private dialogRef: MatDialogRef<BulletinDetailComponent>,
+    _dialogRef: MatDialogRef<BulletinDetailComponent>,
     private bulletinService: BulletinService
   ) {}
 
   ngOnInit(): void {
     this.bulletinService.getBulletin(this.data.bulletinId).subscribe({
-      next: (b) => {
-        this.bulletin = b;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
+      next: (b) => { this.bulletin = b; this.isLoading = false; },
+      error: () => { this.isLoading = false; }
     });
   }
 
   telechargerPdf(): void {
     if (!this.bulletin?.id) return;
     this.isDownloading = true;
-
     this.bulletinService.telechargerPdf(this.bulletin.id).subscribe({
       next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a   = document.createElement('a');
-        const b   = this.bulletin!;
-        const nom = `bulletin_${b.etudiant?.nom}_${b.etudiant?.prenom}_${b.typePeriode}${b.periode}.pdf`
-          .toLowerCase().replace(/ /g, '_');
-        a.href     = url;
-        a.download = nom;
-        a.click();
-        window.URL.revokeObjectURL(url);
+        this.declencherTelechargement(blob, this.nomFichier('pdf'));
         this.isDownloading = false;
       },
       error: () => {
@@ -70,6 +56,31 @@ export class BulletinDetailComponent implements OnInit {
         Swal.fire('Erreur', 'Impossible de générer le PDF', 'error');
       }
     });
+  }
+
+  telechargerWord(): void {
+    if (!this.bulletin?.id) return;
+    this.isDownloading = true;
+    this.bulletinService.telechargerWord(this.bulletin.id).subscribe({
+      next: (blob) => {
+        this.declencherTelechargement(blob, this.nomFichier('docx'));
+        this.isDownloading = false;
+      },
+      error: () => {
+        this.isDownloading = false;
+        Swal.fire('Erreur', 'Impossible de générer le document Word', 'error');
+      }
+    });
+  }
+
+  getTotalCoeff(): number {
+    return (this.bulletin?.lignes ?? [])
+      .reduce((sum, l) => sum + l.coefficient, 0);
+  }
+
+  getTotalMoyCoeff(): number {
+    return (this.bulletin?.lignes ?? [])
+      .reduce((sum, l) => sum + l.moyenneMatiere * l.coefficient, 0);
   }
 
   getMention(moyenne: number): string {
@@ -86,5 +97,20 @@ export class BulletinDetailComponent implements OnInit {
     if (moyenne >= 14) return 'text-green-600 font-semibold';
     if (moyenne >= 10) return 'text-blue-600 font-semibold';
     return 'text-red-600 font-semibold';
+  }
+
+  private declencherTelechargement(blob: Blob, nom: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const a   = document.createElement('a');
+    a.href     = url;
+    a.download = nom;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  private nomFichier(ext: string): string {
+    const b = this.bulletin!;
+    return `bulletin_${b.etudiant?.nom}_${b.etudiant?.prenom}_${b.typePeriode}${b.periode}.${ext}`
+      .toLowerCase().replace(/ /g, '_');
   }
 }
