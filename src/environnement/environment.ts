@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  // apiUrl: "http://localhost:5200",
-  apiUrl: 'https://api.lyuni-gest.com'
+  apiUrl: "http://localhost:5400",
+  // apiUrl: 'https://api.lyuni-gest.com'
 };
   
 /*
