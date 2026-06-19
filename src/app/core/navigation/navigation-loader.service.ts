@@ -44,7 +44,7 @@ export class NavigationLoaderService {
           {
             type: 'link',
             label: 'Emploi du Temps',
-            route: '/enseignant/emploi-du-temps',
+            route: '/enseignant/calendar',
             icon: 'mat:calendar_today'
           },
           {
@@ -193,7 +193,13 @@ export class NavigationLoaderService {
           {
             type: 'link',
             label: 'Emploi du temps',
-            route: '/pedagogie/emploi-du-temps-calendar',
+            route: '/pedagogie/emploi-du-temps',
+            icon: 'mat:calendar_today'
+          },
+          {
+            type: 'link',
+            label: 'Calendrier',
+            route: '/pedagogie/calendar',
             icon: 'mat:calendar_today'
           },
           {

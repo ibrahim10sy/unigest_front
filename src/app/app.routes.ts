@@ -184,13 +184,13 @@ export const appRoutes: VexRoutes = [
               import('./pages/pedagogie/emploi-du-temps/emploi-du-temps-list/emploi-du-temps-list.component')
                 .then((m) => m.EmploiDuTempsListeComponent)
           },
-          {
-            path: 'emploi-du-temps-calendar',
-            canActivate: [RoleGuard(['ADMIN'])],
-            loadComponent: () =>
-              import('./pages/pedagogie/emploi-du-temps/emploi-du-temps-calendar/emploi-du-temps-calendar.component')
-                .then((m) => m.EmploiDuTempsCalendarComponent)
-          },
+          // {
+          //   path: 'emploi-du-temps-calendar',
+          //   canActivate: [RoleGuard(['ADMIN'])],
+          //   loadComponent: () =>
+          //     import('./pages/pedagogie/emploi-du-temps/emploi-du-temps-calendar/emploi-du-temps-calendar.component')
+          //       .then((m) => m.EmploiDuTempsCalendarComponent)
+          // },
           {
             path: 'calendar',
             canActivate: [RoleGuard(['ADMIN'])],
@@ -289,11 +289,17 @@ export const appRoutes: VexRoutes = [
               import('./pages/enseignant/mes-affectations/mes-affectations.component')
                 .then((m) => m.MesAffectationsComponent)
           },
+          // {
+          //   path: 'emploi-du-temps',
+          //   loadComponent: () =>
+          //     import('./pages/pedagogie/emploi-du-temps/emploi-du-temps-calendar/emploi-du-temps-calendar.component')
+          //       .then((m) => m.EmploiDuTempsCalendarComponent)
+          // },
           {
-            path: 'emploi-du-temps',
+            path: 'calendar',
             loadComponent: () =>
-              import('./pages/pedagogie/emploi-du-temps/emploi-du-temps-calendar/emploi-du-temps-calendar.component')
-                .then((m) => m.EmploiDuTempsCalendarComponent)
+              import('./pages/apps/calendar/calendar.component')
+                .then((m) => m.CalendarComponent)
           },
           {
             path: 'classes',
