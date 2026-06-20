@@ -7,6 +7,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BulletinService } from 'src/app/services/BulletinService.service';
+import { ParametreEcoleService } from 'src/app/services/ParametreEcoleService';
 import { Bulletin } from 'src/app/models/Bulletin';
 import Swal from 'sweetalert2';
 
@@ -29,14 +30,19 @@ export class BulletinDetailComponent implements OnInit {
   bulletin: Bulletin | null = null;
   isLoading = true;
   isDownloading = false;
+  coeffConduite = 1.0;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { bulletinId: number },
     _dialogRef: MatDialogRef<BulletinDetailComponent>,
-    private bulletinService: BulletinService
+    private bulletinService: BulletinService,
+    private parametreService: ParametreEcoleService
   ) {}
 
   ngOnInit(): void {
+    this.parametreService.getParametres().subscribe(p => {
+      this.coeffConduite = p.coefficientConduite ?? 1.0;
+    });
     this.bulletinService.getBulletin(this.data.bulletinId).subscribe({
       next: (b) => { this.bulletin = b; this.isLoading = false; },
       error: () => { this.isLoading = false; }
@@ -74,13 +80,15 @@ export class BulletinDetailComponent implements OnInit {
   }
 
   getTotalCoeff(): number {
-    return (this.bulletin?.lignes ?? [])
-      .reduce((sum, l) => sum + l.coefficient, 0);
+    let total = (this.bulletin?.lignes ?? []).reduce((sum, l) => sum + l.coefficient, 0);
+    if (this.bulletin?.noteConduite != null) total += this.coeffConduite;
+    return total;
   }
 
   getTotalMoyCoeff(): number {
-    return (this.bulletin?.lignes ?? [])
-      .reduce((sum, l) => sum + l.moyenneMatiere * l.coefficient, 0);
+    let total = (this.bulletin?.lignes ?? []).reduce((sum, l) => sum + l.moyenneMatiere * l.coefficient, 0);
+    if (this.bulletin?.noteConduite != null) total += this.bulletin.noteConduite * this.coeffConduite;
+    return total;
   }
 
   getMention(moyenne: number): string {

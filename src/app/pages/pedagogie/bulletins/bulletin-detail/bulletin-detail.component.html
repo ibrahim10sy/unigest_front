@@ -74,6 +74,20 @@
               <td class="border px-2 py-1 text-center text-xs">{{ ligne.appreciation || '—' }}</td>
             </tr>
 
+            <!-- Conduite -->
+            <tr *ngIf="bulletin.noteConduite != null"
+                [class.bg-gray-50]="(bulletin.lignes?.length ?? 0) % 2 === 1">
+              <td class="border px-2 py-1">Conduite</td>
+              <td class="border px-2 py-1 text-center">—</td>
+              <td class="border px-2 py-1 text-center">—</td>
+              <td class="border px-2 py-1 text-center">{{ bulletin.noteConduite | number:'1.2-2' }}</td>
+              <td class="border px-2 py-1 text-center">{{ coeffConduite }}</td>
+              <td class="border px-2 py-1 text-center font-semibold">
+                {{ (bulletin.noteConduite * coeffConduite) | number:'1.2-2' }}
+              </td>
+              <td class="border px-2 py-1 text-center text-xs">—</td>
+            </tr>
+
             <!-- Total Coeff -->
             <tr class="bg-gray-100 font-semibold text-xs">
               <td class="border px-2 py-1" colspan="4">Total Coeff</td>

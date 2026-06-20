@@ -45,8 +45,9 @@ export class ParametreEcoleComponent implements OnInit {
       nomEcole:       ['', Validators.required],
       adresseEcole:   [''],
       telephoneEcole: [''],
-      quotaClasse:    [40, [Validators.required, Validators.min(0), Validators.max(100)]],
-      quotaComposition: [60, [Validators.required, Validators.min(0), Validators.max(100)]]
+      quotaClasse:          [40, [Validators.required, Validators.min(0), Validators.max(100)]],
+      quotaComposition:     [60, [Validators.required, Validators.min(0), Validators.max(100)]],
+      coefficientConduite:  [1,  [Validators.required, Validators.min(0)]]
     });
 
     this.seuilsForm = this.fb.group({

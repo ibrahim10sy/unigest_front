@@ -70,6 +70,7 @@ export class BulletinListComponent implements OnInit {
     'typePeriode',
     'moyenneGenerale',
     'rang',
+    'noteConduite',
     'dateGeneration',
     'actions'
   ];
@@ -168,62 +169,123 @@ export class BulletinListComponent implements OnInit {
       return;
     }
 
-    Swal.fire({
-      title: 'Générer les bulletins ?',
-      text: `Période ${this.selectedPeriode} (${this.selectedTypePeriode}) — les bulletins déjà existants seront ignorés.`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Générer',
-      cancelButtonText: 'Annuler'
-    }).then((result) => {
-      if (!result.isConfirmed) return;
+    this.isGenerating = true;
 
-      this.isGenerating = true;
+    this.etudiantService.getEtudiantsParClasse(this.selectedClasseId).subscribe({
+      next: (etudiants: any[]) => {
+        this.isGenerating = false;
 
-      // Utilise getEtudiantsParClasse — retourne Etudiant[] directement
-      this.etudiantService.getEtudiantsParClasse(this.selectedClasseId)
-        .subscribe({
-          next: (etudiants: any[]) => {
-            if (etudiants.length === 0) {
-              this.isGenerating = false;
-              Swal.fire('Info', 'Aucun étudiant trouvé dans cette classe', 'info');
-              return;
+        if (etudiants.length === 0) {
+          Swal.fire('Info', 'Aucun étudiant trouvé dans cette classe', 'info');
+          return;
+        }
+
+        // ── Dialogue conduite par étudiant ──────────────────────────────────
+        Swal.fire({
+          title: 'Notes de conduite',
+          html: `
+            <p style="font-size:13px;color:#555;margin-bottom:10px;">
+              Saisissez la note de conduite (optionnelle, sur 20) pour chaque étudiant.<br>
+              <em>Laisser vide si pas de note de conduite.</em>
+            </p>
+            <div style="max-height:340px;overflow-y:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead>
+                  <tr style="background:#f5f5f5;">
+                    <th style="padding:6px 10px;text-align:left;">Étudiant</th>
+                    <th style="padding:6px 10px;text-align:center;width:110px;">Conduite /20</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${etudiants.map((e: any) => `
+                    <tr style="border-top:1px solid #eee;">
+                      <td style="padding:5px 10px;">${e.prenom} ${e.nom}</td>
+                      <td style="padding:5px 10px;text-align:center;">
+                        <input type="number" id="cond-${e.id}"
+                          min="0" max="20" step="0.25"
+                          class="swal2-input"
+                          style="width:90px;margin:0;font-size:13px;"
+                          placeholder="—">
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `,
+          width: 520,
+          showCancelButton: true,
+          confirmButtonText: 'Générer les bulletins',
+          cancelButtonText: 'Annuler',
+          preConfirm: () => {
+            const conduites: { id: number; conduite?: number }[] = [];
+            for (const e of etudiants) {
+              const raw = (document.getElementById(`cond-${e.id}`) as HTMLInputElement)?.value?.trim();
+              if (raw) {
+                const val = parseFloat(raw);
+                if (isNaN(val) || val < 0 || val > 20) {
+                  Swal.showValidationMessage(`Note invalide pour ${e.prenom} ${e.nom} (0 – 20)`);
+                  return false;
+                }
+                conduites.push({ id: e.id, conduite: val });
+              } else {
+                conduites.push({ id: e.id, conduite: undefined });
+              }
             }
+            return conduites;
+          }
+        }).then(result => {
+          if (!result.isConfirmed) return;
 
-            // catchError sur chaque appel → on ignore les bulletins déjà existants
-            const appels = etudiants.map((etu) =>
-              this.bulletinService.genererBulletin(
-                etu.id,
+          const conduites: { id: number; conduite?: number }[] = result.value;
+          this.isGenerating = true;
+
+          const appels = etudiants.map((etu: any) => {
+            const c = conduites.find(x => x.id === etu.id);
+            return this.bulletinService.genererBulletin(
+              etu.id,
+              this.selectedPeriode,
+              this.selectedTypePeriode,
+              c?.conduite
+            ).pipe(catchError(() => of(null)));
+          });
+
+          // Générer séquentiellement puis recalculer les rangs UNE SEULE FOIS
+          forkJoin(appels).subscribe({
+            next: (resultats) => {
+              const nbGeneres = resultats.filter(r => r !== null).length;
+              const nbIgnores = resultats.filter(r => r === null).length;
+
+              // Recalcul des rangs après toutes les générations
+              this.bulletinService.recalculerRangs(
+                this.selectedClasseId,
                 this.selectedPeriode,
                 this.selectedTypePeriode
-              ).pipe(catchError(() => of(null)))
-            );
-
-            forkJoin(appels).subscribe({
-              next: (resultats) => {
-                this.isGenerating = false;
-                const nbGeneres  = resultats.filter(r => r !== null).length;
-                const nbIgnores  = resultats.filter(r => r === null).length;
-
-                let message = `${nbGeneres} bulletin(s) généré(s)`;
-                if (nbIgnores > 0) {
-                  message += ` · ${nbIgnores} déjà existant(s) ignoré(s)`;
+              ).subscribe({
+                next: () => {
+                  this.isGenerating = false;
+                  let msg = `${nbGeneres} bulletin(s) généré(s)`;
+                  if (nbIgnores > 0) msg += ` · ${nbIgnores} déjà existant(s) ignoré(s)`;
+                  Swal.fire({ icon: 'success', title: msg, timer: 2500, showConfirmButton: false });
+                  this.chargerBulletins();
+                },
+                error: () => {
+                  this.isGenerating = false;
+                  this.chargerBulletins();
                 }
-
-                Swal.fire({ icon: 'success', title: message, timer: 2500, showConfirmButton: false });
-                this.chargerBulletins();
-              },
-              error: () => {
-                this.isGenerating = false;
-                Swal.fire('Erreur', 'Une erreur est survenue pendant la génération', 'error');
-              }
-            });
-          },
-          error: () => {
-            this.isGenerating = false;
-            Swal.fire('Erreur', 'Impossible de récupérer les étudiants de la classe', 'error');
-          }
+              });
+            },
+            error: () => {
+              this.isGenerating = false;
+              Swal.fire('Erreur', 'Une erreur est survenue pendant la génération', 'error');
+            }
+          });
         });
+      },
+      error: () => {
+        this.isGenerating = false;
+        Swal.fire('Erreur', 'Impossible de récupérer les étudiants de la classe', 'error');
+      }
     });
   }
 
@@ -255,6 +317,50 @@ export class BulletinListComponent implements OnInit {
   }
 
   // ─── Supprimer ────────────────────────────────────────────────────────────
+
+  regenerer(bulletin: Bulletin): void {
+    Swal.fire({
+      title: 'Régénérer le bulletin',
+      html: `
+        <p style="font-size:13px;color:#555;margin-bottom:12px;">
+          <strong>${bulletin.etudiant?.prenom} ${bulletin.etudiant?.nom}</strong><br>
+          Note de conduite optionnelle (sur 20)
+        </p>
+        <input id="swal-conduite" type="number" min="0" max="20" step="0.25"
+          class="swal2-input" placeholder="Laisser vide si pas de conduite"
+          value="${bulletin.noteConduite ?? ''}">
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Régénérer',
+      cancelButtonText: 'Annuler',
+      preConfirm: () => {
+        const raw = (document.getElementById('swal-conduite') as HTMLInputElement).value.trim();
+        if (raw === '') return null;
+        const val = parseFloat(raw);
+        if (isNaN(val) || val < 0 || val > 20) {
+          Swal.showValidationMessage('Note invalide (0 – 20)');
+          return false;
+        }
+        return val;
+      }
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      const conduite: number | undefined = result.value === null ? undefined : result.value;
+      this.bulletinService.regenererBulletin(
+        bulletin.etudiant!.id!,
+        bulletin.periode,
+        bulletin.typePeriode,
+        conduite
+      ).subscribe({
+        next: () => {
+          Swal.fire({ icon: 'success', title: 'Bulletin régénéré', timer: 1500, showConfirmButton: false });
+          this.chargerBulletins();
+        },
+        error: (err: any) =>
+          Swal.fire('Erreur', err?.error?.message ?? 'Erreur lors de la régénération', 'error')
+      });
+    });
+  }
 
   supprimer(bulletin: Bulletin) {
     Swal.fire({

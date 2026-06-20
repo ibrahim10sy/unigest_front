@@ -16,5 +16,6 @@ export interface Bulletin {
   appreciation?: string;
   pdfUrl?: string;
   dateGeneration?: string;
+  noteConduite?: number;
   lignes?: LigneBulletin[];
 }

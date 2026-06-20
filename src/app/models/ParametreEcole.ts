@@ -5,4 +5,5 @@ export interface ParametreEcole {
   telephoneEcole?: string;
   quotaClasse: number;
   quotaComposition: number;
+  coefficientConduite: number;
 }

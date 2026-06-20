@@ -29,6 +29,11 @@ import { EtudiantService } from 'src/app/services/etudiant.service';
 import { SeanceFormComponent } from '../../seances/seance-form/seance-form.component';
 import { Matiere } from 'src/app/models/Matiere';
 import { NoteFormComponent } from '../../notes/note-form/note-form.component';
+import { NoteService } from 'src/app/services/note.service';
+import { Note } from 'src/app/models/note.model';
+import { TypePeriode } from 'src/app/models/TypePeriode';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'vex-details',
@@ -49,7 +54,9 @@ import { NoteFormComponent } from '../../notes/note-form/note-form.component';
     MatInputModule,
     ReactiveFormsModule,
     MatDialogModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatSelectModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './details.component.html',
   styleUrl: './details.component.scss'
@@ -74,10 +81,18 @@ export class DetailsComponent implements OnInit {
   affectation!: Affectation;
   etudiants: Etudiant[] = [];
 
+  typesPeriode = Object.values(TypePeriode);
+  periodes = [1, 2, 3];
+  periodeNotesCtrl  = new UntypedFormControl(1);
+  typePeriodeNotesCtrl = new UntypedFormControl(TypePeriode.TRIMESTRE);
+  notesParMatiere: { matiereNom: string; lignes: { etudiantNom: string; notes: { valeur: number; type: string }[] }[] }[] = [];
+  isLoadingNotes = false;
+
   constructor(
     private seanceService: SeanceService,
     private dialog: MatDialog,
-    private etudiantService: EtudiantService
+    private etudiantService: EtudiantService,
+    private noteService: NoteService
   ) {}
 
   ngOnInit(): void {
@@ -155,6 +170,47 @@ export class DetailsComponent implements OnInit {
       if (res) {
         this.chargerSeances(this.affectation.id!);
       }
+    });
+  }
+
+  chargerNotesParMatiere(): void {
+    if (!this.affectation?.id) return;
+    this.isLoadingNotes = true;
+
+    this.noteService.getNotesParAffectationEtPeriode(
+      this.affectation.id,
+      this.periodeNotesCtrl.value,
+      this.typePeriodeNotesCtrl.value
+    ).subscribe({
+      next: (notes: Note[]) => {
+        const byMatiere = new Map<number, {
+          nom: string;
+          byEtudiant: Map<number, { etudiantNom: string; notes: { valeur: number; type: string }[] }>;
+        }>();
+
+        notes.forEach(n => {
+          const mid = n.matiere?.id as number;
+          if (!byMatiere.has(mid)) {
+            byMatiere.set(mid, { nom: n.matiere?.nom ?? '—', byEtudiant: new Map() });
+          }
+          const mEntry = byMatiere.get(mid)!;
+          const eid = n.etudiant?.id as number;
+          if (!mEntry.byEtudiant.has(eid)) {
+            mEntry.byEtudiant.set(eid, {
+              etudiantNom: `${n.etudiant.prenom} ${n.etudiant.nom}`,
+              notes: []
+            });
+          }
+          mEntry.byEtudiant.get(eid)!.notes.push({ valeur: n.valeur, type: n.type as string });
+        });
+
+        this.notesParMatiere = [...byMatiere.entries()].map(([, data]) => ({
+          matiereNom: data.nom,
+          lignes: [...data.byEtudiant.values()]
+        }));
+        this.isLoadingNotes = false;
+      },
+      error: () => { this.isLoadingNotes = false; }
     });
   }
 

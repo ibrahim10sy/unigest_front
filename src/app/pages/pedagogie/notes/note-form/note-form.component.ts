@@ -18,7 +18,7 @@ import { EtudiantService } from 'src/app/services/etudiant.service';
 import { NoteService } from 'src/app/services/note.service';
 import { AnneeScolaireService } from 'src/app/services/annee-scolaire.service';
 import { TypePeriode } from 'src/app/models/TypePeriode';
-import { TypeNote } from 'src/app/models/TypeNote';
+import { Note, TypeNote } from 'src/app/models/note.model';
 import { NoteBatchRequest } from 'src/app/models/NoteBatchRequest';
 import { Etudiant } from 'src/app/models/Etudiant';
 
@@ -27,6 +27,7 @@ interface EtudiantNote {
   nom: string;
   prenom: string;
   valeur: number | null;
+  notesExistantes: { valeur: number; type: string }[];
 }
 
 /**
@@ -118,13 +119,44 @@ export class NoteFormComponent implements OnInit {
       typeNote:    [TypeNote.DEVOIR, Validators.required]
     });
 
-    // Étudiants déjà fournis par le parent
     this.etudiantNotes = (this.data.etudiants ?? []).map(e => ({
       etudiantId: e.id!,
       nom: e.nom,
       prenom: e.prenom,
-      valeur: null
+      valeur: null,
+      notesExistantes: []
     }));
+
+    this.chargerNotesExistantes();
+
+    this.form.get('periode')!.valueChanges.subscribe(() => this.chargerNotesExistantes());
+    this.form.get('typePeriode')!.valueChanges.subscribe(() => this.chargerNotesExistantes());
+  }
+
+  chargerNotesExistantes(): void {
+    if (!this.modePreRempli) return;
+
+    const periode     = this.form.get('periode')!.value;
+    const typePeriode = this.form.get('typePeriode')!.value;
+    const affectationId = this.data.affectation!.id;
+    const matiereId     = this.data.matiere!.id;
+
+    this.noteService.getNotesParAffectationEtPeriode(affectationId, periode, typePeriode)
+      .subscribe((notes: Note[]) => {
+        const filtrees = notes.filter(n => n.matiere?.id === matiereId);
+
+        const byEtudiant = new Map<number, { valeur: number; type: string }[]>();
+        filtrees.forEach(n => {
+          const key = n.etudiant.id!;
+          if (!byEtudiant.has(key)) byEtudiant.set(key, []);
+          byEtudiant.get(key)!.push({ valeur: n.valeur, type: n.type as string });
+        });
+
+        this.etudiantNotes = this.etudiantNotes.map(e => ({
+          ...e,
+          notesExistantes: byEtudiant.get(e.etudiantId) ?? []
+        }));
+      });
   }
 
   // ─── Mode autonome (depuis page notes) ────────────────────────────────────
@@ -175,7 +207,8 @@ export class NoteFormComponent implements OnInit {
           etudiantId: e.id!,
           nom: e.nom,
           prenom: e.prenom,
-          valeur: null
+          valeur: null,
+          notesExistantes: []
         }));
         this.isLoadingStudents = false;
       },
