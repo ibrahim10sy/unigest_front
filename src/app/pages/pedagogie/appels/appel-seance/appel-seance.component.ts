@@ -18,7 +18,6 @@ import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
 import { stagger40ms } from '@vex/animations/stagger.animation';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
 import { Appel } from 'src/app/models/Appel';
 import { AppelService } from 'src/app/services/appel.service';
 import { AppelFormComponent } from '../appel-form/appel-form.component';
@@ -95,8 +94,7 @@ export class AppelSeanceComponent implements OnInit {
     private appelService: AppelService,
     private classeService: ClasseService,
     private dialog: MatDialog,
-    private anneeScolaireService: AnneeScolaireService,
-    private router: Router
+    private anneeScolaireService: AnneeScolaireService
   ) {}
 
   ngOnInit(): void {
@@ -239,6 +237,24 @@ export class AppelSeanceComponent implements OnInit {
           this.chargerAppels();
         }
       });
+  }
+
+  exportAbsences(): void {
+    const classeId = this.classeCtrl.value;
+    const anneeId  = this.anneeCtrl.value;
+    if (!classeId || !anneeId) {
+      Swal.fire('Sélection requise', 'Veuillez sélectionner une classe et une année scolaire.', 'warning');
+      return;
+    }
+    this.appelService.exportAbsencesClassePdf(classeId, anneeId).subscribe(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const classe = this.classes.find(c => c.id === classeId);
+      a.download = `absences-${classe?.nom ?? classeId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   }
 
   supprimer(id: number): void {

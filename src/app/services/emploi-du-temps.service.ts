@@ -53,11 +53,14 @@ export class EmploiDuTempsService {
   }
 
   exportPdf(classeId: number) {
-    return this.http.get(
-      `${this.apiUrl}/export/pdf/${classeId}`,
-      {
-        responseType: 'blob'
-      }
-    );
+    return this.http.get(`${this.apiUrl}/export/pdf/${classeId}`, { responseType: 'blob' });
+  }
+
+  exportExcel(classeId: number) {
+    return this.http.get(`${this.apiUrl}/export/excel/${classeId}`, { responseType: 'blob' });
+  }
+
+  exportWord(classeId: number) {
+    return this.http.get(`${this.apiUrl}/export/word/${classeId}`, { responseType: 'blob' });
   }
 }

@@ -3,7 +3,7 @@
 
   <mat-dialog-content class="flex flex-col gap-4">
    
-    <mat-form-field class="w-full">
+    <mat-form-field subscriptSizing="dynamic" class="w-full">
       <mat-label>Enseignant</mat-label>
       <mat-select formControlName="enseignant" [compareWith]="compareEnseignant">
         <mat-option *ngFor="let p of enseignant" [value]="p">
@@ -11,7 +11,7 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-   <mat-form-field class="w-full">
+   <mat-form-field subscriptSizing="dynamic" class="w-full">
   <mat-label>Matières</mat-label>
   <mat-select formControlName="matieres" multiple [compareWith]="compareMatiere">
     <mat-option *ngFor="let m of matiere" [value]="m">
@@ -19,7 +19,7 @@
     </mat-option>
   </mat-select>
 </mat-form-field>
-    <mat-form-field class="w-full">
+    <mat-form-field subscriptSizing="dynamic" class="w-full">
       <mat-label>Classe</mat-label>
       <mat-select formControlName="classe" [compareWith]="compareClasse">
         <mat-option *ngFor="let p of classe" [value]="p">

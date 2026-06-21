@@ -163,22 +163,45 @@ export class EmploiDuTempsListeComponent implements OnInit {
     return this.cellMap.get(`${jour}|${creneau.heureDebut}`) ?? null;
   }
 
-  // ─── Export PDF ───────────────────────────────────────────────────────────
+  // ─── Exports ──────────────────────────────────────────────────────────────
+
+  private nomClasse(): string {
+    return this.classes.find(c => c.id === this.classeCtrl.value)?.nom ?? this.classeCtrl.value;
+  }
+
+  private telecharger(blob: Blob, filename: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
 
   exporterPdf(): void {
     const classeId = this.classeCtrl.value;
     if (!classeId) { Swal.fire('Attention', 'Sélectionnez une classe', 'warning'); return; }
     this.service.exportPdf(classeId).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const nom = this.classes.find(c => c.id === classeId)?.nom ?? classeId;
-        a.download = `emploi-du-temps-${nom}.pdf`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      },
+      next: (blob) => this.telecharger(blob, `emploi-du-temps-${this.nomClasse()}.pdf`),
       error: () => Swal.fire('Erreur', 'Impossible de générer le PDF', 'error')
+    });
+  }
+
+  exporterExcel(): void {
+    const classeId = this.classeCtrl.value;
+    if (!classeId) { Swal.fire('Attention', 'Sélectionnez une classe', 'warning'); return; }
+    this.service.exportExcel(classeId).subscribe({
+      next: (blob) => this.telecharger(blob, `emploi-du-temps-${this.nomClasse()}.xlsx`),
+      error: () => Swal.fire('Erreur', 'Impossible de générer le fichier Excel', 'error')
+    });
+  }
+
+  exporterWord(): void {
+    const classeId = this.classeCtrl.value;
+    if (!classeId) { Swal.fire('Attention', 'Sélectionnez une classe', 'warning'); return; }
+    this.service.exportWord(classeId).subscribe({
+      next: (blob) => this.telecharger(blob, `emploi-du-temps-${this.nomClasse()}.docx`),
+      error: () => Swal.fire('Erreur', 'Impossible de générer le fichier Word', 'error')
     });
   }
 

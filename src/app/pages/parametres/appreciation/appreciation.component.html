@@ -41,21 +41,21 @@
             class="grid grid-cols-12 gap-3 mb-3 items-center">
 
             <!-- Note min -->
-            <mat-form-field appearance="outline" class="col-span-3">
+            <mat-form-field subscriptSizing="dynamic" appearance="outline" class="col-span-3">
               <mat-label>Min</mat-label>
               <input matInput type="number" formControlName="seuilMin" min="0" max="20" step="0.5">
               <mat-error>Requis (0–20)</mat-error>
             </mat-form-field>
 
             <!-- Note max (saisie) -->
-            <mat-form-field appearance="outline" class="col-span-3">
+            <mat-form-field subscriptSizing="dynamic" appearance="outline" class="col-span-3">
               <mat-label>Max</mat-label>
               <input matInput type="number" formControlName="seuilMax" min="0" max="20" step="0.5" placeholder="—">
               <mat-error>0–20</mat-error>
             </mat-form-field>
 
             <!-- Appréciation -->
-            <mat-form-field appearance="outline" class="col-span-5">
+            <mat-form-field subscriptSizing="dynamic" appearance="outline" class="col-span-5">
               <mat-label>Appréciation</mat-label>
               <input matInput formControlName="libelle" placeholder="Ex: Très bien">
               <mat-error>Requis</mat-error>

@@ -9,7 +9,7 @@
   <mat-divider class="-mx-6 text-border"></mat-divider>
 
   <mat-dialog-content class="flex flex-col gap-4 mt-4">
-    <mat-form-field class="w-full">
+    <mat-form-field subscriptSizing="dynamic" class="w-full">
       <mat-label>Libellé de l'année scolaire</mat-label>
       <input matInput formControlName="libelle" placeholder="Ex: 2025-2026">
       <mat-icon matIconPrefix svgIcon="mat:event_note"></mat-icon>
@@ -17,14 +17,14 @@
     </mat-form-field>
 
     <div class="flex gap-4">
-      <mat-form-field class="flex-auto">
+      <mat-form-field subscriptSizing="dynamic" class="flex-auto">
         <mat-label>Date de début</mat-label>
         <input matInput [matDatepicker]="picker1" formControlName="dateDebut">
         <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
         <mat-datepicker #picker1></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field class="flex-auto">
+      <mat-form-field subscriptSizing="dynamic" class="flex-auto">
         <mat-label>Date de fin</mat-label>
         <input matInput [matDatepicker]="picker2" formControlName="dateFin">
         <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>

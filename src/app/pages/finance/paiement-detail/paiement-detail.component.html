@@ -1,18 +1,18 @@
 <div id="recu-print" *ngIf="!loading && resume">
 
-  <div class="flex items-center p-4 border-b bg-gray-50/50" mat-dialog-title>
-    <div class="bg-primary/10 text-primary p-2 rounded-lg mr-4">
-      <mat-icon svgIcon="mat:receipt"></mat-icon>
+  <div class="flex items-center gap-3 p-5" mat-dialog-title
+       style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-none"
+         style="background:rgba(255,255,255,0.2);">
+      <mat-icon svgIcon="mat:receipt" style="color:white;"></mat-icon>
     </div>
-    
     <div class="flex-auto">
-      <h2 class="m-0 text-lg font-bold">Reçu de paiement</h2>
-      <p class="text-sm text-secondary m-0">
+      <h2 class="m-0 text-base font-bold text-white">Reçu de paiement</h2>
+      <p class="m-0 text-xs" style="color:rgba(255,255,255,0.75);">
         {{ data.inscription.etudiant?.prenom }} {{ data.inscription.etudiant?.nom }}
       </p>
     </div>
-
-    <button (click)="close()" mat-icon-button>
+    <button (click)="close()" mat-icon-button type="button" style="color:rgba(255,255,255,0.8);">
       <mat-icon svgIcon="mat:close"></mat-icon>
     </button>
   </div>
@@ -37,7 +37,7 @@
 
   <div class="p-3 border rounded">
     <span class="text-xs text-secondary">Filière</span>
-    <div class="font-bold text-primary">
+    <div class="font-bold" style="color:#4f46e5;">
       {{ data.inscription.classe?.filiere?.nom || 'N/A' }}
     </div>
   </div>
@@ -81,9 +81,9 @@
           <p class="text-xs text-secondary">Total net</p>
           <p class="font-bold text-lg">{{ resume.totalNet | number }} FCFA</p>
         </div>
-        <div class="bg-primary/5 p-2 rounded">
-          <p class="text-xs text-primary font-bold">Total payé</p>
-          <p class="font-black text-xl text-primary">{{ resume.totalPaye | number }} FCFA</p>
+        <div class="p-2 rounded" style="background:#e0e7ff;">
+          <p class="text-xs font-bold" style="color:#4f46e5;">Total payé</p>
+          <p class="font-black text-xl" style="color:#4f46e5;">{{ resume.totalPaye | number }} FCFA</p>
         </div>
       </div>
 

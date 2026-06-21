@@ -10,13 +10,13 @@
   <mat-divider class="text-border"></mat-divider>
 
   <mat-dialog-content class="flex flex-col mt-4">
-    <mat-form-field class="flex-auto">
+    <mat-form-field subscriptSizing="dynamic" class="flex-auto">
       <mat-label>Nom </mat-label>
       <input cdkFocusInitial formControlName="nom" matInput placeholder="Ex: Loyer, Alimentation...">
       <mat-icon matIconPrefix svgIcon="mat:edit"></mat-icon>
     </mat-form-field>
 
-    <mat-form-field class="flex-auto">
+    <mat-form-field subscriptSizing="dynamic" class="flex-auto">
       <mat-label>Description</mat-label>
       <input cdkFocusInitial formControlName="description" matInput placeholder="Ex: Description/Motif...">
       <!-- <mat-icon matIconPrefix svgIcon="mat:edit"></mat-icon> -->

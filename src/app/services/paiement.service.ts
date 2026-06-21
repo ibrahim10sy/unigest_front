@@ -88,4 +88,17 @@ export class PaiementService {
       `${this.apiUrl}/etudiant/${etudiantId}/classe/${classeId}/annee/${anneeId}`
     );
   }
+
+  exportHistoriquePaiementsPdf(
+    etudiantId: number,
+    classeId?: number,
+    anneeId?: number
+  ): Observable<Blob> {
+    let url = `${this.apiUrl}/etudiant/${etudiantId}/export-pdf`;
+    const params: string[] = [];
+    if (classeId) params.push(`classeId=${classeId}`);
+    if (anneeId)  params.push(`anneeId=${anneeId}`);
+    if (params.length) url += '?' + params.join('&');
+    return this.http.get(url, { responseType: 'blob' });
+  }
 }

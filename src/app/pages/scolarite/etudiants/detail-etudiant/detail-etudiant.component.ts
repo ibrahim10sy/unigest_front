@@ -173,4 +173,16 @@ export class DetailEtudiantComponent implements OnInit {
   getNbAbsences(): number {
     return this.dataSourceAppels.data.filter(a => a.statut === 'ABSENT').length;
   }
+
+  exporterPaiements() {
+    if (!this.etudiant?.id) return;
+    this.paiementService.exportHistoriquePaiementsPdf(this.etudiant.id).subscribe(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `paiements-${this.etudiant.prenom}-${this.etudiant.nom}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
 }

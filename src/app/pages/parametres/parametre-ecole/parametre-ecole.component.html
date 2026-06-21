@@ -14,36 +14,36 @@
     <mat-card-content>
       <form [formGroup]="ecoleForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
 
-        <mat-form-field appearance="outline" class="md:col-span-2">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline" class="md:col-span-2">
           <mat-label>Nom de l'école</mat-label>
           <input matInput formControlName="nomEcole" placeholder="Ex: Lycée Victor Hugo">
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="md:col-span-2">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline" class="md:col-span-2">
           <mat-label>Adresse</mat-label>
           <input matInput formControlName="adresseEcole" placeholder="Ex: 12 Rue de la Paix, Dakar">
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline">
           <mat-label>Téléphone</mat-label>
           <input matInput formControlName="telephoneEcole" placeholder="Ex: +221 33 000 0000">
         </mat-form-field>
 
         <div></div>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline">
           <mat-label>Quota Note de Classe (%)</mat-label>
           <input matInput type="number" formControlName="quotaClasse" min="0" max="100">
           <mat-hint>Part de la note de classe dans la moyenne matière</mat-hint>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline">
           <mat-label>Quota Note de Composition (%)</mat-label>
           <input matInput type="number" formControlName="quotaComposition" min="0" max="100">
           <mat-hint>Part de la note de composition dans la moyenne matière</mat-hint>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline">
           <mat-label>Coefficient Conduite</mat-label>
           <input matInput type="number" formControlName="coefficientConduite" min="0" step="0.5">
           <mat-hint>Coefficient de la note de conduite dans la moyenne générale</mat-hint>

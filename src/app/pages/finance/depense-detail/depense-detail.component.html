@@ -1,109 +1,85 @@
-<div class="flex items-center p-4 border-b bg-gray-50/50" mat-dialog-title>
-
-  <div class="bg-primary/10 text-primary p-2 rounded-lg mr-4">
-    <mat-icon svgIcon="mat:receipt"></mat-icon>
+<!-- En-tête dialog -->
+<div class="flex items-center gap-3 p-5" mat-dialog-title
+     style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;">
+  <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-none"
+       style="background:rgba(255,255,255,0.2);">
+    <mat-icon svgIcon="mat:receipt_long" style="color:white;"></mat-icon>
   </div>
-
   <div class="flex-auto">
-    <h2 class="headline m-0 text-lg font-bold">
-      Détails de la dépense
-    </h2>
-    <p class="caption text-secondary m-0">
-      {{ depense.libelle }}
-    </p>
+    <h2 class="m-0 text-base font-bold text-white">Détails de la dépense</h2>
+    <p class="m-0 text-xs" style="color:rgba(255,255,255,0.75);">{{ depense.libelle }}</p>
   </div>
-
-  <button (click)="close()" mat-icon-button>
+  <button (click)="close()" mat-icon-button type="button" style="color:rgba(255,255,255,0.8);">
     <mat-icon svgIcon="mat:close"></mat-icon>
   </button>
 </div>
 
-<mat-dialog-content class="p-6">
+<mat-dialog-content class="p-5">
 
-  <!-- INFO -->
-  <div class="grid grid-cols-2 gap-4 mb-6">
-
-    <div class="p-3 border rounded">
-      <span class="text-xs text-secondary">Date</span>
-      <div class="font-bold">
-        {{ depense.dateDepense | date:'dd/MM/yyyy' }}
+  <!-- Info -->
+  <div class="grid grid-cols-2 gap-3 mb-4">
+    <div class="p-3 rounded-xl border border-slate-200" style="background:#f8fafc;">
+      <span class="text-xs text-slate-400 font-medium">Date</span>
+      <div class="font-semibold text-slate-800 mt-0.5">{{ depense.dateDepense | date:'dd/MM/yyyy' }}</div>
+    </div>
+    <div class="p-3 rounded-xl border border-slate-200" style="background:#f8fafc;">
+      <span class="text-xs text-slate-400 font-medium">Montant</span>
+      <div class="font-bold text-indigo-600 mt-0.5">{{ depense.montant | number }} FCFA</div>
+    </div>
+    <div class="p-3 rounded-xl border border-slate-200" style="background:#f8fafc;">
+      <span class="text-xs text-slate-400 font-medium">Catégorie</span>
+      <div class="mt-1">
+        <span class="px-2.5 py-1 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4f46e5;">
+          {{ depense.categorieDepense?.nom }}
+        </span>
       </div>
     </div>
-
-    <div class="p-3 border rounded">
-      <span class="text-xs text-secondary">Montant</span>
-      <div class="font-bold text-primary">
-        {{ depense.montant }} F
-      </div>
+    <div class="p-3 rounded-xl border border-slate-200" style="background:#f8fafc;">
+      <span class="text-xs text-slate-400 font-medium">Année scolaire</span>
+      <div class="font-medium text-slate-700 mt-0.5">{{ depense.anneeScolaire?.libelle }}</div>
     </div>
-
-    <div class="p-3 border rounded">
-      <span class="text-xs text-secondary">Catégorie</span>
-      <div class="font-medium">
-        {{ depense.categorieDepense?.nom }}
-      </div>
-    </div>
-
-    <div class="p-3 border rounded">
-      <span class="text-xs text-secondary">Année scolaire</span>
-      <div class="font-medium">
-        {{ depense.anneeScolaire?.libelle }}
-      </div>
-    </div>
-
   </div>
 
-  <!-- FILES -->
-  <div class="border rounded p-4">
-
-    <div class="flex justify-between items-center mb-3">
-
-      <h4 class="m-0 text-xs uppercase text-secondary">
-        Fichiers justificatifs
-      </h4>
-
+  <!-- Fichiers -->
+  <div class="rounded-xl overflow-hidden border border-slate-200">
+    <div class="px-4 py-2.5 border-b flex items-center justify-between" style="background:#f8fafc;">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:#e0e7ff;">
+          <mat-icon svgIcon="mat:folder" style="color:#4f46e5;font-size:14px;width:14px;height:14px;"></mat-icon>
+        </div>
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Fichiers justificatifs</span>
+      </div>
       <button mat-flat-button color="primary" (click)="fileInput.click()">
-        <mat-icon svgIcon="mat:upload"></mat-icon>
+        <mat-icon svgIcon="mat:upload" class="mr-1"></mat-icon>
         Ajouter
       </button>
-
-      <input
-        #fileInput
-        type="file"
-        hidden
-        (change)="uploadFile($event)" />
-
+      <input #fileInput type="file" hidden (change)="uploadFile($event)" />
     </div>
-
-    <div *ngIf="files.length === 0" class="text-sm text-secondary italic">
-      Aucun fichier
-    </div>
-
-    <div *ngFor="let file of files" class="flex justify-between items-center p-2 border-b">
-
-      <div class="flex items-center gap-2">
-        <mat-icon svgIcon="mat:insert_drive_file"></mat-icon>
-        <span class="text-sm">{{ file.fichier }}</span>
+    <div class="p-4">
+      <div *ngIf="files.length === 0" class="text-sm text-slate-400 italic">Aucun fichier</div>
+      <div *ngFor="let file of files; let last = last"
+           [class.border-b]="!last"
+           class="flex items-center justify-between py-2.5">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#e0e7ff;">
+            <mat-icon svgIcon="mat:insert_drive_file" style="color:#4f46e5;font-size:14px;width:14px;height:14px;"></mat-icon>
+          </div>
+          <span class="text-sm font-medium text-slate-700">{{ file.fichier }}</span>
+        </div>
+        <div class="flex gap-1">
+          <button mat-icon-button (click)="voirFile(file)" matTooltip="Voir">
+            <mat-icon svgIcon="mat:visibility" class="text-slate-400"></mat-icon>
+          </button>
+          <button mat-icon-button (click)="deleteFile(file)" matTooltip="Supprimer">
+            <mat-icon svgIcon="mat:delete" class="text-red-400"></mat-icon>
+          </button>
+        </div>
       </div>
-
-      <div class="flex gap-2">
-
-        <button mat-icon-button (click)="voirFile(file)">
-          <mat-icon svgIcon="mat:visibility"></mat-icon>
-        </button>
-
-        <button mat-icon-button color="warn" (click)="deleteFile(file)">
-          <mat-icon svgIcon="mat:delete"></mat-icon>
-        </button>
-
-      </div>
-
     </div>
-
   </div>
 
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Fermer</button>
+<mat-dialog-actions align="end" class="px-5 py-3 border-t">
+  <button mat-button (click)="close()" class="text-slate-500">Fermer</button>
 </mat-dialog-actions>

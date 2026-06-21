@@ -1,285 +1,161 @@
-<!-- HEADER -->
-<div
-  class="flex items-center p-4 border-b bg-gray-50/50"
-  mat-dialog-title>
-
-  <div
-    class="bg-primary/10 text-primary p-2 rounded-lg mr-4 flex items-center justify-center">
-
-    <mat-icon svgIcon="mat:school"></mat-icon>
+<!-- En-tête dialog indigo -->
+<div class="flex items-center gap-3 p-5" mat-dialog-title
+     style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;">
+  <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-none"
+       style="background:rgba(255,255,255,0.2);">
+    <mat-icon svgIcon="mat:school" style="color:white;"></mat-icon>
   </div>
-
   <div class="flex-auto">
-    <h2 class="headline m-0 text-lg font-bold">
-      Détails de l'inscription
-    </h2>
-
-    <p class="caption text-secondary m-0 leading-none">
-      Statut :
-      <span class="font-mono text-primary uppercase">
-        {{ inscription.statut }}
-      </span>
+    <h2 class="m-0 text-base font-bold text-white">Détails de l'inscription</h2>
+    <p class="m-0 text-xs font-mono" style="color:rgba(255,255,255,0.75);">
+      {{ inscription.etudiant?.prenom }} {{ inscription.etudiant?.nom }}
     </p>
   </div>
-
-  <button
-    (click)="close()"
-    mat-icon-button>
-
+  <button (click)="close()" mat-icon-button type="button" style="color:rgba(255,255,255,0.8);">
     <mat-icon svgIcon="mat:close"></mat-icon>
   </button>
 </div>
 
-<!-- CONTENT -->
-<mat-dialog-content class="p-6">
+<mat-dialog-content class="p-5">
+  <div class="flex flex-col gap-4">
 
-  <div class="flex flex-col gap-6">
-
-    <!-- ETUDIANT -->
-    <div class="border rounded-xl p-5 bg-gray-50/50">
-
-      <h4
-        class="m-0 mb-5 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
-
-        <mat-icon
-          class="icon-sm mr-2"
-          svgIcon="mat:person">
-        </mat-icon>
-
-        Étudiant
-      </h4>
-
-      <div class="grid grid-cols-2 gap-x-8 gap-y-5 text-sm">
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Nom complet :</span>
-          <span class="font-medium">
-            {{ inscription.etudiant?.prenom }}
-            {{ inscription.etudiant?.nom }}
-          </span>
+    <!-- Étudiant -->
+    <div class="rounded-xl overflow-hidden border border-slate-200">
+      <div class="px-4 py-2.5 border-b flex items-center gap-2" style="background:#f8fafc;">
+        <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:#e0e7ff;">
+          <mat-icon svgIcon="mat:person" style="color:#4f46e5;font-size:14px;width:14px;height:14px;"></mat-icon>
         </div>
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Matricule :</span>
-          <span class="font-medium">
-            {{ inscription.etudiant?.matricule }}
-          </span>
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Étudiant</span>
+      </div>
+      <div class="p-4 grid grid-cols-2 gap-x-6 gap-y-0 text-sm">
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Nom complet</span>
+          <span class="font-semibold text-slate-800">{{ inscription.etudiant?.prenom }} {{ inscription.etudiant?.nom }}</span>
         </div>
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Téléphone :</span>
-          <span class="font-medium">
-            {{ inscription.etudiant?.telephone }}
-          </span>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Matricule</span>
+          <span class="font-mono font-semibold text-indigo-600">{{ inscription.etudiant?.matricule }}</span>
         </div>
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Email :</span>
-          <span class="font-medium">
-            {{ inscription.etudiant?.email }}
-          </span>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Téléphone</span>
+          <span class="text-slate-700">{{ inscription.etudiant?.telephone || '—' }}</span>
         </div>
-
-        <div class="flex justify-between items-center py-2 col-span-2">
-          <span class="text-secondary">Date de naissance :</span>
-          <span class="font-medium">
-            {{ inscription.etudiant?.dateNaissance | date:'dd/MM/yyyy' }}
-          </span>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Email</span>
+          <span class="text-slate-700">{{ inscription.etudiant?.email || '—' }}</span>
         </div>
-
+        <div class="flex justify-between py-2 border-b border-slate-100 col-span-2">
+          <span class="text-slate-400 font-medium">Date de naissance</span>
+          <span class="text-slate-700">{{ inscription.etudiant?.dateNaissance | date:'dd/MM/yyyy' }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- ACADEMIQUE -->
-    <div class="border rounded-xl p-5 bg-gray-50/50">
-
-      <h4
-        class="m-0 mb-5 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
-
-        <mat-icon
-          class="icon-sm mr-2"
-          svgIcon="mat:menu_book">
-        </mat-icon>
-
-        Informations académiques
-      </h4>
-
-      <div class="grid grid-cols-2 gap-x-8 gap-y-5 text-sm">
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Classe :</span>
-          <span class="font-medium">
+    <!-- Académique -->
+    <div class="rounded-xl overflow-hidden border border-slate-200">
+      <div class="px-4 py-2.5 border-b flex items-center gap-2" style="background:#f8fafc;">
+        <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:#e0e7ff;">
+          <mat-icon svgIcon="mat:menu_book" style="color:#4f46e5;font-size:14px;width:14px;height:14px;"></mat-icon>
+        </div>
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Informations académiques</span>
+      </div>
+      <div class="p-4 grid grid-cols-2 gap-x-6 gap-y-0 text-sm">
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Classe</span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4f46e5;">
             {{ inscription.classe?.nom }}
           </span>
         </div>
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Filière :</span>
-          <span class="font-medium">
-            {{ inscription.classe?.filiere?.nom }}
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Filière</span>
+          <span class="text-slate-700">{{ inscription.classe?.filiere?.nom || '—' }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Année scolaire</span>
+          <span class="font-semibold text-slate-700">{{ inscription.anneeScolaire?.libelle }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Date inscription</span>
+          <span class="text-slate-700">{{ inscription.dateInscription | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-slate-100 col-span-2">
+          <span class="text-slate-400 font-medium">Statut</span>
+          <span [ngClass]="inscription.statut === 'INSCRIT' ? 'badge-actif' : 'badge-inactif'">
+            {{ inscription.statut }}
           </span>
         </div>
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Année scolaire :</span>
-          <span class="font-medium">
-            {{ inscription.anneeScolaire?.libelle }}
-          </span>
-        </div>
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Date inscription :</span>
-          <span class="font-medium">
-            {{ inscription.dateInscription | date:'dd/MM/yyyy' }}
-          </span>
-        </div>
-
       </div>
     </div>
 
-    <!-- FINANCIER -->
-    <div class="border rounded-xl p-5 bg-gray-50/50">
-
-      <h4
-        class="m-0 mb-5 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
-
-        <mat-icon
-          class="icon-sm mr-2"
-          svgIcon="mat:payments">
-        </mat-icon>
-
-        Informations financières
-      </h4>
-
-      <div class="grid grid-cols-2 gap-x-8 gap-y-5 text-sm">
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Frais inscription :</span>
-          <span class="font-medium">
-            {{ inscription.classe?.filiere?.fraisInscription | number }}
-            FCFA
-          </span>
+    <!-- Financier -->
+    <div class="rounded-xl overflow-hidden border border-slate-200">
+      <div class="px-4 py-2.5 border-b flex items-center gap-2" style="background:#f8fafc;">
+        <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:#dcfce7;">
+          <mat-icon svgIcon="mat:payments" style="color:#16a34a;font-size:14px;width:14px;height:14px;"></mat-icon>
         </div>
-        
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Frais scolarité :</span>
-          <span class="font-medium">
-            {{ inscription.classe?.filiere?.fraisScolarite | number }}
-            FCFA
-          </span>
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Informations financières</span>
+      </div>
+      <div class="p-4 grid grid-cols-2 gap-x-6 gap-y-0 text-sm">
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Frais inscription</span>
+          <span class="font-semibold text-slate-700">{{ inscription.classe?.filiere?.fraisInscription | number }} FCFA</span>
         </div>
-
-        <div class="flex justify-between items-center py-2">
-          <span class="text-secondary">Réduction :</span>
-          <span class="font-medium">
-            {{ inscription.montantReduction | number }}
-            FCFA
-          </span>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Frais scolarité</span>
+          <span class="font-semibold text-slate-700">{{ inscription.classe?.filiere?.fraisScolarite | number }} FCFA</span>
         </div>
-
-        <div class="flex justify-between items-center py-2 col-span-2">
-          <span class="text-secondary">Motif réduction :</span>
-          <span class="font-medium">
-            {{ inscription.motifReduction || 'Aucun' }}
-          </span>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Réduction</span>
+          <span class="text-slate-700">{{ inscription.montantReduction | number }} FCFA</span>
         </div>
-
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-400 font-medium">Motif réduction</span>
+          <span class="text-slate-600">{{ inscription.motifReduction || 'Aucun' }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- DOSSIERS -->
-    <div class="border rounded-xl p-5">
-
-      <div class="flex justify-between items-center mb-4">
-
-        <h4
-          class="m-0 text-xs font-bold uppercase text-secondary tracking-widest flex items-center">
-
-          <mat-icon
-            class="icon-sm mr-2"
-            svgIcon="mat:folder">
-          </mat-icon>
-
-          Dossier d'inscription
-        </h4>
-
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="fileInput.click()">
-
-          <mat-icon
-            class="mr-1"
-            svgIcon="mat:upload">
-          </mat-icon>
-
+    <!-- Dossier d'inscription -->
+    <div class="rounded-xl overflow-hidden border border-slate-200">
+      <div class="px-4 py-2.5 border-b flex items-center justify-between" style="background:#f8fafc;">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:#e0e7ff;">
+            <mat-icon svgIcon="mat:folder" style="color:#4f46e5;font-size:14px;width:14px;height:14px;"></mat-icon>
+          </div>
+          <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Dossier d'inscription</span>
+        </div>
+        <button mat-flat-button color="primary" (click)="fileInput.click()">
+          <mat-icon svgIcon="mat:upload" class="mr-1"></mat-icon>
           Ajouter
         </button>
-
-        <input
-          #fileInput
-          type="file"
-          hidden
-          accept=".pdf,.jpg,.jpeg,.png"
-          (change)="uploadFile($event)" />
+        <input #fileInput type="file" hidden accept=".pdf,.jpg,.jpeg,.png" (change)="uploadFile($event)" />
       </div>
-
-      <div
-        *ngIf="files.length === 0"
-        class="text-sm text-secondary italic py-3">
-
-        Aucun document disponible
-      </div>
-
-      <div
-        *ngFor="let file of files"
-        class="flex items-center justify-between py-3 px-2 border-b">
-
-        <div class="flex items-center gap-3">
-
-          <mat-icon svgIcon="mat:description"></mat-icon>
-
-          <span class="text-sm font-medium">
-            {{ file.fichier }}
-          </span>
-        </div>
-
-        <div class="flex items-center gap-2">
-
-          <button
-            mat-icon-button
-            (click)="voirFile(file)">
-
-            <mat-icon svgIcon="mat:visibility"></mat-icon>
-          </button>
-
-          <button
-            mat-icon-button
-            color="warn"
-            (click)="deleteFile(file)">
-
-            <mat-icon svgIcon="mat:delete"></mat-icon>
-          </button>
-
+      <div class="p-4">
+        <div *ngIf="files.length === 0" class="text-sm text-slate-400 italic">Aucun document disponible</div>
+        <div *ngFor="let file of files; let last = last"
+             [class.border-b]="!last"
+             class="flex items-center justify-between py-2.5">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#e0e7ff;">
+              <mat-icon svgIcon="mat:description" style="color:#4f46e5;font-size:14px;width:14px;height:14px;"></mat-icon>
+            </div>
+            <span class="text-sm font-medium text-slate-700">{{ file.fichier }}</span>
+          </div>
+          <div class="flex gap-1">
+            <button mat-icon-button (click)="voirFile(file)" matTooltip="Voir">
+              <mat-icon svgIcon="mat:visibility" class="text-slate-400"></mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteFile(file)" matTooltip="Supprimer">
+              <mat-icon svgIcon="mat:delete" class="text-red-400"></mat-icon>
+            </button>
+          </div>
         </div>
       </div>
-
     </div>
 
   </div>
-
 </mat-dialog-content>
 
-<!-- FOOTER -->
-<mat-dialog-actions
-  align="end"
-  class="p-4 border-t bg-gray-50/50">
-
-  <button
-    mat-button
-    (click)="close()">
-
-    Fermer
-  </button>
-
+<mat-dialog-actions align="end" class="px-5 py-3 border-t">
+  <button mat-button (click)="close()" class="text-slate-500">Fermer</button>
 </mat-dialog-actions>

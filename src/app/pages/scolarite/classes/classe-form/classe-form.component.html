@@ -10,7 +10,7 @@
   <mat-divider class="text-border"></mat-divider>
 
   <mat-dialog-content class="flex flex-col gap-4 mt-4">
-    <mat-form-field class="flex-auto">
+    <mat-form-field subscriptSizing="dynamic" class="flex-auto">
       <mat-label>Nom de la classe</mat-label>
       <input formControlName="nom" matInput placeholder="ex: L1 Informatique">
       <mat-icon matIconPrefix svgIcon="mat:edit"></mat-icon>
@@ -20,7 +20,7 @@
     
          
 
-  <mat-form-field class="flex-auto">
+  <mat-form-field subscriptSizing="dynamic" class="flex-auto">
     <mat-label>Filière</mat-label>
     <mat-select formControlName="filiereId" [disabled]="filieresFiltrees.length === 0">
       <mat-option *ngFor="let f of filieresFiltrees" [value]="f.id">{{ f.nom }}</mat-option>

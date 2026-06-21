@@ -45,14 +45,9 @@
 
       <span class="flex-1"></span>
 
-      <button
-        (click)="ouvrirForm()"
-        class="ml-4 flex-none"
-        color="primary"
-        mat-mini-fab
-        matTooltip="Ajouter une catégorie">
-
-        <mat-icon svgIcon="mat:add"></mat-icon>
+      <button (click)="ouvrirForm()" color="primary" mat-flat-button type="button">
+        <mat-icon svgIcon="mat:add" class="mr-1"></mat-icon>
+        Ajouter
       </button>
     </div>
 
@@ -172,12 +167,12 @@
               <mat-icon svgIcon="mat:visibility"></mat-icon>
             </button>
 
-            <button mat-icon-button color="primary" (click)="ouvrirForm(row)">
-              <mat-icon svgIcon="mat:edit"></mat-icon>
+            <button mat-icon-button (click)="ouvrirForm(row)" matTooltip="Modifier">
+              <mat-icon svgIcon="mat:edit" class="text-indigo-400"></mat-icon>
             </button>
 
-            <button mat-icon-button color="warn" (click)="supprimer(row)">
-              <mat-icon svgIcon="mat:delete"></mat-icon>
+            <button mat-icon-button (click)="supprimer(row)" matTooltip="Supprimer">
+              <mat-icon svgIcon="mat:delete" class="text-red-400"></mat-icon>
             </button>
 
           </div>

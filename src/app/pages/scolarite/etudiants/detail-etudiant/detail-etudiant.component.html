@@ -180,11 +180,18 @@
 
       <!-- ── Paiements ───────────────────────────────────────────── -->
       <div class="card overflow-hidden">
-        <div class="px-5 py-3 border-b flex items-center gap-2" style="background:#f8fafc;">
-          <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#dcfce7;">
-            <mat-icon svgIcon="mat:payments" style="color:#16a34a;font-size:16px;width:16px;height:16px;"></mat-icon>
+        <div class="px-5 py-3 border-b flex items-center justify-between" style="background:#f8fafc;">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#dcfce7;">
+              <mat-icon svgIcon="mat:payments" style="color:#16a34a;font-size:16px;width:16px;height:16px;"></mat-icon>
+            </div>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Historique des paiements</span>
           </div>
-          <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Historique des paiements</span>
+          <button mat-stroked-button (click)="exporterPaiements()"
+                  matTooltip="Exporter les paiements en PDF">
+            <mat-icon svgIcon="mat:picture_as_pdf" class="text-slate-500 mr-1"></mat-icon>
+            PDF
+          </button>
         </div>
         <table [dataSource]="dataSourcePaiements" mat-table class="w-full">
           <ng-container matColumnDef="date">

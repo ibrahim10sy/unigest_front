@@ -63,6 +63,12 @@
             <mat-icon svgIcon="mat:refresh" class="mr-1 text-slate-400"></mat-icon>
             Réinitialiser
           </button>
+
+          <button mat-flat-button color="primary" (click)="exportAbsences()" class="h-14"
+                  matTooltip="Exporter les absences de la classe sélectionnée en PDF">
+            <mat-icon svgIcon="mat:picture_as_pdf" class="mr-1"></mat-icon>
+            Exporter PDF
+          </button>
         </div>
       </div>
 

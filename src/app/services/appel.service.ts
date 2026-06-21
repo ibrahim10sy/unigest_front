@@ -155,4 +155,11 @@ export class AppelService {
       `${this.apiUrl}/seance/${seanceId}`
     );
   }
+
+  exportAbsencesClassePdf(classeId: number, anneeId: number): Observable<Blob> {
+    return this.http.get(
+      `${this.apiUrl}/classe/${classeId}/export-pdf?anneeId=${anneeId}`,
+      { responseType: 'blob' }
+    );
+  }
 }

@@ -6,7 +6,7 @@
   <mat-dialog-content class="flex flex-col gap-4 py-4">
   
     <!-- <div class="grid grid-cols-2 gap-2"> -->
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full">
         <mat-label>Année Scolaire</mat-label>
         <mat-select [(ngModel)]="filterYear" (selectionChange)="applyFilters()" [ngModelOptions]="{standalone: true}">
           <mat-option value="">Toutes les années</mat-option>
@@ -14,7 +14,7 @@
         </mat-select>
       </mat-form-field>
 
-   <mat-form-field class="w-full">
+   <mat-form-field subscriptSizing="dynamic" class="w-full">
   <mat-label>Sélectionner ÉLÈVE / Étudiant</mat-label>
 
   <mat-select formControlName="inscription" [compareWith]="compareInscription">
@@ -95,7 +95,7 @@
 
 </div>
 
-    <mat-form-field class="w-full">
+    <mat-form-field subscriptSizing="dynamic" class="w-full">
       <mat-label>Mode de paiement</mat-label>
       <mat-select formControlName="mode">
         <mat-option *ngFor="let mode of paymentModes" [value]="mode">
@@ -104,7 +104,7 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field class="w-full">
+    <mat-form-field subscriptSizing="dynamic" class="w-full">
       <mat-label>Montant</mat-label>
       <input matInput formControlName="montant" type="number" placeholder="Ex: 50000" />
       <span matTextPrefix>FCFA &nbsp;</span>

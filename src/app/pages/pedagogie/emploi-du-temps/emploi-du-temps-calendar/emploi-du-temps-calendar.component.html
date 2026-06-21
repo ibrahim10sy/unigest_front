@@ -12,7 +12,7 @@
       <div class="flex items-center gap-3 mt-4 sm:mt-0">
 
         <!-- Sélecteur de classe -->
-        <mat-form-field appearance="outline" class="flex-none">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline" class="flex-none">
           <mat-label>Classe</mat-label>
           <mat-select [(value)]="classeId" (selectionChange)="onClasseChange()">
             <mat-option *ngFor="let c of classes" [value]="c.id">

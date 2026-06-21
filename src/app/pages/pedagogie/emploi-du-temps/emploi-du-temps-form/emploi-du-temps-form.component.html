@@ -14,7 +14,7 @@
   <mat-dialog-content class="flex flex-col gap-4 mt-4">
 
     <!-- Type en premier : conditionne l'affichage du reste -->
-    <mat-form-field class="w-full">
+    <mat-form-field subscriptSizing="dynamic" class="w-full">
       <mat-label>Type</mat-label>
       <mat-select formControlName="type">
         <mat-option *ngFor="let t of types" [value]="t">
@@ -50,7 +50,7 @@
           <mat-error>Enseignant requis</mat-error>
         </mat-form-field>
 
-        <mat-form-field class="col-span-2">
+        <mat-form-field subscriptSizing="dynamic" class="col-span-2">
           <mat-label>Matière</mat-label>
           <mat-select formControlName="matiere">
             <mat-option *ngFor="let m of matieres" [value]="m.id">

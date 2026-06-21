@@ -45,7 +45,7 @@
       </mat-form-field>
 
       <!-- Matière de l'affectation -->
-      <mat-form-field *ngIf="selectedAffectation">
+      <mat-form-field subscriptSizing="dynamic" *ngIf="selectedAffectation">
         <mat-label>Matière</mat-label>
         <mat-select formControlName="matiereId">
           <mat-option *ngFor="let m of selectedAffectation.matieres" [value]="m.id">

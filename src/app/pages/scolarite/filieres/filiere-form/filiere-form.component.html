@@ -31,7 +31,7 @@
 
   <mat-dialog-content class="flex flex-col">
 
-    <mat-form-field class="flex-auto">
+    <mat-form-field subscriptSizing="dynamic" class="flex-auto">
   <mat-label>Niveau scolaire</mat-label>
   <mat-select formControlName="niveauId">
     <mat-option *ngFor="let n of niveaux" [value]="n.id">
@@ -40,7 +40,7 @@
   </mat-select>
 </mat-form-field>
 
-    <mat-form-field class="flex-auto mt-4">
+    <mat-form-field subscriptSizing="dynamic" class="flex-auto mt-4">
       <mat-label>Nom de la filière</mat-label>
       <input cdkFocusInitial formControlName="nom" matInput placeholder="Ex. Génie Logiciel" />
       <mat-icon matIconPrefix svgIcon="mat:edit"></mat-icon>
@@ -48,14 +48,14 @@
     </mat-form-field>
 
     <div class="flex gap-4 mt-4">
-      <mat-form-field class="flex-auto">
+      <mat-form-field subscriptSizing="dynamic" class="flex-auto">
         <mat-label>Frais d'inscription</mat-label>
         <input formControlName="fraisInscription" matInput type="number" placeholder="Ex. 50000" />
         <mat-error *ngIf="form.get('fraisInscription')?.hasError('min')">Doit être positif</mat-error>
       </mat-form-field>
 
       
-      <mat-form-field class="flex-auto">
+      <mat-form-field subscriptSizing="dynamic" class="flex-auto">
         <mat-label>Frais de scolarité</mat-label>
         <input formControlName="fraisScolarite" matInput type="number" placeholder="Ex. 200000" />
         <mat-error *ngIf="form.get('fraisScolarite')?.hasError('min')">Doit être positif</mat-error>

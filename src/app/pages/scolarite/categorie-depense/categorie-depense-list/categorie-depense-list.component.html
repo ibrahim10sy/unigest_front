@@ -27,18 +27,15 @@
  <vex-page-layout-content [class.container]="layoutCtrl.value === 'boxed'" class="-mt-6">
     <div class="card overflow-auto -mt-16">
       
-      <div class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
-        <h2 class="title my-0 hidden sm:block flex-none">Catégories</h2>
-
-        <mat-form-field subscriptSizing="dynamic" class="ml-4">
+      <div class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center gap-4">
+        <mat-form-field subscriptSizing="dynamic" class="flex-1 max-w-xs">
           <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
           <input matInput [formControl]="searchCtrl" placeholder="Rechercher une catégorie..." type="text" />
         </mat-form-field>
-
         <span class="flex-1"></span>
-
-        <button (click)="ajouter()" class="ml-4 flex-none" color="primary" mat-mini-fab matTooltip="Ajouter une catégorie">
-          <mat-icon svgIcon="mat:add"></mat-icon>
+        <button (click)="ajouter()" color="primary" mat-flat-button type="button">
+          <mat-icon svgIcon="mat:add" class="mr-1"></mat-icon>
+          Ajouter
         </button>
       </div>
 
@@ -63,11 +60,11 @@
           <th *matHeaderCellDef mat-header-cell></th>
           <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
             <div class="flex">
-                <button (click)="$event.stopPropagation(); modifier(row)" mat-icon-button color="primary">
-                  <mat-icon svgIcon="mat:edit"></mat-icon>
+                <button (click)="$event.stopPropagation(); modifier(row)" mat-icon-button matTooltip="Modifier">
+                  <mat-icon svgIcon="mat:edit" class="text-indigo-400"></mat-icon>
                 </button>
-                <button (click)="$event.stopPropagation(); supprimer(row)" mat-icon-button color="warn">
-                  <mat-icon svgIcon="mat:delete"></mat-icon>
+                <button (click)="$event.stopPropagation(); supprimer(row)" mat-icon-button matTooltip="Supprimer">
+                  <mat-icon svgIcon="mat:delete" class="text-red-400"></mat-icon>
                 </button>
             </div>
           </td>
