@@ -6,7 +6,7 @@
   <mat-card class="mb-6">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon class="mr-2 align-middle">school</mat-icon>
+        <mat-icon svgIcon="mat:school" class="mr-2 align-middle"></mat-icon>
         Informations de l'école
       </mat-card-title>
     </mat-card-header>
@@ -65,80 +65,10 @@
       <button mat-raised-button color="primary"
               [disabled]="ecoleForm.invalid || loading"
               (click)="sauvegarderEcole()">
-        <mat-icon>save</mat-icon> Sauvegarder
+        <mat-icon svgIcon="mat:save"></mat-icon> Sauvegarder
       </button>
     </mat-card-actions>
   </mat-card>
 
-  <!-- ── Seuils d'appréciation ────────────────────────────────────────────── -->
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon class="mr-2 align-middle">star_rate</mat-icon>
-        Seuils d'appréciation
-      </mat-card-title>
-      <mat-card-subtitle>
-        Configurez les mentions selon le niveau de l'école (primaire, secondaire…)
-      </mat-card-subtitle>
-    </mat-card-header>
-
-    <mat-card-content>
-      <form [formGroup]="seuilsForm" class="mt-4">
-
-        <div class="grid grid-cols-12 gap-2 font-semibold text-sm text-gray-600 mb-2 px-2">
-          <div class="col-span-4">Seuil minimum (/20)</div>
-          <div class="col-span-6">Appréciation affichée</div>
-          <div class="col-span-2"></div>
-        </div>
-
-        <div formArrayName="seuils">
-          <div *ngFor="let ctrl of seuils.controls; let i = index"
-               [formGroupName]="i"
-               class="grid grid-cols-12 gap-2 mb-2 items-center">
-
-            <mat-form-field appearance="outline" class="col-span-4">
-              <mat-label>Seuil min</mat-label>
-              <input matInput type="number" formControlName="seuilMin" min="0" max="20" step="0.5">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="col-span-6">
-              <mat-label>Appréciation</mat-label>
-              <input matInput formControlName="libelle" placeholder="Ex: Très bien">
-            </mat-form-field>
-
-            <div class="col-span-2 flex justify-center">
-              <button mat-icon-button color="warn" (click)="supprimerSeuil(i)"
-                      matTooltip="Supprimer">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        <div *ngIf="seuils.length === 0" class="text-gray-400 text-sm py-4 text-center">
-          Aucun seuil configuré. Ajoutez-en un ci-dessous.
-        </div>
-
-        <button mat-stroked-button color="primary" (click)="ajouterSeuil()" class="mt-2">
-          <mat-icon>add</mat-icon> Ajouter un seuil
-        </button>
-
-        <div class="mt-4 p-3 bg-amber-50 rounded text-sm text-amber-800">
-          <strong>Conseil :</strong> Pour l'école primaire vous pouvez définir ≥ 9/20 = "Bien"
-          alors qu'au secondaire ≥ 14/20 = "Bien". Les seuils s'appliquent du plus élevé au plus bas.
-        </div>
-
-      </form>
-    </mat-card-content>
-
-    <mat-card-actions align="end">
-      <button mat-raised-button color="primary"
-              [disabled]="seuilsForm.invalid || loading"
-              (click)="sauvegarderSeuils()">
-        <mat-icon>save</mat-icon> Sauvegarder les seuils
-      </button>
-    </mat-card-actions>
-  </mat-card>
 
 </div>

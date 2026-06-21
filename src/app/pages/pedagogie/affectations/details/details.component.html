@@ -475,10 +475,19 @@
                 <td class="px-4 py-2.5 text-secondary text-xs">{{ i + 1 }}</td>
                 <td class="px-4 py-2.5 font-medium text-slate-800">{{ row.etudiantNom }}</td>
                 <td class="px-4 py-2.5">
-                  <span *ngFor="let n of row.notes"
-                    class="inline-flex items-center gap-1 mr-1 mb-0.5 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    {{ n.valeur | number:'1.2-2' }}
-                    <span class="text-secondary text-[10px]">({{ n.type }})</span>
+                  <span *ngFor="let n of row.notes" class="inline-flex items-center gap-0.5 mr-1 mb-0.5">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                      {{ n.valeur | number:'1.2-2' }}
+                      <span class="text-secondary text-[10px]">({{ n.type }})</span>
+                    </span>
+                    <button
+                      mat-icon-button
+                      type="button"
+                      style="width:20px;height:20px;line-height:20px"
+                      (click)="modifierNote(n.id, n.valeur, n.type)"
+                      matTooltip="Modifier cette note">
+                      <mat-icon svgIcon="mat:edit" style="font-size:13px;width:13px;height:13px"></mat-icon>
+                    </button>
                   </span>
                 </td>
               </tr>

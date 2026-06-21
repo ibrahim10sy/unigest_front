@@ -30,10 +30,11 @@ import { SeanceFormComponent } from '../../seances/seance-form/seance-form.compo
 import { Matiere } from 'src/app/models/Matiere';
 import { NoteFormComponent } from '../../notes/note-form/note-form.component';
 import { NoteService } from 'src/app/services/note.service';
-import { Note } from 'src/app/models/note.model';
+import { Note, TypeNote } from 'src/app/models/note.model';
 import { TypePeriode } from 'src/app/models/TypePeriode';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'vex-details',
@@ -56,7 +57,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatDialogModule,
     MatButtonToggleModule,
     MatSelectModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule
   ],
   templateUrl: './details.component.html',
   styleUrl: './details.component.scss'
@@ -82,10 +84,10 @@ export class DetailsComponent implements OnInit {
   etudiants: Etudiant[] = [];
 
   typesPeriode = Object.values(TypePeriode);
-  periodes = [1, 2, 3];
+  periodes = [1, 2, 3,4,5];
   periodeNotesCtrl  = new UntypedFormControl(1);
-  typePeriodeNotesCtrl = new UntypedFormControl(TypePeriode.TRIMESTRE);
-  notesParMatiere: { matiereNom: string; lignes: { etudiantNom: string; notes: { valeur: number; type: string }[] }[] }[] = [];
+  typePeriodeNotesCtrl = new UntypedFormControl(TypePeriode);
+  notesParMatiere: { matiereNom: string; lignes: { etudiantNom: string; notes: { id: number; valeur: number; type: string }[] }[] }[] = [];
   isLoadingNotes = false;
 
   constructor(
@@ -185,7 +187,7 @@ export class DetailsComponent implements OnInit {
       next: (notes: Note[]) => {
         const byMatiere = new Map<number, {
           nom: string;
-          byEtudiant: Map<number, { etudiantNom: string; notes: { valeur: number; type: string }[] }>;
+          byEtudiant: Map<number, { etudiantNom: string; notes: { id: number; valeur: number; type: string }[] }>;
         }>();
 
         notes.forEach(n => {
@@ -201,7 +203,7 @@ export class DetailsComponent implements OnInit {
               notes: []
             });
           }
-          mEntry.byEtudiant.get(eid)!.notes.push({ valeur: n.valeur, type: n.type as string });
+          mEntry.byEtudiant.get(eid)!.notes.push({ id: n.id!, valeur: n.valeur, type: n.type as string });
         });
 
         this.notesParMatiere = [...byMatiere.entries()].map(([, data]) => ({
@@ -211,6 +213,34 @@ export class DetailsComponent implements OnInit {
         this.isLoadingNotes = false;
       },
       error: () => { this.isLoadingNotes = false; }
+    });
+  }
+
+  modifierNote(noteId: number, valeurActuelle: number, typeActuel: string): void {
+    Swal.fire({
+      title: 'Modifier la note',
+      input: 'number',
+      inputLabel: `Type : ${typeActuel}`,
+      inputValue: valeurActuelle,
+      inputAttributes: { min: '0', max: '20', step: '0.5' },
+      showCancelButton: true,
+      confirmButtonText: 'Enregistrer',
+      cancelButtonText: 'Annuler',
+      inputValidator: (value) => {
+        const v = parseFloat(value);
+        if (isNaN(v) || v < 0 || v > 20) return 'La note doit être entre 0 et 20';
+        return null;
+      }
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      const nouvelleValeur = parseFloat(result.value);
+      this.noteService.modifierNote(noteId, nouvelleValeur, typeActuel as TypeNote).subscribe({
+        next: () => {
+          Swal.fire({ title: 'Note modifiée', icon: 'success', timer: 1500, showConfirmButton: false });
+          this.chargerNotesParMatiere();
+        },
+        error: () => Swal.fire({ title: 'Erreur', text: 'Impossible de modifier la note.', icon: 'error' })
+      });
     });
   }
 

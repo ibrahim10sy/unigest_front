@@ -326,6 +326,12 @@ export const appRoutes: VexRoutes = [
             loadComponent: () =>
               import('./pages/parametres/parametre-ecole/parametre-ecole.component')
                 .then((m) => m.ParametreEcoleComponent)
+          },
+          {
+            path: 'appreciation',
+            loadComponent: () =>
+              import('./pages/parametres/appreciation/appreciation.component')
+                .then((m) => m.AppreciationComponent)
           }
         ]
       },

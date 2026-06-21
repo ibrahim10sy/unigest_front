@@ -273,6 +273,12 @@ export class NavigationLoaderService {
             label: 'École & Bulletins',
             route: '/parametres/ecole',
             icon: 'mat:settings'
+          },
+          {
+            type: 'link',
+            label: 'Appréciations',
+            route: '/parametres/appreciation',
+            icon: 'mat:star_rate'
           }
         ]
       }

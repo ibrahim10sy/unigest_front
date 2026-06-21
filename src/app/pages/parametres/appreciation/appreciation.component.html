@@ -1,0 +1,120 @@
+<vex-page-layout>
+  <vex-page-layout-header class="pb-16 flex flex-col items-start justify-center">
+    <div class="w-full flex justify-between">
+      <div>
+        <h1 class="title mt-0 mb-1">Appréciations</h1>
+        <vex-breadcrumbs [crumbs]="['Paramètres', 'Appréciations']"></vex-breadcrumbs>
+      </div>
+    </div>
+  </vex-page-layout-header>
+
+  <vex-page-layout-content class="-mt-6">
+    <div class="card -mt-16 p-6 max-w-3xl">
+
+      <div class="mb-6">
+        <h2 class="text-xl font-bold text-slate-800 mb-1 flex items-center gap-2">
+          <mat-icon svgIcon="mat:star_rate" class="text-amber-500"></mat-icon>
+          Intervalles d'appréciation
+        </h2>
+        <p class="text-sm text-slate-500">
+          Définissez les mentions selon les intervalles de notes. Le seuil minimum suffit —
+          la borne supérieure est calculée automatiquement à partir du seuil suivant.
+        </p>
+      </div>
+
+      <form [formGroup]="seuilsForm">
+
+        <!-- En-tête du tableau -->
+        <div class="grid grid-cols-12 gap-3 mb-2 px-2 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+          <div class="col-span-3">Note min (/20)</div>
+          <div class="col-span-3">Note max (/20)</div>
+          <div class="col-span-5">Appréciation affichée</div>
+          <div class="col-span-1"></div>
+        </div>
+
+        <mat-divider class="mb-3"></mat-divider>
+
+        <div formArrayName="seuils">
+          <div
+            *ngFor="let ctrl of seuils.controls; let i = index"
+            [formGroupName]="i"
+            class="grid grid-cols-12 gap-3 mb-3 items-center">
+
+            <!-- Note min -->
+            <mat-form-field appearance="outline" class="col-span-3">
+              <mat-label>Min</mat-label>
+              <input matInput type="number" formControlName="seuilMin" min="0" max="20" step="0.5">
+              <mat-error>Requis (0–20)</mat-error>
+            </mat-form-field>
+
+            <!-- Note max (saisie) -->
+            <mat-form-field appearance="outline" class="col-span-3">
+              <mat-label>Max</mat-label>
+              <input matInput type="number" formControlName="seuilMax" min="0" max="20" step="0.5" placeholder="—">
+              <mat-error>0–20</mat-error>
+            </mat-form-field>
+
+            <!-- Appréciation -->
+            <mat-form-field appearance="outline" class="col-span-5">
+              <mat-label>Appréciation</mat-label>
+              <input matInput formControlName="libelle" placeholder="Ex: Très bien">
+              <mat-error>Requis</mat-error>
+            </mat-form-field>
+
+            <!-- Supprimer -->
+            <div class="col-span-1 flex justify-center">
+              <button
+                mat-icon-button
+                color="warn"
+                type="button"
+                (click)="supprimerSeuil(i)"
+                matTooltip="Supprimer cet intervalle">
+                <mat-icon svgIcon="mat:delete"></mat-icon>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Aucun seuil -->
+        <div *ngIf="seuils.length === 0"
+             class="text-center py-8 text-slate-400 text-sm border-2 border-dashed border-slate-200 rounded-xl mb-4">
+          Aucun intervalle configuré. Ajoutez-en un ci-dessous.
+        </div>
+
+        <!-- Aperçu trié -->
+        <div *ngIf="seuils.length > 1"
+             class="p-3 bg-amber-50 rounded-xl text-sm text-amber-800 mb-4">
+          <strong>Aperçu des intervalles (triés) :</strong>
+          <div class="mt-1 flex flex-wrap gap-2">
+            <span
+              *ngFor="let s of seuilsTries; let i = index"
+              class="px-2 py-1 bg-amber-100 rounded font-mono text-xs">
+              {{ s.seuilMin | number:'1.2-2' }} – {{ s.seuilMax != null ? (s.seuilMax | number:'1.2-2') : '20' }} → {{ s.libelle || '?' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3 mt-4">
+          <button mat-stroked-button color="primary" type="button" (click)="ajouterSeuil()">
+            <mat-icon svgIcon="mat:add"></mat-icon>
+            Ajouter un intervalle
+          </button>
+          <span class="flex-1"></span>
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            [disabled]="seuilsForm.invalid || loading"
+            (click)="sauvegarder()">
+            <mat-icon svgIcon="mat:save"></mat-icon>
+            {{ loading ? 'Sauvegarde...' : 'Sauvegarder' }}
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </vex-page-layout-content>
+</vex-page-layout>
