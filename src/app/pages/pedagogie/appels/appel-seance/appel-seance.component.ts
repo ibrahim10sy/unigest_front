@@ -72,6 +72,7 @@ export class AppelSeanceComponent implements OnInit {
   annees: any[] = [];
   classes: any[] = [];
 
+  tousLesAppels: Appel[] = [];
   totalAppels = 0;
   totalAbsents = 0;
   totalRetards = 0;
@@ -99,15 +100,23 @@ export class AppelSeanceComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.initialiserFiltre();
-
     this.chargerAnnees();
     this.chargerClasses();
     this.chargerAppelsAnneeCourante();
 
-    this.searchCtrl.valueChanges.subscribe((value) => {
-      this.dataSource.filter = (value || '').trim().toLowerCase();
+    this.anneeCtrl.valueChanges.subscribe(anneeId => {
+      if (anneeId) {
+        this.appelService.getByAnnee(anneeId).subscribe({
+          next: appels => { this.tousLesAppels = appels; this.appliquerTousFiltres(); },
+          error: () => {}
+        });
+      }
     });
+
+    this.searchCtrl.valueChanges.subscribe(() => this.appliquerTousFiltres());
+    this.classeCtrl.valueChanges.subscribe(() => this.appliquerTousFiltres());
+    this.statutCtrl.valueChanges.subscribe(() => this.appliquerTousFiltres());
+    this.dateCtrl.valueChanges.subscribe(() => this.appliquerTousFiltres());
   }
 
   chargerAnnees(): void {
@@ -152,65 +161,63 @@ export class AppelSeanceComponent implements OnInit {
   chargerAppelsAnneeCourante(): void {
     this.anneeScolaireService.getAnneeActive().subscribe({
       next: (annee) => {
+        this.anneeCtrl.setValue(annee.id, { emitEvent: false });
         this.appelService.getByAnnee(annee.id!).subscribe({
           next: (appels) => {
-            this.dataSource.data = appels;
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-
-            this.calculerStats();
+            this.tousLesAppels = appels;
+            this.appliquerTousFiltres();
           },
-          error: (err) => {
-            console.error('Erreur lors du chargement des appels', err);
-          }
+          error: () => {}
         });
       },
-      error: (err) => {
-        console.error("Erreur lors de la récupération de l'année active", err);
-      }
+      error: () => {}
     });
   }
 
   chargerAppels(): void {
     this.appelService.getAll().subscribe({
       next: (res: Appel[]) => {
-        this.dataSource.data = res;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-
-        this.calculerStats();
+        this.tousLesAppels = res;
+        this.appliquerTousFiltres();
       },
-      error: (err) => {
-        console.error('Erreur lors du chargement des appels', err);
-      }
+      error: () => {}
     });
   }
 
-  initialiserFiltre(): void {
-    this.dataSource.filterPredicate = (
-      data: Appel,
-      filter: string
-    ): boolean => {
-      const terme = filter.trim().toLowerCase();
+  appliquerTousFiltres(): void {
+    let resultat = [...this.tousLesAppels];
 
-      return (
-        data.etudiant?.nom?.toLowerCase().includes(terme) ||
-        data.etudiant?.prenom?.toLowerCase().includes(terme) ||
-        data.seance?.matiere?.toLowerCase().includes(terme) ||
-        data.seance?.affectation?.classe?.nom?.toLowerCase().includes(terme) ||
-        data.statut?.toLowerCase().includes(terme)
+    const texte = (this.searchCtrl.value || '').trim().toLowerCase();
+    if (texte) {
+      resultat = resultat.filter(a =>
+        a.etudiant?.nom?.toLowerCase().includes(texte) ||
+        a.etudiant?.prenom?.toLowerCase().includes(texte) ||
+        a.seance?.matiere?.toLowerCase().includes(texte) ||
+        a.seance?.affectation?.classe?.nom?.toLowerCase().includes(texte) ||
+        a.statut?.toLowerCase().includes(texte)
       );
-    };
-  }
-
-  appliquerFiltre(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
     }
+
+    const classeId = this.classeCtrl.value;
+    if (classeId) {
+      resultat = resultat.filter(a => a.seance?.affectation?.classe?.id === classeId);
+    }
+
+    const statut = this.statutCtrl.value;
+    if (statut) {
+      resultat = resultat.filter(a => a.statut === statut);
+    }
+
+    const date: Date | null = this.dateCtrl.value;
+    if (date) {
+      const iso = date.toISOString().substring(0, 10);
+      resultat = resultat.filter(a => a.seance?.date?.toString().substring(0, 10) === iso);
+    }
+
+    this.dataSource.data = resultat;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.calculerStats();
   }
 
   ouvrirDetail(appel: Appel): void {

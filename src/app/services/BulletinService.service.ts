@@ -153,6 +153,25 @@ export class BulletinService {
   }
 
   /**
+   * Générer ou régénérer (upsert) tous les bulletins d'une classe en une seule requête
+   */
+  genererTousPourClasse(
+    classeId: number,
+    periode: number,
+    typePeriode: TypePeriode,
+    conduites: { etudiantId: number; noteConduite: number | null }[]
+  ): Observable<Bulletin[]> {
+    const params = new HttpParams()
+      .set('periode', periode)
+      .set('typePeriode', typePeriode);
+    return this.http.post<Bulletin[]>(
+      `${this.apiUrl}/classe/${classeId}/generer-tous`,
+      conduites,
+      { params }
+    );
+  }
+
+  /**
    * Recalculer les rangs de toute une classe (appeler après génération en masse)
    */
   recalculerRangs(classeId: number, periode: number, typePeriode: TypePeriode): Observable<void> {

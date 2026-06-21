@@ -1,192 +1,134 @@
 <vex-page-layout>
-  <vex-page-layout-header
-    class="pb-16 flex flex-col items-start justify-center">
-    <div
-      [class.container]="layoutCtrl.value === 'boxed'"
-      [class.px-6]="layoutCtrl.value === 'fullwidth'"
-      class="w-full flex flex-col sm:flex-row justify-between">
+  <vex-page-layout-header class="pb-16 flex flex-col items-start justify-center">
+    <div [class.container]="layoutCtrl.value === 'boxed'"
+         [class.px-6]="layoutCtrl.value === 'fullwidth'"
+         class="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 class="title mt-0 mb-1">Emploi du temps</h1>
-
-        <vex-breadcrumbs
-          [crumbs]="['Configuration', 'Gestion des emplois du temps']">
-        </vex-breadcrumbs>
+        <vex-breadcrumbs [crumbs]="['Pédagogie', 'Emploi du temps']"></vex-breadcrumbs>
       </div>
-
       <div class="hidden sm:block">
-        <mat-button-toggle-group
-          [formControl]="layoutCtrl"
-          class="mt-4 sm:mt-0">
-          <mat-button-toggle value="boxed"> Réduire </mat-button-toggle>
-
-          <mat-button-toggle value="fullwidth"> Plein écran </mat-button-toggle>
+        <mat-button-toggle-group [formControl]="layoutCtrl" class="mt-4 sm:mt-0">
+          <mat-button-toggle value="boxed">Réduire</mat-button-toggle>
+          <mat-button-toggle value="fullwidth">Plein écran</mat-button-toggle>
         </mat-button-toggle-group>
       </div>
     </div>
   </vex-page-layout-header>
 
-  <vex-page-layout-content
-    [class.container]="layoutCtrl.value === 'boxed'"
-    class="-mt-6">
-    <div class="card overflow-auto -mt-16">
-      <div
-        class="bg-app-bar px-6 h-16 border-b sticky left-0 flex items-center">
-        <h2 class="title my-0 hidden sm:block flex-none">Emploi du temps</h2>
+  <vex-page-layout-content [class.container]="layoutCtrl.value === 'boxed'" class="-mt-6">
 
-        <mat-form-field subscriptSizing="dynamic" class="ml-4">
-          <mat-label>Rechercher...</mat-label>
+    <!-- Barre de filtres et actions -->
+    <div class="card -mt-16 mb-4 px-4 py-3 flex flex-wrap items-center gap-3">
 
-          <input
-            matInput
-            (keyup)="appliquerFiltre($event)"
-            placeholder="Rechercher..." />
+      <!-- Sélecteur de classe -->
+      <mat-form-field appearance="outline" class="w-52" subscriptSizing="dynamic">
+        <mat-label>Classe</mat-label>
+        <mat-select [formControl]="classeCtrl">
+          <mat-option *ngFor="let c of classes" [value]="c.id">{{ c.nom }}</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-          <mat-icon matIconPrefix svgIcon="mat:search"> </mat-icon>
-        </mat-form-field>
+      <!-- Recherche (liste uniquement) -->
+      <mat-form-field *ngIf="viewMode === 'liste'" appearance="outline" subscriptSizing="dynamic" class="w-52">
+        <mat-label>Rechercher…</mat-label>
+        <input matInput (keyup)="appliquerFiltre($event)" placeholder="Matière, enseignant…">
+        <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
+      </mat-form-field>
 
-        <span class="flex-1"></span>
+      <span class="flex-1"></span>
 
-        <button
-          (click)="ajouter()"
-          class="ml-4 flex-none"
-          color="primary"
-          mat-mini-fab
-          matTooltip="Ajouter un emploi du temps">
-          <mat-icon svgIcon="mat:add"></mat-icon>
-        </button>
-      </div>
+      <!-- Toggle vue -->
+      <mat-button-toggle-group [(ngModel)]="viewMode" class="border border-slate-200 rounded-lg overflow-hidden">
+        <mat-button-toggle value="liste" matTooltip="Vue liste">
+          <mat-icon svgIcon="mat:view_list"></mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="grille" matTooltip="Vue tableau hebdomadaire">
+          <mat-icon svgIcon="mat:grid_view"></mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
 
-      <table
-        mat-table
-        [dataSource]="dataSource"
-        matSort
-        @stagger
-        class="w-full">
-        <!-- Jour -->
+      <!-- Export PDF -->
+      <button mat-stroked-button color="warn" (click)="exporterPdf()" matTooltip="Télécharger en PDF">
+        <mat-icon svgIcon="mat:picture_as_pdf"></mat-icon>
+        PDF
+      </button>
+
+      <!-- Ajouter -->
+      <button mat-flat-button color="primary" (click)="ajouter()">
+        <mat-icon svgIcon="mat:add"></mat-icon>
+        Ajouter
+      </button>
+    </div>
+
+    <!-- Spinner -->
+    <div *ngIf="isLoading" class="flex justify-center py-12">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- VUE LISTE                                                           -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="!isLoading && viewMode === 'liste'" class="card overflow-auto">
+      <table mat-table [dataSource]="dataSource" matSort @stagger class="w-full">
+
         <ng-container matColumnDef="jour">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Jours</th>
-
           <td mat-cell *matCellDef="let row">
-            <span class="text-sm font-medium text-primary">
-              {{ getJoursLabel(row.jours) }}
-            </span>
+            <span class="text-sm font-medium text-primary">{{ getJoursLabel(row.jours) }}</span>
           </td>
         </ng-container>
 
-        <!-- Horaire -->
         <ng-container matColumnDef="horaire">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header
-            class="uppercase">
-            Horaire
-          </th>
-
+          <th mat-header-cell *matHeaderCellDef class="uppercase">Horaire</th>
           <td mat-cell *matCellDef="let row">
             <div class="flex flex-col">
-              <span class="font-medium">
-                {{ row.heureDebut }}
-              </span>
-
-              <span class="text-secondary text-xs">
-                {{ row.heureFin }}
-              </span>
+              <span class="font-medium">{{ row.heureDebut }}</span>
+              <span class="text-secondary text-xs">{{ row.heureFin }}</span>
             </div>
           </td>
         </ng-container>
-         <!-- Périodicité -->
+
         <ng-container matColumnDef="periode">
-          <th mat-header-cell *matHeaderCellDef class="uppercase">
-            Période
-          </th>
-
+          <th mat-header-cell *matHeaderCellDef class="uppercase">Période</th>
           <td mat-cell *matCellDef="let row">
-           <div class="flex flex-col">
-              <span class="font-medium">
-               Du {{ row.dateDebut | date:'dd/MM/yyyy'}}
-              </span>
-
-              <span class="text-secondary text-xs">
-               au {{ row.dateFin | date:'dd/MM/yyyy'}}
-              </span>
-            </div>å
+            <div class="flex flex-col">
+              <span class="font-medium">Du {{ row.dateDebut | date:'dd/MM/yyyy' }}</span>
+              <span class="text-secondary text-xs">au {{ row.dateFin | date:'dd/MM/yyyy' }}</span>
+            </div>
           </td>
         </ng-container>
 
-
-        <!-- Matière -->
         <ng-container matColumnDef="matiere">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header
-            class="uppercase">
-            Matière
-          </th>
-
-          <td mat-cell *matCellDef="let row" class="font-medium text-primary">
-            {{ row.matiere?.nom }}
-          </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="uppercase">Matière</th>
+          <td mat-cell *matCellDef="let row" class="font-medium">{{ row.matiere?.nom }}</td>
         </ng-container>
 
-        <!-- Enseignant -->
         <ng-container matColumnDef="enseignant">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header
-            class="uppercase">
-            Enseignant
-          </th>
-
-          <td mat-cell *matCellDef="let row" class="font-medium text-primary">
-            {{ row.enseignant?.nom }}
-            {{ row.enseignant?.prenom }}
-          </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="uppercase">Enseignant</th>
+          <td mat-cell *matCellDef="let row">{{ row.enseignant?.nom }} {{ row.enseignant?.prenom }}</td>
         </ng-container>
 
-       
-        <!-- Statut -->
         <ng-container matColumnDef="statut">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header
-            class="uppercase">
-            Statut
-          </th>
-
+          <th mat-header-cell *matHeaderCellDef class="uppercase">Statut</th>
           <td mat-cell *matCellDef="let row">
-            <span
-              [class]="
-                row.actif
-                  ? 'text-green-600 bg-green-600/10'
-                  : 'text-red-600 bg-red-600/10'
-              "
-              class="rounded px-2 py-1 font-medium text-xs">
-              {{ row.actif ? "En cours" : "Terminé" }}
+            <span [class]="row.actif ? 'text-green-600 bg-green-600/10' : 'text-red-600 bg-red-600/10'"
+                  class="rounded px-2 py-1 font-medium text-xs">
+              {{ row.actif ? 'En cours' : 'Terminé' }}
             </span>
           </td>
         </ng-container>
 
-        <!-- Actions -->
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
-
           <td mat-cell *matCellDef="let row" class="w-10 text-secondary">
             <div class="flex">
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="$event.stopPropagation(); modifier(row)">
+              <button mat-icon-button color="primary"
+                      (click)="$event.stopPropagation(); modifier(row)" matTooltip="Modifier">
                 <mat-icon svgIcon="mat:edit"></mat-icon>
               </button>
-
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="$event.stopPropagation(); supprimer(row)">
+              <button mat-icon-button color="warn"
+                      (click)="$event.stopPropagation(); supprimer(row)" matTooltip="Supprimer">
                 <mat-icon svgIcon="mat:delete"></mat-icon>
               </button>
             </div>
@@ -194,16 +136,106 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" @fadeInUp
+            class="hover:bg-hover cursor-pointer"></tr>
 
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedColumns"
-          @fadeInUp
-          class="hover:bg-hover cursor-pointer"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td [attr.colspan]="displayedColumns.length" class="mat-cell text-center py-10 text-secondary">
+            Aucun emploi du temps pour cette classe.
+          </td>
+        </tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" class="sticky left-0"></mat-paginator>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- VUE GRILLE HEBDOMADAIRE                                             -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="!isLoading && viewMode === 'grille'" class="card overflow-x-auto">
+
+      <!-- En-tête classe + légende -->
+      <div class="px-6 py-4 border-b flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">Tableau hebdomadaire</h2>
+          <p class="text-sm text-slate-500 mt-0.5" *ngIf="getNomClasse()">
+            Classe : <strong>{{ getNomClasse() }}</strong>
+          </p>
+        </div>
+        <span class="text-xs text-slate-400">{{ creneaux.length }} créneau(x) · {{ dataSource.data.length }} cours</span>
+      </div>
+
+      <!-- Aucun créneau -->
+      <div *ngIf="creneaux.length === 0" class="text-center py-16 text-slate-400 text-sm">
+        <mat-icon svgIcon="mat:calendar_today" class="text-4xl opacity-30 mb-2"></mat-icon>
+        <p>Aucun emploi du temps configuré pour cette classe.</p>
+      </div>
+
+      <!-- Tableau grille -->
+      <table *ngIf="creneaux.length > 0"
+             class="w-full border-collapse text-sm min-w-[700px]">
+        <thead>
+          <tr class="bg-slate-800 text-white">
+            <th class="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wider w-28 border-r border-slate-700">
+              Horaire
+            </th>
+            <th *ngFor="let jour of jours"
+                class="px-3 py-3 text-center font-semibold text-xs uppercase tracking-wider border-r border-slate-700 last:border-0">
+              {{ joursLabels[jour] }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let creneau of creneaux; let even = even"
+              [class]="even ? 'bg-white' : 'bg-slate-50/60'">
+
+            <!-- Colonne horaire -->
+            <td class="px-4 py-3 border-r border-slate-200 border-b border-b-slate-100 align-middle">
+              <div class="font-mono text-xs font-semibold text-slate-600 leading-tight">
+                {{ creneau.heureDebut }}<br>
+                <span class="text-slate-400 font-normal">{{ creneau.heureFin }}</span>
+              </div>
+            </td>
+
+            <!-- Cellule par jour -->
+            <td *ngFor="let jour of jours"
+                class="px-2 py-2 border-r border-slate-200 border-b border-b-slate-100 last:border-r-0 align-middle min-w-[110px]">
+
+              <ng-container *ngIf="getCellule(jour, creneau) as cours; else vide">
+                <!-- Pause / Récréation -->
+                <ng-container *ngIf="cours.type === 'PAUSE' || cours.type === 'RECREATION'; else courNormal">
+                  <div class="rounded-lg px-2 py-1.5 text-xs text-center leading-snug
+                               bg-amber-50 border border-amber-300 text-amber-800">
+                    <div class="font-bold">
+                      {{ cours.type === 'RECREATION' ? '☕ Récréation' : '⏸ Pause' }}
+                    </div>
+                    <div *ngIf="cours.description" class="text-[10px] opacity-75 mt-0.5 truncate">
+                      {{ cours.description }}
+                    </div>
+                  </div>
+                </ng-container>
+                <!-- Cours normal -->
+                <ng-template #courNormal>
+                  <div class="rounded-lg px-2.5 py-2 text-white text-xs leading-snug shadow-sm"
+                       [style.background-color]="cours.couleur || '#4f46e5'">
+                    <div class="font-bold truncate">{{ cours.matiere?.nom }}</div>
+                    <div class="opacity-85 mt-0.5 truncate">
+                      {{ cours.enseignant?.prenom }} {{ cours.enseignant?.nom }}
+                    </div>
+                  </div>
+                </ng-template>
+              </ng-container>
+
+              <ng-template #vide>
+                <div class="h-10 rounded-lg border-2 border-dashed border-slate-200 opacity-40"></div>
+              </ng-template>
+            </td>
+
+          </tr>
+        </tbody>
       </table>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]" class="sticky left-0">
-      </mat-paginator>
     </div>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
   </vex-page-layout-content>
 </vex-page-layout>

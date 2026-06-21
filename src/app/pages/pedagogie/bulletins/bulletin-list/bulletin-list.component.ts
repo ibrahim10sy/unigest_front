@@ -14,8 +14,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/vex-page-layout-content.directive';
 import { VexPageLayoutHeaderDirective } from '@vex/components/vex-page-layout/vex-page-layout-header.directive';
@@ -164,8 +162,8 @@ export class BulletinListComponent implements OnInit {
   // ─── Génération des bulletins pour toute la classe ───────────────────────
 
   genererTousBulletins() {
-    if (!this.selectedClasseId) {
-      Swal.fire('Attention', 'Sélectionnez une classe', 'warning');
+    if (!this.selectedClasseId || !this.selectedPeriode || !this.selectedTypePeriode) {
+      Swal.fire('Attention', 'Sélectionnez une classe, une période et un type', 'warning');
       return;
     }
 
@@ -176,17 +174,16 @@ export class BulletinListComponent implements OnInit {
         this.isGenerating = false;
 
         if (etudiants.length === 0) {
-          Swal.fire('Info', 'Aucun étudiant trouvé dans cette classe', 'info');
+          Swal.fire('Info', 'Aucun étudiant actif dans cette classe', 'info');
           return;
         }
 
-        // ── Dialogue conduite par étudiant ──────────────────────────────────
         Swal.fire({
           title: 'Notes de conduite',
           html: `
             <p style="font-size:13px;color:#555;margin-bottom:10px;">
-              Saisissez la note de conduite (optionnelle, sur 20) pour chaque étudiant.<br>
-              <em>Laisser vide si pas de note de conduite.</em>
+              Note de conduite optionnelle (0–20) pour chaque étudiant.<br>
+              <em>Laisser vide si pas de conduite. Les bulletins existants seront mis à jour.</em>
             </p>
             <div style="max-height:340px;overflow-y:auto;">
               <table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -213,23 +210,23 @@ export class BulletinListComponent implements OnInit {
               </table>
             </div>
           `,
-          width: 520,
+          width: 540,
           showCancelButton: true,
-          confirmButtonText: 'Générer les bulletins',
+          confirmButtonText: 'Générer / Mettre à jour',
           cancelButtonText: 'Annuler',
           preConfirm: () => {
-            const conduites: { id: number; conduite?: number }[] = [];
+            const conduites: { etudiantId: number; noteConduite: number | null }[] = [];
             for (const e of etudiants) {
               const raw = (document.getElementById(`cond-${e.id}`) as HTMLInputElement)?.value?.trim();
               if (raw) {
                 const val = parseFloat(raw);
                 if (isNaN(val) || val < 0 || val > 20) {
-                  Swal.showValidationMessage(`Note invalide pour ${e.prenom} ${e.nom} (0 – 20)`);
+                  Swal.showValidationMessage(`Note invalide pour ${e.prenom} ${e.nom} (0–20)`);
                   return false;
                 }
-                conduites.push({ id: e.id, conduite: val });
+                conduites.push({ etudiantId: e.id, noteConduite: val });
               } else {
-                conduites.push({ id: e.id, conduite: undefined });
+                conduites.push({ etudiantId: e.id, noteConduite: null });
               }
             }
             return conduites;
@@ -237,47 +234,28 @@ export class BulletinListComponent implements OnInit {
         }).then(result => {
           if (!result.isConfirmed) return;
 
-          const conduites: { id: number; conduite?: number }[] = result.value;
           this.isGenerating = true;
+          const conduites: { etudiantId: number; noteConduite: number | null }[] = result.value;
 
-          const appels = etudiants.map((etu: any) => {
-            const c = conduites.find(x => x.id === etu.id);
-            return this.bulletinService.genererBulletin(
-              etu.id,
-              this.selectedPeriode,
-              this.selectedTypePeriode,
-              c?.conduite
-            ).pipe(catchError(() => of(null)));
-          });
-
-          // Générer séquentiellement puis recalculer les rangs UNE SEULE FOIS
-          forkJoin(appels).subscribe({
-            next: (resultats) => {
-              const nbGeneres = resultats.filter(r => r !== null).length;
-              const nbIgnores = resultats.filter(r => r === null).length;
-
-              // Recalcul des rangs après toutes les générations
-              this.bulletinService.recalculerRangs(
-                this.selectedClasseId,
-                this.selectedPeriode,
-                this.selectedTypePeriode
-              ).subscribe({
-                next: () => {
-                  this.isGenerating = false;
-                  let msg = `${nbGeneres} bulletin(s) généré(s)`;
-                  if (nbIgnores > 0) msg += ` · ${nbIgnores} déjà existant(s) ignoré(s)`;
-                  Swal.fire({ icon: 'success', title: msg, timer: 2500, showConfirmButton: false });
-                  this.chargerBulletins();
-                },
-                error: () => {
-                  this.isGenerating = false;
-                  this.chargerBulletins();
-                }
-              });
-            },
-            error: () => {
+          this.bulletinService.genererTousPourClasse(
+            this.selectedClasseId,
+            this.selectedPeriode,
+            this.selectedTypePeriode,
+            conduites
+          ).subscribe({
+            next: (bulletins) => {
               this.isGenerating = false;
-              Swal.fire('Erreur', 'Une erreur est survenue pendant la génération', 'error');
+              Swal.fire({
+                icon: 'success',
+                title: `${bulletins.length} bulletin(s) générés / mis à jour`,
+                timer: 2000,
+                showConfirmButton: false
+              });
+              this.chargerBulletins();
+            },
+            error: (err: any) => {
+              this.isGenerating = false;
+              Swal.fire('Erreur', err?.error?.message ?? 'Erreur lors de la génération', 'error');
             }
           });
         });
