@@ -3,99 +3,180 @@
 // Vex Core
 @import "./@vex/styles/core";
 
-/*
-  You can override any CSS Variable or style here
-  Example:
+// ═══════════════════════════════════════════════════════════════
+// UNIGEST — Thème Indigo/Violet
+// ═══════════════════════════════════════════════════════════════
 
-  :root {
-   --vex-sidenav-background: #333333;
-  }
-
-  All possible variables can be found in @vex/styles/core or by simply inspecting the element you want to change
-  in Chrome/Firefox DevTools
-*/
-
-/**
-  Uncomment the below code and adjust the values to fit your colors, the application will automatically adjust
- */
 html {
-  // --vex-color-primary: blue;
-  // --vex-color-primary-contrast: white;
+  // ── Couleurs primaires ─────────────────────────────────────────
+  --vex-color-primary: #4f46e5;
+  --vex-color-primary-contrast: #ffffff;
+  --vex-color-accent: #7c3aed;
+  --vex-color-accent-contrast: #ffffff;
 
-  // --vex-color-accent: yellow;
-  // --vex-color-accent-contrast: black;
+  // ── Sidenav fond sombre indigo ────────────────────────────────
+  --vex-sidenav-background: #1e1b4b;
+  --vex-sidenav-color: rgba(255, 255, 255, 0.85);
+  --vex-sidenav-toolbar-background: #1a1744;
+  --vex-sidenav-section-divider-color: rgba(255, 255, 255, 0.07);
 
-  // --vex-color-warn: yellow;
-  // --vex-color-warn-contrast: black;
+  // ── Items sidenav ─────────────────────────────────────────────
+  --vex-sidenav-item-color: rgba(255, 255, 255, 0.62);
+  --vex-sidenav-item-color-hover: #ffffff;
+  --vex-sidenav-item-color-active: #ffffff;
+  --vex-sidenav-item-background-hover: rgba(255, 255, 255, 0.07);
+  --vex-sidenav-item-background-active: rgba(99, 102, 241, 0.32);
+  --vex-sidenav-item-font-weight: 500;
+  --vex-sidenav-item-ripple-color: rgba(255, 255, 255, 0.08);
+
+  // ── Icônes sidenav ────────────────────────────────────────────
+  --vex-sidenav-item-icon-color: rgba(255, 255, 255, 0.42);
+  --vex-sidenav-item-icon-color-hover: rgba(255, 255, 255, 0.85);
+  --vex-sidenav-item-icon-color-active: #a5b4fc;
+
+  // ── Sous-titres sidenav ───────────────────────────────────────
+  --vex-sidenav-subheading-color: rgba(255, 255, 255, 0.26);
+
+  // ── Dropdown sidenav ─────────────────────────────────────────
+  --vex-sidenav-item-dropdown-background: rgba(0, 0, 0, 0.15);
+  --vex-sidenav-item-dropdown-background-hover: rgba(255, 255, 255, 0.05);
+  --vex-sidenav-item-dropdown-background-active: rgba(79, 70, 229, 0.28);
+  --vex-sidenav-item-dropdown-color-active: #c7d2fe;
+  --vex-sidenav-item-dropdown-color-hover: rgba(255, 255, 255, 0.85);
+
+  // ── Toolbar ───────────────────────────────────────────────────
+  --vex-toolbar-background: #ffffff;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// GLOBAL — Améliorations visuelles
+// ═══════════════════════════════════════════════════════════════
 
-/* Dans src/styles.scss */
+body {
+  background-color: #f1f5f9;
+}
+
+// Cards plus modernes
+.card {
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+// En-têtes de table plus lisibles
+.mat-mdc-header-cell {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b !important;
+}
+
+// Lignes de table
+.mat-mdc-row:hover {
+  background-color: #f8fafc !important;
+}
+
+// Form fields
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+// Buttons arrondis
+.mdc-button {
+  border-radius: 8px !important;
+}
+
+.mdc-fab {
+  border-radius: 12px !important;
+}
+
+// ── Badges de statut réutilisables ────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+// Page headers avec gradient
+.page-header-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+}
+
+// ── Toolbar interne des pages (bg-app-bar) ────────────────────
+.bg-app-bar {
+  background: #ffffff !important;
+}
+
+// Bouton d'ajout principal dans les pages
+.mat-mdc-mini-fab.mat-primary {
+  border-radius: 10px !important;
+}
+
+// Paginator
+.mat-mdc-paginator {
+  border-top: 1px solid #f1f5f9;
+  background: #fafafa;
+}
+
+// Badge de statut dans les tables
+.badge-actif {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-inactif {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SweetAlert z-index
+// ═══════════════════════════════════════════════════════════════
+
 .swal2-container {
-  z-index: 999999 !important; /* Pour passer au-dessus des popovers Vex */
+  z-index: 999999 !important;
 }
 
-.swal2-styled {
-  /* On force la visibilité car Vex peut mettre l'opacité à 0 par défaut */
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: inline-block !important;
-}
-
-/* On s'assure que le bouton de confirmation a bien sa couleur */
-.swal2-confirm {
-  background-color: #3085d6 !important;
-  color: white !important;
-}
-
-/* Idem pour le bouton annuler */
-.swal2-cancel {
-  background-color: #d33 !important;
-  color: white !important;
-}
-/* Dans src/styles.scss */
-
-/* Force la visibilité des boutons SweetAlert */
 .swal2-styled {
   opacity: 1 !important;
   visibility: visible !important;
   display: inline-block !important;
   box-shadow: none !important;
+  border-radius: 8px !important;
 }
 
-/* On s'assure que le bouton annuler (Annuler) est bien rouge et visible */
 .swal2-cancel {
-  background-color: #d33 !important;
+  background-color: #ef4444 !important;
   color: white !important;
   opacity: 1 !important;
 }
 
-/* On s'assure que le bouton de confirmation (Oui) est bien bleu et visible */
 .swal2-confirm {
-  background-color: #3085d6 !important;
+  background-color: #4f46e5 !important;
   color: white !important;
   opacity: 1 !important;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// Print
+// ═══════════════════════════════════════════════════════════════
 
 @media print {
-
-  body * {
-    visibility: hidden;
-  }
-
-  #recu-print, #recu-print * {
-    visibility: visible;
-  }
-
-  #recu-print {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-  }
-
-  mat-dialog-actions,
-  button {
-    display: none !important;
-  }
+  body * { visibility: hidden; }
+  #recu-print, #recu-print * { visibility: visible; }
+  #recu-print { position: absolute; top: 0; left: 0; width: 100%; }
+  mat-dialog-actions, button { display: none !important; }
 }

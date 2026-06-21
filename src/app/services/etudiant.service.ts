@@ -54,4 +54,8 @@ export class EtudiantService {
     if (etudiant.id) return this.http.put<Etudiant>(`${this.apiUrl}/${etudiant.id}`, etudiant);
     return this.http.post<Etudiant>(this.apiUrl, etudiant);
   }
+
+  exporterDossierPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/export-pdf`, { responseType: 'blob' });
+  }
 }

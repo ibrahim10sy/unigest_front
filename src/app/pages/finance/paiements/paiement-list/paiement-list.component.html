@@ -1,158 +1,117 @@
 <vex-page-layout>
-  <vex-page-layout-header
-    class="pb-16 flex flex-col items-start justify-center">
-    <div
-      [class.container]="layoutCtrl.value === 'boxed'"
-      [class.px-6]="layoutCtrl.value === 'fullwidth'"
-      class="w-full flex flex-col sm:flex-row justify-between">
+  <vex-page-layout-header class="pb-16 flex flex-col items-start justify-center">
+    <div [class.container]="layoutCtrl.value === 'boxed'"
+         [class.px-6]="layoutCtrl.value === 'fullwidth'"
+         class="w-full flex flex-col sm:flex-row justify-between">
       <div>
-        <h1 class="title mt-0 mb-1">Gestion des Paiements Scolaire</h1>
-        <vex-breadcrumbs
-          [crumbs]="[
-            'Configuration',
-            'Gestion des Paiement Scolaire'
-          ]"></vex-breadcrumbs>
+        <h1 class="title mt-0 mb-1">Paiements Scolaires</h1>
+        <vex-breadcrumbs [crumbs]="['Finance', 'Paiements']"></vex-breadcrumbs>
       </div>
- 
-      <div class="hidden sm:block">
-        <mat-button-toggle-group
-          [formControl]="layoutCtrl"
-          class="mt-4 sm:mt-0">
-          <mat-button-toggle value="boxed">Réduire</mat-button-toggle>
-          <mat-button-toggle value="fullwidth">Plein écran</mat-button-toggle>
-        </mat-button-toggle-group>
+      <div class="hidden sm:flex items-center gap-3">
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 text-white text-sm font-medium">
+          {{ dataSource.data.length }} paiement{{ dataSource.data.length !== 1 ? 's' : '' }}
+        </div>
       </div>
     </div>
   </vex-page-layout-header>
 
-  <vex-page-layout-content
-    [class.container]="layoutCtrl.value === 'boxed'"
-    class="-mt-6">
+  <vex-page-layout-content [class.container]="layoutCtrl.value === 'boxed'" class="-mt-6">
     <div class="card overflow-auto -mt-16">
-      <div
-  class="bg-app-bar px-6 py-2 border-b sticky left-0 flex flex-wrap items-center gap-4">
 
-  <!-- 🔍 Recherche -->
-  <mat-form-field appearance="outline" class="w-64">
-    <mat-icon matPrefix svgIcon="mat:search"></mat-icon>
-    <input
-      matInput
-      [formControl]="searchCtrl"
-      placeholder="Rechercher..."
-      type="text" />
-  </mat-form-field>
+      <!-- Barre d'outils avec filtres -->
+      <div class="bg-app-bar px-6 py-3 border-b sticky left-0 flex flex-wrap items-center gap-3">
 
-  <!-- 🎓 Classe -->
-  <mat-form-field appearance="outline" class="w-48">
-    <mat-label>Classe</mat-label>
-    <mat-select
-      [(value)]="selectedClasseId"
-      (selectionChange)="onFilterChange()">
-      <mat-option *ngFor="let c of classes" [value]="c.id">
-        {{ c.nom }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic" class="w-52">
+          <mat-icon matIconPrefix svgIcon="mat:search"></mat-icon>
+          <input matInput [formControl]="searchCtrl" placeholder="Rechercher..." type="text"/>
+        </mat-form-field>
 
-  <!-- 📅 Année -->
-  <mat-form-field appearance="outline" class="w-48">
-    <mat-label>Année</mat-label>
-    <mat-select
-      [(value)]="selectedAnneeId"
-      (selectionChange)="onFilterChange()">
-      <mat-option *ngFor="let a of annees" [value]="a.id">
-        {{ a.libelle }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic" class="w-40">
+          <mat-label>Classe</mat-label>
+          <mat-select [(value)]="selectedClasseId" (selectionChange)="onFilterChange()">
+            <mat-option *ngFor="let c of classes" [value]="c.id">{{ c.nom }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-  <!-- espace flexible -->
-  <span class="flex-1"></span>
+        <mat-form-field subscriptSizing="dynamic" class="w-40">
+          <mat-label>Année</mat-label>
+          <mat-select [(value)]="selectedAnneeId" (selectionChange)="onFilterChange()">
+            <mat-option *ngFor="let a of annees" [value]="a.id">{{ a.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-  <!-- ➕ Bouton -->
-  <button
-    (click)="ajouter()"
-    color="primary"
-    mat-mini-fab
-    matTooltip="Ajouter un paiement">
-    <mat-icon svgIcon="mat:add"></mat-icon>
-  </button>
+        <span class="flex-1"></span>
 
-</div>
+        <button (click)="ajouter()" color="primary" mat-flat-button type="button">
+          <mat-icon svgIcon="mat:add" class="mr-1"></mat-icon>
+          Ajouter
+        </button>
+      </div>
 
-      <table
-        @stagger
-        [dataSource]="dataSource"
-        class="w-full"
-        mat-table
-        matSort>
+      <!-- Table -->
+      <table @stagger [dataSource]="dataSource" class="w-full" mat-table matSort>
+
         <ng-container matColumnDef="datePaiement">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.datePaiement | date: "dd/MM/yyyy" }}
+          <td mat-cell *matCellDef="let row" class="text-slate-400 text-sm">
+            {{ row.datePaiement | date:'dd/MM/yyyy' }}
           </td>
         </ng-container>
+
         <ng-container matColumnDef="etudiant">
           <th mat-header-cell *matHeaderCellDef>Étudiant</th>
           <td mat-cell *matCellDef="let row">
-            <div *ngIf="row.inscription">
-              <span class="font-bold">
-                {{ row.inscription.etudiant.prenom }}
-                {{ row.inscription.etudiant.nom }}
+            <div *ngIf="row.inscription" class="flex items-center gap-3">
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-none"
+                   style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
+                {{ (row.inscription.etudiant.prenom?.[0] || '') }}{{ (row.inscription.etudiant.nom?.[0] || '') }}
+              </div>
+              <span class="font-semibold text-slate-800">
+                {{ row.inscription.etudiant.prenom }} {{ row.inscription.etudiant.nom }}
               </span>
             </div>
           </td>
         </ng-container>
+
         <ng-container matColumnDef="montant">
           <th mat-header-cell *matHeaderCellDef>Montant payé</th>
-          <td mat-cell *matCellDef="let row" class="font-bold">
-            {{ row.montant | number }} <small>FCFA</small>
+          <td mat-cell *matCellDef="let row" class="font-bold text-slate-700">
+            {{ row.montant | number }} <span class="text-xs text-slate-400 font-normal">FCFA</span>
           </td>
         </ng-container>
+
         <ng-container matColumnDef="modePaiement">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            Mode de paiement
-          </th>
-          <td mat-cell *matCellDef="let row">{{ row.modePaiement }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Mode</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+              {{ row.modePaiement }}
+            </span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
-
           <td mat-cell *matCellDef="let row" class="w-10 text-secondary">
             <div class="flex">
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="voirDetails(row); $event.stopPropagation()">
-                <mat-icon svgIcon="mat:visibility"></mat-icon>
+              <button mat-icon-button (click)="voirDetails(row); $event.stopPropagation()" matTooltip="Détails">
+                <mat-icon svgIcon="mat:visibility" class="text-slate-400"></mat-icon>
               </button>
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="modifier(row); $event.stopPropagation()">
-                <mat-icon svgIcon="mat:edit"></mat-icon>
+              <button mat-icon-button (click)="modifier(row); $event.stopPropagation()" matTooltip="Modifier">
+                <mat-icon svgIcon="mat:edit" class="text-indigo-400"></mat-icon>
               </button>
-
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="supprimer(row); $event.stopPropagation()">
-                <mat-icon svgIcon="mat:delete"></mat-icon>
+              <button mat-icon-button (click)="supprimer(row); $event.stopPropagation()" matTooltip="Supprimer">
+                <mat-icon svgIcon="mat:delete" class="text-red-400"></mat-icon>
               </button>
             </div>
           </td>
         </ng-container>
+
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-        <tr
-          *matRowDef="let row; columns: displayedColumns"
-          @fadeInUp
-          class="hover:bg-hover cursor-pointer"
-          mat-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns"
+            @fadeInUp class="hover:bg-hover cursor-pointer" mat-row></tr>
       </table>
 
-      <mat-paginator
-        [pageSizeOptions]="[5, 10, 20]"
-        class="sticky left-0"></mat-paginator>
-    </div> </vex-page-layout-content
-></vex-page-layout>
+      <mat-paginator [pageSizeOptions]="[10, 20, 50]" class="sticky left-0"></mat-paginator>
+    </div>
+  </vex-page-layout-content>
+</vex-page-layout>

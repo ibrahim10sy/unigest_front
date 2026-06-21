@@ -1,73 +1,213 @@
-<vex-secondary-toolbar current="Tableau de bord">
-  <vex-breadcrumbs
-    [crumbs]="[ 'Analytique']"
-    class="flex-auto">
-  </vex-breadcrumbs>
-</vex-secondary-toolbar>
+<div class="min-h-screen" style="background:#f1f5f9;">
 
-<div class="container p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+  <!-- ═══════════════════════════════════════════════════════
+       HEADER GRADIENT
+  ═══════════════════════════════════════════════════════ -->
+  <div style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);" class="px-6 pt-8 pb-24">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-white mb-1">Tableau de bord</h1>
+          <p class="text-indigo-200 text-sm">Vue d'ensemble de votre établissement</p>
+        </div>
+        <div class="flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+          <mat-icon svgIcon="mat:today" style="color:#c7d2fe;font-size:18px;width:18px;height:18px;"></mat-icon>
+          <span class="text-white text-sm font-medium">{{ today }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- GRAND GRAPHIQUE -->
-<vex-widget-large-goal-chart
-  [series]="salesSeries"
-  [labels]="yearLabels"
-  [currentYearLabel]="currentYearLabel"
-  class="sm:col-span-full"
-  [total]="(stats?.inscriptionsAnneeCourante || 0).toString()">
-</vex-widget-large-goal-chart>
+  <!-- ═══════════════════════════════════════════════════════
+       KPI CARDS (chevauchent le header)
+  ═══════════════════════════════════════════════════════ -->
+  <div class="px-6 -mt-16 max-w-7xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-<!-- <vex-widget-large-chart
-  [series]="userSessionsSeries"
-  class="sm:col-span-2">
-</vex-widget-large-chart> -->
+      <!-- Étudiants -->
+      <div class="card p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#ede9fe;">
+            <mat-icon svgIcon="mat:group" style="color:#7c3aed;font-size:20px;width:20px;height:20px;"></mat-icon>
+          </div>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background:#ede9fe;color:#7c3aed;">Actifs</span>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-800">{{ stats?.totalEtudiants || 0 }}</div>
+          <div class="text-slate-500 text-sm mt-0.5">Étudiants</div>
+        </div>
+      </div>
 
-  <!-- ETUDIANTS -->
-  <vex-widget-quick-value-center
-  [change]="0"
-  icon="mat:group"
-  iconClass="text-primary-600 bg-primary-600/10"
-  label="Étudiants"
-  [value]="(stats?.totalEtudiants || 0).toString()">
-</vex-widget-quick-value-center>
+      <!-- Filières -->
+      <div class="card p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#fef3c7;">
+            <mat-icon svgIcon="mat:school" style="color:#d97706;font-size:20px;width:20px;height:20px;"></mat-icon>
+          </div>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background:#fef3c7;color:#d97706;">Total</span>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-800">{{ stats?.totalFilieres || 0 }}</div>
+          <div class="text-slate-500 text-sm mt-0.5">Filières</div>
+        </div>
+      </div>
 
-  <!-- FILIERES -->
-  <vex-widget-quick-value-center
-    [change]="0"
-    icon="mat:school"
-    iconClass="text-orange-600 bg-orange-600/10"
-    label="Filières"
-    [value]="(stats?.totalFilieres || 0).toString()">
-  </vex-widget-quick-value-center>
+      <!-- Classes -->
+      <div class="card p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#e0e7ff;">
+            <mat-icon svgIcon="mat:class" style="color:#4f46e5;font-size:20px;width:20px;height:20px;"></mat-icon>
+          </div>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background:#e0e7ff;color:#4f46e5;">Total</span>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-800">{{ stats?.totalClasses || 0 }}</div>
+          <div class="text-slate-500 text-sm mt-0.5">Classes</div>
+        </div>
+      </div>
 
-  <!-- CLASSES -->
-  <vex-widget-quick-value-center
-    [change]="0"
-    icon="mat:class"
-    iconClass="text-purple-600 bg-purple-600/10"
-    label="Classes"
-    [value]="(stats?.totalClasses || 0).toString()">
-  </vex-widget-quick-value-center>
+      <!-- Inscriptions -->
+      <div class="card p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#d1fae5;">
+            <mat-icon svgIcon="mat:assignment" style="color:#059669;font-size:20px;width:20px;height:20px;"></mat-icon>
+          </div>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background:#d1fae5;color:#059669;">Année</span>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-800">{{ stats?.inscriptionsAnneeCourante || 0 }}</div>
+          <div class="text-slate-500 text-sm mt-0.5">Inscriptions</div>
+        </div>
+      </div>
 
-  <!-- INSCRIPTIONS -->
-  <vex-widget-quick-value-center
-    [change]="0"
-    icon="mat:assignment"
-    iconClass="text-teal-600 bg-teal-600/10"
-    label="Inscriptions"
-    [value]="(stats?.totalInscriptions || 0).toString()">
-  </vex-widget-quick-value-center>
+    </div>
+  </div>
 
-  <!-- EVOLUTION -->
-  <vex-widget-large-chart
-    [series]="userSessionsSeries"
-    class="sm:col-span-2">
-  </vex-widget-large-chart>
+  <!-- ═══════════════════════════════════════════════════════
+       CONTENU PRINCIPAL
+  ═══════════════════════════════════════════════════════ -->
+  <div class="px-6 pt-6 pb-10 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-  <!-- TABLE -->
- <vex-widget-table
-  [columns]="tableColumns"
-  [data]="tableData"
-  class="sm:col-span-2">
-</vex-widget-table>
+      <!-- Évolution inscriptions (2/3) -->
+      <div class="card p-6 lg:col-span-2">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-800">Évolution des inscriptions</h2>
+            <p class="text-slate-400 text-xs mt-0.5">Par année scolaire</p>
+          </div>
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#e0e7ff;">
+            <mat-icon svgIcon="mat:trending_up" style="color:#4f46e5;font-size:16px;width:16px;height:16px;"></mat-icon>
+          </div>
+        </div>
+        <vex-widget-large-goal-chart
+          [series]="salesSeries"
+          [labels]="yearLabels"
+          [currentYearLabel]="currentYearLabel"
+          [total]="(stats?.inscriptionsAnneeCourante || 0).toString()">
+        </vex-widget-large-goal-chart>
+      </div>
+
+      <!-- Séances du jour (1/3) -->
+      <div class="card p-6 flex flex-col">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-800">Séances du jour</h2>
+            <p class="text-slate-400 text-xs mt-0.5">{{ today }}</p>
+          </div>
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#fce7f3;">
+            <mat-icon svgIcon="mat:event_note" style="color:#db2777;font-size:16px;width:16px;height:16px;"></mat-icon>
+          </div>
+        </div>
+
+        <!-- Liste des séances -->
+        <div class="flex flex-col gap-2 flex-1 overflow-auto max-h-64">
+          <div *ngIf="tableData.length === 0" class="flex flex-col items-center justify-center py-10 text-slate-400">
+            <mat-icon svgIcon="mat:event_busy" style="font-size:40px;width:40px;height:40px;opacity:.25;"></mat-icon>
+            <span class="text-sm mt-2">Aucune séance aujourd'hui</span>
+          </div>
+          <div *ngFor="let s of tableData"
+               class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors">
+            <div class="w-1.5 h-1.5 rounded-full mt-2 flex-none" style="background:#4f46e5;"></div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-slate-700 truncate">{{ s.matiere }}</div>
+              <div class="text-xs text-slate-400 truncate">{{ s.classe }} · {{ s.professeur }}</div>
+            </div>
+            <div class="text-xs font-mono text-slate-400 flex-none">{{ s.heureDebut }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Deuxième rangée: graphique sessions + résumé rapide -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+
+      <!-- Graphique sessions (2/3) -->
+      <div class="card p-6 lg:col-span-2">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-800">Sessions par année</h2>
+            <p class="text-slate-400 text-xs mt-0.5">Activité globale</p>
+          </div>
+        </div>
+        <vex-widget-large-chart [series]="userSessionsSeries"></vex-widget-large-chart>
+      </div>
+
+      <!-- Accès rapide (1/3) -->
+      <div class="card p-6 flex flex-col gap-3">
+        <h2 class="text-base font-bold text-slate-800 mb-2">Accès rapide</h2>
+
+        <a routerLink="/scolarite/etudiants"
+           class="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 transition-colors group cursor-pointer no-underline">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-none" style="background:#e0e7ff;">
+            <mat-icon svgIcon="mat:group" style="color:#4f46e5;font-size:18px;width:18px;height:18px;"></mat-icon>
+          </div>
+          <div class="flex-1">
+            <div class="text-sm font-semibold text-slate-700 group-hover:text-indigo-600">Étudiants</div>
+            <div class="text-xs text-slate-400">Gérer les inscriptions</div>
+          </div>
+          <mat-icon svgIcon="mat:arrow_forward_ios" style="font-size:12px;width:12px;height:12px;color:#cbd5e1;"></mat-icon>
+        </a>
+
+        <a routerLink="/pedagogie/notes"
+           class="flex items-center gap-3 p-3 rounded-xl hover:bg-amber-50 transition-colors group cursor-pointer no-underline">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-none" style="background:#fef3c7;">
+            <mat-icon svgIcon="mat:grading" style="color:#d97706;font-size:18px;width:18px;height:18px;"></mat-icon>
+          </div>
+          <div class="flex-1">
+            <div class="text-sm font-semibold text-slate-700 group-hover:text-amber-600">Notes</div>
+            <div class="text-xs text-slate-400">Saisir et consulter</div>
+          </div>
+          <mat-icon svgIcon="mat:arrow_forward_ios" style="font-size:12px;width:12px;height:12px;color:#cbd5e1;"></mat-icon>
+        </a>
+
+        <a routerLink="/pedagogie/bulletins"
+           class="flex items-center gap-3 p-3 rounded-xl hover:bg-green-50 transition-colors group cursor-pointer no-underline">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-none" style="background:#d1fae5;">
+            <mat-icon svgIcon="mat:description" style="color:#059669;font-size:18px;width:18px;height:18px;"></mat-icon>
+          </div>
+          <div class="flex-1">
+            <div class="text-sm font-semibold text-slate-700 group-hover:text-green-600">Bulletins</div>
+            <div class="text-xs text-slate-400">Générer et imprimer</div>
+          </div>
+          <mat-icon svgIcon="mat:arrow_forward_ios" style="font-size:12px;width:12px;height:12px;color:#cbd5e1;"></mat-icon>
+        </a>
+
+        <a routerLink="/pedagogie/emploi-du-temps"
+           class="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors group cursor-pointer no-underline">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-none" style="background:#fce7f3;">
+            <mat-icon svgIcon="mat:calendar_month" style="color:#db2777;font-size:18px;width:18px;height:18px;"></mat-icon>
+          </div>
+          <div class="flex-1">
+            <div class="text-sm font-semibold text-slate-700 group-hover:text-pink-600">Emploi du temps</div>
+            <div class="text-xs text-slate-400">Consulter les horaires</div>
+          </div>
+          <mat-icon svgIcon="mat:arrow_forward_ios" style="font-size:12px;width:12px;height:12px;color:#cbd5e1;"></mat-icon>
+        </a>
+      </div>
+
+    </div>
+  </div>
 
 </div>

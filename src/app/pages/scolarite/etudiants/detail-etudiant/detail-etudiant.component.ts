@@ -1,12 +1,11 @@
-import { Affectation } from 'src/app/models/Affectation';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -17,7 +16,6 @@ import { VexPageLayoutContentDirective } from '@vex/components/vex-page-layout/v
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
 import { stagger40ms } from '@vex/animations/stagger.animation';
-import Swal from 'sweetalert2';
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { Etudiant } from 'src/app/models/Etudiant';
 import { Paiement } from 'src/app/models/paiement';
@@ -27,6 +25,7 @@ import { InscriptionService } from 'src/app/services/inscription.service';
 import { NoteService } from 'src/app/services/note.service';
 import { AppelService } from 'src/app/services/appel.service';
 import { MediaService } from 'src/app/services/MediasService.service';
+import { EtudiantService } from 'src/app/services/etudiant.service';
 import { Appel } from 'src/app/models/Appel';
 import { Note } from 'src/app/models/note.model';
 import { Inscription } from 'src/app/models/Inscription';
@@ -74,7 +73,8 @@ export class DetailEtudiantComponent implements OnInit {
     private inscriptionService: InscriptionService,
     private noteService: NoteService,
     private appelService: AppelService,
-    private mediaService: MediaService
+    private mediaService: MediaService,
+    private etudiantService: EtudiantService
   ) {}
 
   ngOnInit(): void {
@@ -121,8 +121,15 @@ export class DetailEtudiantComponent implements OnInit {
   }
 
   exporterDossier() {
-    // Déclenche la fenêtre d'impression du navigateur
-    window.print();
+    if (!this.etudiant?.id) return;
+    this.etudiantService.exporterDossierPdf(this.etudiant.id).subscribe(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `dossier-${this.etudiant.prenom}-${this.etudiant.nom}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   }
   loadAppels() {
     this.appelService.getByEtudiant(this.etudiant.id!)
@@ -160,7 +167,10 @@ export class DetailEtudiantComponent implements OnInit {
   }
 
   getMontantTotalPaye(): number {
-    return this.dataSourcePaiements.data
-      .reduce((sum, p) => sum + p.montant, 0);
+    return this.dataSourcePaiements.data.reduce((sum, p) => sum + p.montant, 0);
+  }
+
+  getNbAbsences(): number {
+    return this.dataSourceAppels.data.filter(a => a.statut === 'ABSENT').length;
   }
 }
