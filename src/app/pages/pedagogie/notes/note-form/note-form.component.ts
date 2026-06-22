@@ -72,7 +72,7 @@ export class NoteFormComponent implements OnInit {
 
   typesPeriode = Object.values(TypePeriode);
   typesNote = Object.values(TypeNote);
-  periodes = [1, 2, 3];
+  periodes = [1, 2, 3,4,5];
 
   etudiantNotes: EtudiantNote[] = [];
 

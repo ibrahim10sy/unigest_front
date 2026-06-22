@@ -122,18 +122,6 @@ export class NavigationLoaderService {
           },
           {
             type: 'link',
-            label: 'Année Scolaire',
-            route: '/scolarite/annee-scolaire',
-            icon: 'mat:date_range'
-          },
-          {
-            type: 'link',
-            label: 'Niveau',
-            route: '/scolarite/niveau',
-            icon: 'mat:layers'
-          },
-          {
-            type: 'link',
             label: 'Filières',
             route: '/scolarite/filieres',
             icon: 'mat:school'
@@ -262,23 +250,42 @@ export class NavigationLoaderService {
       },
 
       // ============================
-      // ⚙️ PARAMÈTRES
+      // ⚙️ PARAMÉTRAGE
       // ============================
       {
         type: 'subheading',
-        label: 'Paramètres',
+        label: 'Paramétrage',
         children: [
           {
-            type: 'link',
-            label: 'École & Bulletins',
-            route: '/parametres/ecole',
-            icon: 'mat:settings'
-          },
-          {
-            type: 'link',
-            label: 'Appréciations',
-            route: '/parametres/appreciation',
-            icon: 'mat:star_rate'
+            type: 'dropdown',
+            label: 'Paramétrage',
+            icon: 'mat:tune',
+            children: [
+              {
+                type: 'link',
+                label: 'Niveaux',
+                route: '/scolarite/niveau',
+                icon: 'mat:layers'
+              },
+              {
+                type: 'link',
+                label: 'Année Scolaire',
+                route: '/scolarite/annee-scolaire',
+                icon: 'mat:date_range'
+              },
+              {
+                type: 'link',
+                label: 'Paramétrage École',
+                route: '/parametres/ecole',
+                icon: 'mat:settings'
+              },
+              {
+                type: 'link',
+                label: 'Appréciations',
+                route: '/parametres/appreciation',
+                icon: 'mat:star_rate'
+              }
+            ]
           }
         ]
       }

@@ -59,7 +59,7 @@ export class NoteListComponent implements OnInit {
   annees: any[] = [];
   classes: any[] = [];
 
-  periodes: number[] = [1, 2, 3];
+  periodes: number[] = [1, 2, 3,4,5];
   typesPeriode = Object.values(TypePeriode);
 
   selectedAnneeId!: number;
